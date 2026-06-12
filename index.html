@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Workflow Flows — duane-art</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#ffffff; --bg2:#f2f4f7; --surface:#f7f8fa; --border:#e4e7ec; --border2:#cfd5dd;
+    --text:#15181d; --muted:#4c5563; --faint:#9099a6;
+    --warm:#e8612f; --warm-hi:#ff8a4d; --cool:#0e9b8e; --cool-hi:#0c8276;
+    --display:"Space Grotesk",system-ui,sans-serif; --body:"Inter",system-ui,sans-serif; --mono:"JetBrains Mono",ui-monospace,monospace;
+  }
+  *{box-sizing:border-box} html,body{margin:0;padding:0}
+  body{background:var(--bg); color:var(--text); font-family:var(--body); -webkit-font-smoothing:antialiased; min-height:100vh;
+    background-image:radial-gradient(rgba(21,24,29,.05) 1px, transparent 1px); background-size:24px 24px;}
+  .wrap{max-width:900px; margin:0 auto; padding:64px 24px 100px}
+  .eyebrow{font-family:var(--mono); font-size:12px; letter-spacing:.2em; text-transform:uppercase; color:var(--faint); display:flex; align-items:center; gap:10px; margin-bottom:14px}
+  .eyebrow .dot{width:9px;height:9px;border-radius:50%; background:radial-gradient(circle at 35% 35%, var(--warm-hi), var(--warm)); box-shadow:0 0 10px rgba(232,97,47,.6)}
+  h1{font-family:var(--display); font-weight:700; font-size:clamp(34px,6vw,52px); letter-spacing:-.025em; margin:0 0 10px}
+  .sub{color:var(--muted); font-size:17px; margin:0 0 40px; max-width:60ch}
+  .grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:16px}
+  a.card{display:flex; flex-direction:column; justify-content:space-between; min-height:120px; text-decoration:none;
+    background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:18px 20px; transition:.16s; position:relative; overflow:hidden}
+  a.card::before{content:""; position:absolute; left:0; top:0; bottom:0; width:4px; background:linear-gradient(var(--warm-hi),var(--cool)); opacity:.0; transition:.16s}
+  a.card:hover{border-color:var(--cool); transform:translateY(-2px); box-shadow:0 10px 26px rgba(21,24,29,.08)}
+  a.card:hover::before{opacity:1}
+  .card .name{font-family:var(--display); font-weight:600; font-size:20px; color:var(--text); letter-spacing:-.01em}
+  .card .slug{font-family:var(--mono); font-size:11px; color:var(--faint); margin-top:3px}
+  .card .go{margin-top:14px; font-size:13px; font-weight:500; color:var(--cool-hi); display:flex; align-items:center; gap:6px}
+  .card .go svg{width:15px;height:15px;stroke:currentColor;stroke-width:2;fill:none; transition:.16s}
+  a.card:hover .go svg{transform:translateX(3px)}
+  .state{color:var(--muted); font-size:15px; padding:30px 0; font-family:var(--body)}
+  .state.err{color:#b4452f}
+  .state .mono{font-family:var(--mono); font-size:13px; color:var(--faint)}
+  footer{margin-top:48px; color:var(--faint); font-size:12px; font-family:var(--mono); letter-spacing:.03em}
+  footer a{color:var(--cool-hi); text-decoration:none}
+  @media (prefers-reduced-motion:reduce){ a.card,a.card .go svg{transition:none} a.card:hover{transform:none} }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="eyebrow"><span class="dot"></span>Workflow Tools</div>
+    <h1>Process Flows</h1>
+    <p class="sub">An index of step-by-step pipeline walkthroughs. Pick one to see the flow — the images that build each step, the prompts behind them, the whole arc.</p>
+    <div id="grid" class="grid"></div>
+    <div id="state" class="state">Loading flows…</div>
+    <footer>duane-art / workflow-tools · auto-updates as folders are added</footer>
+  </div>
+
+<script>
+(function(){
+  var OWNER="duane-art", REPO="workflow-tools";
+  var API="https://api.github.com/repos/"+OWNER+"/"+REPO+"/contents/";
+  var grid=document.getElementById("grid"), state=document.getElementById("state");
+
+  function pretty(name){
+    return name.replace(/[-_]+/g," ").replace(/\b\w/g,function(c){return c.toUpperCase();});
+  }
+  function arrow(){ return '<svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>'; }
+
+  fetch(API,{headers:{"Accept":"application/vnd.github+json"}})
+    .then(function(r){ if(!r.ok) throw new Error("HTTP "+r.status); return r.json(); })
+    .then(function(items){
+      var dirs=items.filter(function(i){ return i.type==="dir"; })
+                    .sort(function(a,b){ return a.name.localeCompare(b.name); });
+      if(!dirs.length){ state.innerHTML='No project folders yet. Add one (e.g. <span class="mono">birthdayland/index.html</span>) and it\'ll appear here.'; return; }
+      state.style.display="none";
+      dirs.forEach(function(d){
+        var a=document.createElement("a");
+        a.className="card"; a.href="./"+encodeURIComponent(d.name)+"/";
+        a.innerHTML='<div><div class="name">'+pretty(d.name)+'</div><div class="slug">/'+d.name+'/</div></div>'+
+                    '<div class="go">Open flow '+arrow()+'</div>';
+        grid.appendChild(a);
+      });
+    })
+    .catch(function(e){
+      state.className="state err";
+      state.innerHTML='Couldn\'t load the project list ('+e.message+'). This page reads the repo via GitHub\'s public API, which limits anonymous requests to ~60/hour per network — try again shortly, or open a project directly by adding its folder name to the URL.';
+    });
+})();
+</script>
+</body>
+</html>
