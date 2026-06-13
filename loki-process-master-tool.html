@@ -318,7 +318,7 @@
 (function(){
   "use strict";
   var VIEW=false, mode="edit", orient="portrait";
-  var state={ title:"", intro:"", steps:[], shareUrl:"", shareImage:"", shareBase:"", ghRepo:"", ghBranch:"", ghFolder:"", card:{color:"",text:"",pattern:""} };
+  var state={ title:"", intro:"", steps:[], shareUrl:"", shareImage:"", shareBase:"", ghRepo:"", ghBranch:"", ghFolder:"", card:{color:"",text:"",pattern:""}, exportName:"" };
   var uid=function(){ return Math.random().toString(36).slice(2,9); };
 
   if (window.__FLOW_DATA__){ try{ state=window.__FLOW_DATA__; }catch(e){} VIEW=!!window.__VIEW_ONLY__; }
@@ -679,6 +679,26 @@
     });
   }
 
+  // Export a uniquely-named HTML into the repo's "exports/" folder (the Launchpad reads that folder).
+  function exportToHub(){
+    var win=window.open("about:blank","_blank");   // open synchronously so the popup blocker allows it
+    var def=state.exportName||safeName();
+    var nm=window.prompt(
+      "Export to your exports folder.\n\n"+
+      "File name (no extension). Re-use the same name to UPDATE an existing flow; "+
+      "use a new name to create a new one:", def);
+    if(nm===null){ if(win) win.close(); return; }
+    nm=nm.trim().replace(/[^a-z0-9_-]+/gi,"-").replace(/^-+|-+$/g,"")||safeName();
+    state.exportName=nm;
+    var fileName=nm+".html";
+    var url=ghUploadUrl("exports");
+    if(win){ try{ win.opener=null; }catch(e){} win.location.href=url; }
+    else { window.prompt("Popup blocked. Copy this link, open it, then drop the HTML there:", url); }
+    exportHTML(fileName).then(function(){
+      toast("Saved "+fileName+" — drag it into the exports tab, then Commit.");
+    });
+  }
+
   /* ---------------- SHARE (link or file) ---------------- */
   function curLink(){ var v=$("sh-url").value.trim(); return v||(VIEW?location.href:""); }
   function shareMsg(link){ var base="Duane is sharing the workflow for "+(state.title||"Untitled process")+"."; return link?(base+" Please click the link below to see it in action!"):(base+" Open the attached file in any browser to see it in action!"); }
@@ -828,7 +848,7 @@
   if(!VIEW){
     $title.oninput=function(){ state.title=$title.value; $proj.textContent=state.title||"Untitled process"; };
     $intro.oninput=function(){ state.intro=$intro.value; autoGrow($intro); };
-    $("b-add").onclick=addStep; $("b-save").onclick=save; $("b-export").onclick=function(){ exportHTML(); }; $("b-publish").onclick=publish;
+    $("b-add").onclick=addStep; $("b-save").onclick=save; $("b-export").onclick=exportToHub; $("b-publish").onclick=publish;
     $("b-load").onclick=function(){ $json.value=""; $json.click(); };
     $("seg").addEventListener("click",function(e){ var b=e.target.closest("button[data-m]"); if(b)setMode(b.dataset.m); });
     $img.onchange=function(){ if(activeStep)addFiles(activeStep,$img.files); };
@@ -843,8 +863,37 @@
   $("orient").value=orient; $("orient").onchange=function(){ orient=$("orient").value; };
   $("b-print").onclick=doPrint;
 
+  // Open-for-edit: if the URL has ?edit=<path-to-exported-html>, fetch that file, pull its
+  // flow data out, and load it in EDIT mode. Powers the Launchpad's "click to work on it".
+  function loadFromEditParam(){
+    var m=location.search.match(/[?&]edit=([^&]+)/);
+    if(!m) return;
+    var path=decodeURIComponent(m[1]);
+    var fname=(path.split("/").pop()||""), ename=fname.replace(/\.html?$/i,"");
+    toast("Loading "+fname+"\u2026");
+    fetch(path,{cache:"no-store"})
+      .then(function(r){ if(!r.ok) throw new Error("HTTP "+r.status); return r.text(); })
+      .then(function(text){
+        var key="window.__FLOW_DATA__=", i=text.indexOf(key);
+        if(i<0) throw new Error("no flow data in that file");
+        var rest=text.slice(i+key.length), end=rest.indexOf(";window.__VIEW_ONLY__");
+        if(end<0) throw new Error("couldn't parse the flow data");
+        var d=JSON.parse(rest.slice(0,end));
+        state={ title:d.title||"", intro:d.intro||"", steps:Array.isArray(d.steps)?d.steps:[],
+                shareUrl:d.shareUrl||"", shareImage:d.shareImage||"", shareBase:d.shareBase||"",
+                ghRepo:state.ghRepo, ghBranch:state.ghBranch, ghFolder:d.ghFolder||"",
+                card:(d.card&&typeof d.card==="object")?{color:d.card.color||"",text:d.card.text||"",pattern:d.card.pattern||""}:{color:"",text:"",pattern:""},
+                exportName:ename };
+        state.steps.forEach(function(s){ if(!s.id)s.id=uid(); if(!s.media){ s.media=(s.images||[]).map(function(x){return {type:"image",src:x};}); } delete s.images; });
+        render(); if(mode==="canvas"){ renderCanvas(); requestAnimationFrame(fit); }
+        toast("Loaded "+fname+" \u2014 editing");
+      })
+      .catch(function(e){ toast("Couldn't load "+fname+" ("+e.message+")"); });
+  }
+
   renderEditor();
   if(mode==="canvas"){ setMode("canvas"); }
+  if(!VIEW && !window.__FLOW_DATA__) loadFromEditParam();
   window.addEventListener("resize",function(){ if(mode==="canvas"&&!userMoved) fit(); });
 })();
 </script>
