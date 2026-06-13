@@ -658,22 +658,25 @@
   }
   function publish(){
     var owner=(state.ghRepo.split("/")[0]||""), repo=(state.ghRepo.split("/")[1]||"");
+    // Open the upload tab synchronously, as a direct result of the click, so the popup
+    // blocker allows it. We point this already-open tab at the right folder once we know it.
+    var win=window.open("about:blank","_blank");
     var guess=(state.ghFolder&&state.ghFolder.trim())||slugify(state.title)||"process";
     var ans=window.prompt(
       "Publish to GitHub Pages.\n\n"+
       "Repo: "+state.ghRepo+"   (branch "+state.ghBranch+")\n"+
       "Live URL: https://"+owner+".github.io/"+repo+"/<folder>/\n\n"+
       "Folder name (must match the live URL):", guess);
-    if(ans===null) return;                                   // cancelled
+    if(ans===null){ if(win) win.close(); return; }           // cancelled
     var folder=ans.trim().replace(/^\/+|\/+$/g,"");
-    if(!folder){ toast("Need a folder name to publish."); return; }
+    if(!folder){ if(win) win.close(); toast("Need a folder name to publish."); return; }
     state.ghFolder=folder; lsSet("pfb_ghRepo",state.ghRepo); lsSet("pfb_ghBranch",state.ghBranch);
     var url=ghUploadUrl(folder);
-    var win=window.open(url,"_blank","noopener");            // jump straight to that folder's upload page
+    if(win){ try{ win.opener=null; }catch(e){} win.location.href=url; }   // send the tab we already opened
+    else { window.prompt("Popup blocked. Copy this link, open it, then upload index.html there:", url); }
     exportHTML("index.html").then(function(){
       toast("Saved index.html — drag it into the GitHub tab that opened, then Commit.");
     });
-    if(!win){ window.prompt("Popup blocked. Copy this link, open it, then upload index.html there:", url); }
   }
 
   /* ---------------- SHARE (link or file) ---------------- */
