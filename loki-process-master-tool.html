@@ -242,7 +242,7 @@
   <div class="bar">
     <div class="brand"><span class="dot"></span>Process Flow</div>
     <div id="proj-label"></div>
-    <a class="btn editing-only" id="b-hub" href="https://duane-art.github.io/workflow-tools/" target="_blank" rel="noopener" title="Open the hub in a new tab" style="text-decoration:none"><svg viewBox="0 0 24 24"><path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z"/></svg>Hub</a>
+    <a class="btn editing-only" id="b-hub" href="https://duane-art.github.io/workflow-tools/" target="_blank" rel="noopener" title="Open your public portfolio in a new tab" style="text-decoration:none"><svg viewBox="0 0 24 24"><path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z"/></svg>Portfolio</a>
     <span class="spacer"></span>
     <div class="seg editing-only" id="seg"><button data-m="edit" class="on">Edit</button><button data-m="canvas">Preview</button></div>
     <button class="btn editing-only" id="b-add"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Add step</button>
@@ -253,7 +253,7 @@
     <button class="btn editing-only" id="b-card" title="Set this flow's hub card color and text"><svg viewBox="0 0 24 24"><path d="M3 5h18v14H3zM3 9h18"/></svg>Card</button>
     <button class="btn btn-share" id="b-share"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>Share</button>
     <select class="btn editing-only" id="imgq" title="Image quality on export"><option value="balanced">Images: Balanced</option><option value="high">Images: High</option><option value="small">Images: Small</option><option value="original">Images: Original</option></select>
-    <button class="btn btn-primary editing-only" id="b-publish" title="Save index.html and open the GitHub upload page for this project's folder"><svg viewBox="0 0 24 24"><path d="M12 13v8M8 17l4-4 4 4M20 16.7A5 5 0 0018 7h-1.26A8 8 0 104 15.25"/></svg>Publish</button>
+    <button class="btn editing-only" id="b-portfolio" title="Add this flow to your public portfolio folder on GitHub"><svg viewBox="0 0 24 24"><path d="M12 13v8M8 17l4-4 4 4M20 16.7A5 5 0 0018 7h-1.26A8 8 0 104 15.25"/></svg>Add to portfolio</button>
     <button class="btn editing-only" id="b-export"><svg viewBox="0 0 24 24"><path d="M4 12v7a1 1 0 001 1h14a1 1 0 001-1v-7M16 6l-4-4-4 4M12 2v13"/></svg>Export page</button>
   </div>
 
@@ -721,6 +721,25 @@
     });
   }
 
+  // Add the current flow to the PUBLIC portfolio folder (dr3d-flow-portfolio/, read by the portfolio page).
+  function exportToPortfolio(){
+    var win=window.open("about:blank","_blank");
+    var def=state.exportName||safeName();
+    var nm=window.prompt(
+      "Add to your PUBLIC portfolio.\n\n"+
+      "Anything here shows on your portfolio page to prospects.\n"+
+      "File name (no extension). Re-use a name to update; new name to add:", def);
+    if(nm===null){ if(win) win.close(); return; }
+    nm=nm.trim().replace(/[^a-z0-9_-]+/gi,"-").replace(/^-+|-+$/g,"")||safeName();
+    var fileName=nm+".html";
+    var url=ghUploadUrl("dr3d-flow-portfolio");
+    if(win){ try{ win.opener=null; }catch(e){} win.location.href=url; }
+    else { window.prompt("Popup blocked. Copy this link, open it, then drop the HTML there:", url); }
+    exportHTML(fileName).then(function(){
+      toast("Saved "+fileName+" — drag it into the portfolio tab, then Commit.");
+    });
+  }
+
   /* ---------------- SHARE (link or file) ---------------- */
   function curLink(){ var v=$("sh-url").value.trim(); return v||(VIEW?location.href:""); }
   function shareMsg(link){ var base="Duane is sharing the workflow for "+(state.title||"Untitled process")+"."; return link?(base+" Please click the link below to see it in action!"):(base+" Open the attached file in any browser to see it in action!"); }
@@ -892,7 +911,7 @@
   if(!VIEW){
     $title.oninput=function(){ state.title=$title.value; $proj.textContent=state.title||"Untitled process"; };
     $intro.oninput=function(){ state.intro=$intro.value; autoGrow($intro); };
-    $("b-add").onclick=addStep; $("b-save").onclick=save; $("b-export").onclick=exportToHub; $("b-publish").onclick=publish;
+    $("b-add").onclick=addStep; $("b-save").onclick=save; $("b-export").onclick=exportToHub; $("b-portfolio").onclick=exportToPortfolio;
     $("b-load").onclick=function(){ $json.value=""; $json.click(); };
     $("seg").addEventListener("click",function(e){ var b=e.target.closest("button[data-m]"); if(b)setMode(b.dataset.m); });
     $img.onchange=function(){ if(activeStep)addFiles(activeStep,$img.files); };

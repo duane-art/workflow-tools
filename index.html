@@ -3,141 +3,112 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Workflow Flows — duane-art</title>
+<title>Process Flow Portfolio — DLoose Design</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#ffffff; --bg2:#f2f4f7; --surface:#f7f8fa; --border:#e4e7ec; --border2:#cfd5dd;
+    --bg:#ffffff; --bg2:#f2f4f7; --surface:#f7f8fa; --surface2:#eef1f5;
+    --border:#e4e7ec; --border2:#cfd5dd;
     --text:#15181d; --muted:#4c5563; --faint:#9099a6;
     --warm:#e8612f; --warm-hi:#ff8a4d; --cool:#0e9b8e; --cool-hi:#0c8276;
     --display:"Space Grotesk",system-ui,sans-serif; --body:"Inter",system-ui,sans-serif; --mono:"JetBrains Mono",ui-monospace,monospace;
   }
   *{box-sizing:border-box} html,body{margin:0;padding:0}
   body{background:var(--bg); color:var(--text); font-family:var(--body); -webkit-font-smoothing:antialiased; min-height:100vh;
-    background-image:radial-gradient(rgba(21,24,29,.05) 1px, transparent 1px); background-size:24px 24px;}
-  .wrap{max-width:980px; margin:0 auto; padding:64px 24px 100px}
-  .eyebrow{font-family:var(--mono); font-size:12px; letter-spacing:.2em; text-transform:uppercase; color:var(--faint); display:flex; align-items:center; gap:10px; margin-bottom:14px}
-  .eyebrow .dot{width:9px;height:9px;border-radius:50%; background:radial-gradient(circle at 35% 35%, var(--warm-hi), var(--warm)); box-shadow:0 0 10px rgba(232,97,47,.6)}
-  h1{font-family:var(--display); font-weight:700; font-size:clamp(34px,6vw,52px); letter-spacing:-.025em; margin:0 0 10px}
-  .sub{color:var(--muted); font-size:17px; margin:0 0 16px; max-width:60ch}
-  .editbar{display:none; margin:0 0 30px; font-family:var(--mono); font-size:12px; color:var(--cool-hi)}
-  body.editing .editbar{display:block}
-  .grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(248px,1fr)); gap:18px}
-  a.card{display:flex; flex-direction:column; text-decoration:none;
-    background:var(--surface); border:1px solid var(--border); border-radius:16px; overflow:hidden; transition:.16s; position:relative}
-  a.card:hover{border-color:var(--cool); transform:translateY(-2px); box-shadow:0 12px 28px rgba(21,24,29,.10)}
+    background-image:radial-gradient(rgba(20,24,29,.045) 1px, transparent 1px); background-size:24px 24px;}
+  .wrap{max-width:1040px; margin:0 auto; padding:60px 24px 100px}
+
+  .topline{display:flex; align-items:flex-end; justify-content:space-between; gap:24px; flex-wrap:wrap}
+  .lede{min-width:0}
+  .eyebrow{font-family:var(--mono); font-size:12px; letter-spacing:.22em; text-transform:uppercase; color:var(--faint); display:flex; align-items:center; gap:10px; margin-bottom:14px}
+  .eyebrow .dot{width:9px;height:9px;border-radius:50%; background:radial-gradient(circle at 35% 35%, var(--warm-hi), var(--warm)); box-shadow:0 0 12px rgba(232,97,47,.7)}
+  h1{font-family:var(--display); font-weight:700; font-size:clamp(34px,6vw,54px); letter-spacing:-.025em; margin:0 0 10px}
+  .sub{color:var(--muted); font-size:17px; margin:0; max-width:54ch; line-height:1.5}
+  .newflow{flex:0 0 auto; font-family:var(--body); font-weight:600; font-size:14px; text-decoration:none;
+    display:inline-flex; align-items:center; gap:9px; padding:12px 18px; border-radius:11px;
+    color:#06201d; background:linear-gradient(135deg,var(--cool-hi),var(--cool)); border:none; transition:.16s;}
+  .newflow:hover{filter:brightness(1.07); transform:translateY(-1px)}
+  .newflow svg{width:17px;height:17px;stroke:currentColor;stroke-width:2.2;fill:none}
+
+  .grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(252px,1fr)); gap:18px; margin-top:40px}
+  .card{display:flex; flex-direction:column; cursor:pointer; position:relative; text-decoration:none; color:inherit;
+    background:var(--surface); border:1px solid var(--border); border-radius:16px; overflow:hidden; transition:.16s}
+  .card:hover{border-color:var(--cool); transform:translateY(-2px); box-shadow:0 14px 32px rgba(20,24,29,.12)}
   .thumb{position:relative; width:100%; aspect-ratio:16/10; overflow:hidden;
     background:linear-gradient(135deg, #11302c 0%, #0e9b8e 48%, #e8612f 100%);}
   .thumb img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:0; transition:opacity .3s}
   .thumb img.show{opacity:1}
   .thumb .ph{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; padding:14px;
-    text-align:center; color:rgba(255,255,255,.92); font-family:var(--display); font-weight:600; font-size:18px; letter-spacing:-.01em;
-    text-shadow:0 1px 8px rgba(0,0,0,.28)}
+    text-align:center; color:rgba(255,255,255,.94); font-family:var(--display); font-weight:600; font-size:18px; letter-spacing:-.01em;
+    text-shadow:0 1px 8px rgba(0,0,0,.34)}
+  .thumb .boxtext{position:absolute; inset:0; display:none; align-items:center; justify-content:center; padding:14px; text-align:center;
+    font-family:var(--display); font-weight:600; font-size:23px; line-height:1.15; letter-spacing:-.01em; word-break:break-word}
   .thumb .play{position:absolute; right:10px; bottom:10px; width:30px;height:30px;border-radius:50%;
-    background:rgba(10,12,16,.55); display:none; align-items:center; justify-content:center}
+    background:rgba(10,12,16,.6); display:none; align-items:center; justify-content:center}
   .thumb .play svg{width:14px;height:14px;fill:#fff}
   .thumb.is-video .play{display:flex}
-  .thumb .boxtext{position:absolute; inset:0; display:none; align-items:center; justify-content:center; padding:14px; text-align:center; font-family:var(--display); font-weight:600; font-size:23px; line-height:1.15; letter-spacing:-.01em; word-break:break-word}
-  .edit-cover{position:absolute; top:8px; right:8px; width:30px;height:30px;border-radius:8px;border:none;
-    background:rgba(10,12,16,.7); color:#fff; display:none; align-items:center; justify-content:center; cursor:pointer; z-index:4; padding:0}
-  .edit-cover svg{width:15px;height:15px;stroke:#fff;stroke-width:2;fill:none}
-  .edit-cover:hover{background:var(--cool)}
-  body.editing .thumb:hover .edit-cover, body.editing .edit-cover:focus{display:flex}
-  .body{padding:15px 18px 17px}
-  .card .name{font-family:var(--display); font-weight:600; font-size:19px; color:var(--text); letter-spacing:-.01em}
-  .card .slug{font-family:var(--mono); font-size:11px; color:var(--faint); margin-top:3px}
-  .card .go{margin-top:12px; font-size:13px; font-weight:500; color:var(--cool-hi); display:flex; align-items:center; gap:6px}
-  .card .go svg{width:15px;height:15px;stroke:currentColor;stroke-width:2;fill:none; transition:.16s}
-  a.card:hover .go svg{transform:translateX(3px)}
-  .state{color:var(--muted); font-size:15px; padding:30px 0; font-family:var(--body)}
-  .state.err{color:#b4452f}
-  .state .mono{font-family:var(--mono); font-size:13px; color:var(--faint)}
-  footer{margin-top:48px; color:var(--faint); font-size:12px; font-family:var(--mono); letter-spacing:.03em}
-  footer a{color:var(--cool-hi); text-decoration:none}
+  .body{padding:15px 18px 16px; display:flex; flex-direction:column; gap:3px}
+  .card .name{font-family:var(--display); font-weight:600; font-size:18px; color:var(--text); letter-spacing:-.01em; line-height:1.2}
+  .card .slug{font-family:var(--mono); font-size:11px; color:var(--faint); overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+  .actions{display:flex; align-items:center; justify-content:space-between; gap:8px; margin-top:11px; flex-wrap:wrap}
+  .actions .go{font-size:13.5px; font-weight:600; color:var(--cool-hi); display:flex; align-items:center; gap:6px}
+  .actions .go svg{width:15px;height:15px;stroke:currentColor;stroke-width:2;fill:none; transition:.16s}
+  .card:hover .go svg{transform:translateX(3px)}
+  .actions .view{font-family:var(--mono); font-size:11px; letter-spacing:.04em; text-transform:uppercase; color:var(--faint); text-decoration:none; padding:4px 8px; border:1px solid var(--border2); border-radius:7px; transition:.15s}
+  .actions .view:hover{color:var(--text); border-color:var(--muted)}
+  .actions .util{display:flex; align-items:center; gap:6px}
+  .actions .copy{font-family:var(--mono); font-size:11px; letter-spacing:.04em; text-transform:uppercase; color:var(--cool-hi); background:none; border:1px solid var(--border2); border-radius:7px; padding:4px 8px; cursor:pointer; transition:.15s}
+  .actions .copy:hover{border-color:var(--cool); color:var(--text)}
+  .actions .copy.done{color:#86e6d7; border-color:var(--cool)}
 
-  /* ---- cover crop editor ---- */
-  .cropper{position:fixed; inset:0; z-index:100; display:none; align-items:center; justify-content:center; padding:24px; background:rgba(12,14,18,.62); backdrop-filter:blur(3px)}
-  .cropper.open{display:flex}
-  .crop-panel{background:#fff; border-radius:16px; padding:22px; width:min(440px,94vw); box-shadow:0 24px 70px rgba(0,0,0,.4)}
-  .crop-panel h3{font-family:var(--display); font-weight:600; font-size:19px; margin:0 0 4px}
-  .crop-panel .h-sub{font-family:var(--mono); font-size:11px; color:var(--faint); margin:0 0 16px}
-  .crop-stage{position:relative; width:100%; aspect-ratio:16/10; border-radius:10px; overflow:hidden; background:#0d1117;
-    background-image:linear-gradient(45deg,#1a1f27 25%,transparent 25%),linear-gradient(-45deg,#1a1f27 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#1a1f27 75%),linear-gradient(-45deg,transparent 75%,#1a1f27 75%); background-size:18px 18px; background-position:0 0,0 9px,9px -9px,-9px 0;
-    cursor:grab}
-  .crop-stage.drag{cursor:grabbing}
-  .crop-stage canvas{position:absolute; inset:0; width:100%; height:100%; display:block}
-  .crop-stage .hint{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:rgba(255,255,255,.78); font-family:var(--body); font-size:14px; text-align:center; padding:18px; pointer-events:none}
-  .crop-row{display:flex; align-items:center; gap:10px; margin-top:14px}
-  .crop-row.zoom{justify-content:center}
-  .zbtn{width:40px;height:40px;border-radius:10px;border:1px solid var(--border2); background:var(--surface); color:var(--text); font-size:22px; line-height:1; display:flex;align-items:center;justify-content:center; cursor:pointer}
-  .zbtn:hover{border-color:var(--cool); color:var(--cool-hi)}
-  .zbtn:disabled{opacity:.4; cursor:default}
-  .btn{font-family:var(--body); font-weight:500; font-size:14px; border-radius:10px; padding:11px 16px; border:1px solid var(--border2); background:var(--surface); color:var(--text); cursor:pointer}
-  .btn:hover{border-color:var(--cool)}
-  .btn.primary{background:var(--cool); border-color:var(--cool); color:#fff}
-  .btn.primary:hover{background:var(--cool-hi)}
-  .btn.primary:disabled{opacity:.5; cursor:default}
-  .crop-actions{display:flex; gap:10px; margin-top:16px}
-  .crop-actions .btn{flex:1}
-  .crop-status{font-family:var(--mono); font-size:11px; color:var(--cool-hi); margin-top:12px; min-height:14px; line-height:1.5}
-  .file-row .btn{flex:1}
-  @media (prefers-reduced-motion:reduce){ a.card,a.card .go svg,.thumb img{transition:none} a.card:hover{transform:none} }
+  .state{color:var(--muted); font-size:15px; padding:34px 0; font-family:var(--body); line-height:1.55}
+  .state.err{color:#e0846b}
+  .state .mono{font-family:var(--mono); font-size:13px; color:var(--cool-hi)}
+  footer{margin-top:50px; color:var(--faint); font-size:12px; font-family:var(--mono); letter-spacing:.03em; display:flex; gap:14px; flex-wrap:wrap; align-items:center}
+  footer a{color:var(--cool-hi); text-decoration:none}
+  footer a:hover{text-decoration:underline}
+  @media (prefers-reduced-motion:reduce){ .card,.card .go svg,.thumb img,.newflow{transition:none} .card:hover,.newflow:hover{transform:none} }
 </style>
 </head>
 <body>
   <div class="wrap">
-    <div class="eyebrow"><span class="dot"></span>Workflow Tools</div>
-    <h1>Process Flows</h1>
-    <p class="sub">An index of step-by-step pipeline walkthroughs. Pick one to see the flow — the images that build each step, the prompts behind them, the whole arc.</p>
-    <div class="editbar">✎ Edit mode on — hover a card and click the pencil to set its featured image.</div>
-    <div id="grid" class="grid"></div>
-    <div id="state" class="state">Loading flows…</div>
-    <footer>duane-art / workflow-tools · auto-updates as folders are added</footer>
-  </div>
-
-  <!-- cover crop editor -->
-  <div class="cropper" id="cropper">
-    <div class="crop-panel">
-      <h3 id="crop-title">Featured image</h3>
-      <p class="h-sub" id="crop-folder"></p>
-      <div class="crop-stage" id="crop-stage">
-        <canvas id="crop-canvas" width="1000" height="625"></canvas>
-        <div class="hint" id="crop-hint">Choose an image below, then drag to position and use + / − to zoom.</div>
+    <div class="topline">
+      <div class="lede">
+        <div class="eyebrow"><span class="dot"></span>DLoose Design · Process Flow Portfolio</div>
+        <h1>Flow Portfolio</h1>
+        <p class="sub">A selection of AI-driven production workflows — click any project to explore the full process, step by step.</p>
       </div>
-      <div class="crop-row file-row"><button class="btn" id="crop-choose">Choose image…</button></div>
-      <div class="crop-row zoom">
-        <button class="zbtn" id="crop-out" title="Zoom out">−</button>
-        <button class="zbtn" id="crop-in" title="Zoom in">+</button>
-      </div>
-      <div class="crop-actions">
-        <button class="btn" id="crop-cancel">Cancel</button>
-        <button class="btn primary" id="crop-save" disabled>Save cover</button>
-      </div>
-      <div class="crop-status" id="crop-status"></div>
-      <input type="file" id="crop-file" accept="image/*" style="display:none">
     </div>
+    <div id="grid" class="grid"></div>
+    <div id="state" class="state">Loading the portfolio…</div>
+    <footer>
+      <span>DLoose Design</span>
+      <span id="count"></span>
+      <a href="https://www.linkedin.com/in/dloosedesign/" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="https://x.com/DLooseDesign" target="_blank" rel="noopener">X</a>
+    </footer>
   </div>
 
 <script>
 (function(){
+  "use strict";
   var OWNER="duane-art", REPO="workflow-tools", BRANCH="main";
   var API="https://api.github.com/repos/"+OWNER+"/"+REPO+"/contents/";
-  // Opened from disk (file://), relative card links resolve against the local folder —
-  // where the flow folders don't exist. In that case point links/covers at the live
-  // GitHub Pages site. Served over http(s) on Pages, stay relative so it still works
-  // under a custom domain or a renamed repo.
-  var SERVED=(location.protocol==="http:"||location.protocol==="https:");
-  var SITE=SERVED?"./":"https://"+OWNER+".github.io/"+REPO+"/";
+  var PORT="dr3d-flow-portfolio";              // the folder this portfolio reads
+  var PAGES="https://"+OWNER+".github.io/"+REPO+"/";  // hosted base — keeps every link online even if this page is opened locally
   var grid=document.getElementById("grid"), state=document.getElementById("state");
-  var EDIT=/[?&]edit\b/.test(location.search);
-  if(EDIT) document.body.classList.add("editing");
 
   function pretty(name){ return name.replace(/[-_]+/g," ").replace(/\b\w/g,function(c){return c.toUpperCase();}); }
   function arrow(){ return '<svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>'; }
-  function pencil(){ return '<svg viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>'; }
+  function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c];}); }
   function hidePh(thumb){ var ph=thumb.querySelector(".ph"); if(ph) ph.style.display="none"; }
+  function copyToClip(text){
+    if(navigator.clipboard && navigator.clipboard.writeText) return navigator.clipboard.writeText(text);
+    return new Promise(function(res,rej){ try{ var t=document.createElement("textarea"); t.value=text; t.style.position="fixed"; t.style.opacity="0"; document.body.appendChild(t); t.focus(); t.select(); document.execCommand("copy"); t.remove(); res(); }catch(e){ rej(e); } });
+  }
+
   function cLum(hex){ var c=String(hex||"").replace("#",""); if(c.length===3)c=c.split("").map(function(x){return x+x;}).join(""); if(c.length<6)return 1; var r=parseInt(c.slice(0,2),16)/255,g=parseInt(c.slice(2,4),16)/255,b=parseInt(c.slice(4,6),16)/255; function f(x){return x<=0.03928?x/12.92:Math.pow((x+0.055)/1.055,2.4);} return 0.2126*f(r)+0.7152*f(g)+0.0722*f(b); }
   function cTxt(hex){ return cLum(hex)>0.42?"#15181d":"#ffffff"; }
   function cardPattern(pattern, col, op){
@@ -162,7 +133,6 @@
     hidePh(thumb);
     var img=thumb.querySelector("img"); if(img) img.classList.remove("show");
   }
-
   function poster(url){
     var m;
     if((m=url.match(/drive\.google\.com\/file\/d\/([\w-]+)/))||(m=url.match(/[?&]id=([\w-]+)/)))
@@ -198,153 +168,78 @@
     return list;
   }
 
-  // Cover priority: an explicit cover.jpg in the folder, else the flow's own image.
-  function loadCover(thumb){
-    var folder=thumb.getAttribute("data-folder");
+  // Read each export file, give the card its real title + its own card design (or first image).
+  function loadThumb(thumb){
+    var file=thumb.getAttribute("data-file");
     var img=thumb.querySelector("img");
-    var probe=new Image(); probe.referrerPolicy="no-referrer";
-    probe.onload=function(){ img.src=probe.src; img.classList.add("show"); hidePh(thumb); };
-    probe.onerror=function(){ loadFromFlow(thumb,folder,img); };
-    probe.src=SITE+encodeURIComponent(folder)+"/cover.jpg";
-  }
-  function loadFromFlow(thumb,folder,img){
-    fetch(SITE+encodeURIComponent(folder)+"/index.html",{cache:"force-cache"})
+    fetch("./"+PORT+"/"+encodeURIComponent(file),{cache:"force-cache"})
       .then(function(r){ return r.ok ? r.text() : Promise.reject(); })
       .then(function(text){
         var data=extractData(text);
+        if(data && data.title){ var card=thumb.parentNode, n=card&&card.querySelector(".name"); if(n) n.textContent=data.title; }
         if(data && data.card && data.card.color){ applyColorCard(thumb,data.card); return; }
         var tried=pickCover(data);
-        if(!tried.length){ return; }
+        if(!tried.length) return;
         var k=0;
         img.onload=function(){ img.classList.add("show"); hidePh(thumb); thumb.classList.toggle("is-video", !!tried[k].video); };
         img.onerror=function(){ k++; if(k<tried.length){ img.src=tried[k].src; } };
         img.src=tried[0].src;
       })
-      .catch(function(){ /* keep gradient + name placeholder */ });
+      .catch(function(){ /* keep gradient + name */ });
   }
 
   var io = ("IntersectionObserver" in window) ? new IntersectionObserver(function(entries,obs){
-    entries.forEach(function(en){ if(en.isIntersecting){ obs.unobserve(en.target); loadCover(en.target); } });
+    entries.forEach(function(en){ if(en.isIntersecting){ obs.unobserve(en.target); loadThumb(en.target); } });
   },{rootMargin:"300px"}) : null;
 
-  /* ================= cover crop editor ================= */
-  var CE=(function(){
-    var OUT_W=1000, OUT_H=625;            // 16:10 output
-    var modal=document.getElementById("cropper");
-    var canvas=document.getElementById("crop-canvas");
-    var stage=document.getElementById("crop-stage");
-    var hint=document.getElementById("crop-hint");
-    var statusEl=document.getElementById("crop-status");
-    var fileInput=document.getElementById("crop-file");
-    var saveBtn=document.getElementById("crop-save");
-    var folder="", img=null, scale=1, minScale=1, ox=0, oy=0;
-    var ctx=null; try{ ctx=canvas.getContext("2d"); }catch(e){}
+  function makeCard(file){
+    var base=file.replace(/\.html?$/i,"");
+    var flowURL=PAGES+PORT+"/"+encodeURIComponent(file);
+    var card=document.createElement("a");
+    card.className="card";
+    card.href=flowURL; card.target="_blank"; card.rel="noopener";
+    card.innerHTML=
+      '<div class="thumb" data-file="'+esc(file)+'">'+
+        '<img alt="" referrerpolicy="no-referrer">'+
+        '<div class="boxtext"></div>'+
+        '<div class="ph">'+esc(pretty(base))+'</div>'+
+        '<div class="play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>'+
+      '</div>'+
+      '<div class="body">'+
+        '<div class="name">'+esc(pretty(base))+'</div>'+
+        '<div class="actions">'+
+          '<span class="go">View flow '+arrow()+'</span>'+
+        '</div>'+
+      '</div>';
+    return card;
+  }
 
-    function clampPan(){
-      var iw=img.width*scale, ih=img.height*scale;
-      var minX=OUT_W-iw, minY=OUT_H-ih;
-      if(ox>0)ox=0; if(ox<minX)ox=minX;
-      if(oy>0)oy=0; if(oy<minY)oy=minY;
-    }
-    function render(){
-      if(!ctx) return;
-      ctx.clearRect(0,0,OUT_W,OUT_H);
-      if(img){ ctx.drawImage(img, ox, oy, img.width*scale, img.height*scale); }
-    }
-    function fit(){
-      minScale=Math.max(OUT_W/img.width, OUT_H/img.height);
-      scale=minScale;
-      ox=(OUT_W-img.width*scale)/2; oy=(OUT_H-img.height*scale)/2;
-      clampPan(); render();
-    }
-    function zoom(f){
-      if(!img) return;
-      var ns=Math.min(Math.max(scale*f, minScale), minScale*8);
-      var cx=OUT_W/2, cy=OUT_H/2;
-      ox=cx-(cx-ox)*(ns/scale); oy=cy-(cy-oy)*(ns/scale);
-      scale=ns; clampPan(); render();
-    }
-    // drag to pan (convert display px -> output px)
-    var dragging=false, lastX=0, lastY=0;
-    function dispScale(){ var r=stage.getBoundingClientRect(); return OUT_W/(r.width||OUT_W); }
-    stage.addEventListener("mousedown",function(e){ if(!img)return; dragging=true; stage.classList.add("drag"); lastX=e.clientX; lastY=e.clientY; });
-    window.addEventListener("mousemove",function(e){ if(!dragging)return; var s=dispScale(); ox+=(e.clientX-lastX)*s; oy+=(e.clientY-lastY)*s; lastX=e.clientX; lastY=e.clientY; clampPan(); render(); });
-    window.addEventListener("mouseup",function(){ dragging=false; stage.classList.remove("drag"); });
-    stage.addEventListener("wheel",function(e){ if(!img)return; e.preventDefault(); zoom(e.deltaY<0?1.08:1/1.08); },{passive:false});
-    // touch
-    stage.addEventListener("touchstart",function(e){ if(!img||!e.touches[0])return; dragging=true; lastX=e.touches[0].clientX; lastY=e.touches[0].clientY; },{passive:true});
-    stage.addEventListener("touchmove",function(e){ if(!dragging||!e.touches[0])return; var s=dispScale(); ox+=(e.touches[0].clientX-lastX)*s; oy+=(e.touches[0].clientY-lastY)*s; lastX=e.touches[0].clientX; lastY=e.touches[0].clientY; clampPan(); render(); },{passive:true});
-    stage.addEventListener("touchend",function(){ dragging=false; });
-
-    function onFile(file){
-      if(!file) return;
-      var r=new FileReader();
-      r.onload=function(){ var im=new Image(); im.onload=function(){ img=im; hint.style.display="none"; saveBtn.disabled=false; statusEl.textContent=""; fit(); }; im.onerror=function(){ statusEl.textContent="Couldn't read that image."; }; im.src=r.result; };
-      r.readAsDataURL(file);
-    }
-    function save(){
-      if(!img) return;
-      var url="https://github.com/"+OWNER+"/"+REPO+"/upload/"+encodeURIComponent(BRANCH)+"/"+encodeURIComponent(folder);
-      var win=window.open(url,"_blank","noopener");
-      var dataUrl = ctx ? canvas.toDataURL("image/jpeg",0.86) : "";
-      var a=document.createElement("a"); a.href=dataUrl; a.download="cover.jpg"; document.body.appendChild(a); a.click(); a.remove();
-      statusEl.innerHTML = win
-        ? "Saved <b>cover.jpg</b> — drag it into the GitHub tab that opened (folder <b>"+folder+"</b>), then Commit. Refresh the hub after."
-        : "Saved <b>cover.jpg</b>. Pop-up blocked — open <a href='"+url+"' target='_blank' rel='noopener'>this upload page</a>, drag cover.jpg in, Commit.";
-    }
-
-    document.getElementById("crop-choose").onclick=function(){ fileInput.value=""; fileInput.click(); };
-    fileInput.onchange=function(){ onFile(fileInput.files[0]); };
-    document.getElementById("crop-in").onclick=function(){ zoom(1.15); };
-    document.getElementById("crop-out").onclick=function(){ zoom(1/1.15); };
-    document.getElementById("crop-cancel").onclick=close;
-    saveBtn.onclick=save;
-    modal.addEventListener("click",function(e){ if(e.target===modal) close(); });
-    document.addEventListener("keydown",function(e){ if(e.key==="Escape" && modal.classList.contains("open")) close(); });
-
-    function open(fldr){
-      folder=fldr; img=null; saveBtn.disabled=true; statusEl.textContent="";
-      hint.style.display="flex"; if(ctx) ctx.clearRect(0,0,OUT_W,OUT_H);
-      document.getElementById("crop-folder").textContent="/"+folder+"/cover.jpg";
-      modal.classList.add("open");
-    }
-    function close(){ modal.classList.remove("open"); }
-    return {open:open, close:close};
-  })();
-
-  fetch(API,{headers:{"Accept":"application/vnd.github+json"}})
+  fetch(API+PORT,{headers:{"Accept":"application/vnd.github+json"}})
     .then(function(r){ if(!r.ok) throw new Error("HTTP "+r.status); return r.json(); })
     .then(function(items){
-      var dirs=items.filter(function(i){ return i.type==="dir"; })
-                    .sort(function(a,b){ return a.name.localeCompare(b.name); });
-      if(!dirs.length){ state.innerHTML='No project folders yet. Add one (e.g. <span class="mono">birthdayland/index.html</span>) and it\'ll appear here.'; return; }
+      if(!Array.isArray(items)){ throw new Error("unexpected response"); }
+      var files=items.filter(function(i){ return i.type==="file" && /\.html?$/i.test(i.name); })
+                     .sort(function(a,b){ return a.name.localeCompare(b.name); });
+      if(!files.length){
+        state.innerHTML='No portfolio pieces yet. In the builder, open a flow and use <span class="mono">Add to portfolio</span> — it\'ll appear here.';
+        return;
+      }
       state.style.display="none";
-      dirs.forEach(function(d){
-        var a=document.createElement("a");
-        a.className="card"; a.href=SITE+encodeURIComponent(d.name)+"/";
-        a.innerHTML=
-          '<div class="thumb" data-folder="'+d.name.replace(/"/g,"&quot;")+'">'+
-            '<img alt="" referrerpolicy="no-referrer">'+
-            '<div class="boxtext"></div>'+
-            '<div class="ph">'+pretty(d.name)+'</div>'+
-            '<div class="play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>'+
-            '<button class="edit-cover" title="Set featured image">'+pencil()+'</button>'+
-          '</div>'+
-          '<div class="body">'+
-            '<div class="name">'+pretty(d.name)+'</div>'+
-            '<div class="slug">/'+d.name+'/</div>'+
-            '<div class="go">Open flow '+arrow()+'</div>'+
-          '</div>';
-        grid.appendChild(a);
-        var thumb=a.querySelector(".thumb");
-        var ed=a.querySelector(".edit-cover");
-        ed.addEventListener("click",function(e){ e.preventDefault(); e.stopPropagation(); CE.open(d.name); });
-        if(io){ io.observe(thumb); } else { loadCover(thumb); }
+      files.forEach(function(f){
+        var card=makeCard(f.name);
+        grid.appendChild(card);
+        var thumb=card.querySelector(".thumb");
+        if(io){ io.observe(thumb); } else { loadThumb(thumb); }
       });
+      var c=document.getElementById("count"); if(c) c.textContent="· "+files.length+" project"+(files.length===1?"":"s");
     })
     .catch(function(e){
       state.className="state err";
-      state.innerHTML='Couldn\'t load the project list ('+e.message+'). This page reads the repo via GitHub\'s public API, which limits anonymous requests to ~60/hour per network — try again shortly, or open a project directly by adding its folder name to the URL.';
+      if(/HTTP 404/.test(e.message)){
+        state.innerHTML='Portfolio is empty for now. In the builder, use <span class="mono">Add to portfolio</span> on a flow — committing the first file creates the folder and it shows up here.';
+      } else {
+        state.innerHTML='Couldn\'t load the portfolio ('+esc(e.message)+'). This page reads the repo via GitHub\'s public API, which limits anonymous requests to ~60/hour per network — try again shortly.';
+      }
     });
 })();
 </script>
