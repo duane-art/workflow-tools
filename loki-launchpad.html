@@ -98,6 +98,7 @@
   var API="https://api.github.com/repos/"+OWNER+"/"+REPO+"/contents/";
   var EXPORTS="exports";                       // the folder this launchpad reads
   var TOOL="loki-process-master-tool.html";    // the builder we open flows into
+  var PAGES="https://"+OWNER+".github.io/"+REPO+"/";  // hosted base — keeps every link online even if this page is opened locally
   var grid=document.getElementById("grid"), state=document.getElementById("state");
 
   function pretty(name){ return name.replace(/[-_]+/g," ").replace(/\b\w/g,function(c){return c.toUpperCase();}); }
@@ -194,8 +195,8 @@
 
   function makeCard(file){
     var base=file.replace(/\.html?$/i,"");
-    var editURL=TOOL+"?edit="+EXPORTS+"/"+encodeURIComponent(file);
-    var viewURL="./"+EXPORTS+"/"+encodeURIComponent(file);
+    var editURL=PAGES+TOOL+"?edit="+EXPORTS+"/"+encodeURIComponent(file);
+    var viewURL=PAGES+EXPORTS+"/"+encodeURIComponent(file);
     var card=document.createElement("div");
     card.className="card";
     card.innerHTML=
@@ -222,7 +223,7 @@
     var v=card.querySelector(".view");
     v.addEventListener("click",function(e){ e.stopPropagation(); });
     // Copy link: put the absolute, Slack-ready hosted URL on the clipboard
-    var cp=card.querySelector(".copy"), absURL=new URL(viewURL, location.href).href;
+    var cp=card.querySelector(".copy"), absURL=viewURL;
     cp.addEventListener("click",function(e){
       e.stopPropagation(); e.preventDefault();
       copyToClip(absURL).then(function(){ cp.textContent="Copied!"; cp.classList.add("done"); setTimeout(function(){ cp.textContent="Copy link"; cp.classList.remove("done"); },1300); })
