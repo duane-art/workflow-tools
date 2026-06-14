@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Launchpad — duane-art</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0c0f14; --bg2:#11161d; --surface:#161c25; --surface2:#1c242f;
+    --border:#232c38; --border2:#303b49;
+    --text:#e8edf3; --muted:#9aa7b6; --faint:#5d6b7c;
+    --warm:#e8612f; --warm-hi:#ff8a4d; --cool:#13b9a7; --cool-hi:#2ad6c3;
+    --display:"Space Grotesk",system-ui,sans-serif; --body:"Inter",system-ui,sans-serif; --mono:"JetBrains Mono",ui-monospace,monospace;
+  }
+  *{box-sizing:border-box} html,body{margin:0;padding:0}
+  body{background:var(--bg); color:var(--text); font-family:var(--body); -webkit-font-smoothing:antialiased; min-height:100vh;
+    background-image:radial-gradient(rgba(255,255,255,.035) 1px, transparent 1px); background-size:24px 24px;}
+  .wrap{max-width:1040px; margin:0 auto; padding:60px 24px 100px}
+
+  .topline{display:flex; align-items:flex-end; justify-content:space-between; gap:24px; flex-wrap:wrap}
+  .lede{min-width:0}
+  .eyebrow{font-family:var(--mono); font-size:12px; letter-spacing:.22em; text-transform:uppercase; color:var(--faint); display:flex; align-items:center; gap:10px; margin-bottom:14px}
+  .eyebrow .dot{width:9px;height:9px;border-radius:50%; background:radial-gradient(circle at 35% 35%, var(--warm-hi), var(--warm)); box-shadow:0 0 12px rgba(232,97,47,.7)}
+  h1{font-family:var(--display); font-weight:700; font-size:clamp(34px,6vw,54px); letter-spacing:-.025em; margin:0 0 10px}
+  .sub{color:var(--muted); font-size:17px; margin:0; max-width:54ch; line-height:1.5}
+  .newflow{flex:0 0 auto; font-family:var(--body); font-weight:600; font-size:14px; text-decoration:none;
+    display:inline-flex; align-items:center; gap:9px; padding:12px 18px; border-radius:11px;
+    color:#06201d; background:linear-gradient(135deg,var(--cool-hi),var(--cool)); border:none; transition:.16s;}
+  .newflow:hover{filter:brightness(1.07); transform:translateY(-1px)}
+  .newflow svg{width:17px;height:17px;stroke:currentColor;stroke-width:2.2;fill:none}
+
+  .grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(252px,1fr)); gap:18px; margin-top:40px}
+  .card{display:flex; flex-direction:column; cursor:pointer; position:relative;
+    background:var(--surface); border:1px solid var(--border); border-radius:16px; overflow:hidden; transition:.16s}
+  .card:hover{border-color:var(--cool); transform:translateY(-2px); box-shadow:0 14px 32px rgba(0,0,0,.45)}
+  .thumb{position:relative; width:100%; aspect-ratio:16/10; overflow:hidden;
+    background:linear-gradient(135deg, #11302c 0%, #0e9b8e 48%, #e8612f 100%);}
+  .thumb img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:0; transition:opacity .3s}
+  .thumb img.show{opacity:1}
+  .thumb .ph{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; padding:14px;
+    text-align:center; color:rgba(255,255,255,.94); font-family:var(--display); font-weight:600; font-size:18px; letter-spacing:-.01em;
+    text-shadow:0 1px 8px rgba(0,0,0,.34)}
+  .thumb .boxtext{position:absolute; inset:0; display:none; align-items:center; justify-content:center; padding:14px; text-align:center;
+    font-family:var(--display); font-weight:600; font-size:23px; line-height:1.15; letter-spacing:-.01em; word-break:break-word}
+  .thumb .play{position:absolute; right:10px; bottom:10px; width:30px;height:30px;border-radius:50%;
+    background:rgba(10,12,16,.6); display:none; align-items:center; justify-content:center}
+  .thumb .play svg{width:14px;height:14px;fill:#fff}
+  .thumb.is-video .play{display:flex}
+  .body{padding:15px 18px 16px; display:flex; flex-direction:column; gap:3px}
+  .card .name{font-family:var(--display); font-weight:600; font-size:18px; color:var(--text); letter-spacing:-.01em; line-height:1.2}
+  .card .slug{font-family:var(--mono); font-size:11px; color:var(--faint); overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+  .actions{display:flex; align-items:center; justify-content:space-between; margin-top:11px}
+  .actions .go{font-size:13.5px; font-weight:600; color:var(--cool-hi); display:flex; align-items:center; gap:6px}
+  .actions .go svg{width:15px;height:15px;stroke:currentColor;stroke-width:2;fill:none; transition:.16s}
+  .card:hover .go svg{transform:translateX(3px)}
+  .actions .view{font-family:var(--mono); font-size:11px; letter-spacing:.04em; text-transform:uppercase; color:var(--faint); text-decoration:none; padding:4px 8px; border:1px solid var(--border2); border-radius:7px; transition:.15s}
+  .actions .view:hover{color:var(--text); border-color:var(--muted)}
+
+  .state{color:var(--muted); font-size:15px; padding:34px 0; font-family:var(--body); line-height:1.55}
+  .state.err{color:#e0846b}
+  .state .mono{font-family:var(--mono); font-size:13px; color:var(--cool-hi)}
+  footer{margin-top:50px; color:var(--faint); font-size:12px; font-family:var(--mono); letter-spacing:.03em; display:flex; gap:14px; flex-wrap:wrap; align-items:center}
+  footer a{color:var(--cool-hi); text-decoration:none}
+  footer a:hover{text-decoration:underline}
+  @media (prefers-reduced-motion:reduce){ .card,.card .go svg,.thumb img,.newflow{transition:none} .card:hover,.newflow:hover{transform:none} }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="topline">
+      <div class="lede">
+        <div class="eyebrow"><span class="dot"></span>Workflow Tools · Private</div>
+        <h1>Launchpad</h1>
+        <p class="sub">Every flow in your library. Click one to open it in the builder, ready to edit — or start a fresh one.</p>
+      </div>
+      <a class="newflow" href="loki-process-master-tool.html"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>New flow</a>
+    </div>
+    <div id="grid" class="grid"></div>
+    <div id="state" class="state">Loading your flows…</div>
+    <footer>
+      <span>duane-art / workflow-tools · reads <span style="color:var(--muted)">exports/</span></span>
+      <span id="count"></span>
+      <a href="./">Public hub →</a>
+    </footer>
+  </div>
+
+<script>
+(function(){
+  "use strict";
+  var OWNER="duane-art", REPO="workflow-tools", BRANCH="main";
+  var API="https://api.github.com/repos/"+OWNER+"/"+REPO+"/contents/";
+  var EXPORTS="exports";                       // the folder this launchpad reads
+  var TOOL="loki-process-master-tool.html";    // the builder we open flows into
+  var grid=document.getElementById("grid"), state=document.getElementById("state");
+
+  function pretty(name){ return name.replace(/[-_]+/g," ").replace(/\b\w/g,function(c){return c.toUpperCase();}); }
+  function arrow(){ return '<svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>'; }
+  function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c];}); }
+  function hidePh(thumb){ var ph=thumb.querySelector(".ph"); if(ph) ph.style.display="none"; }
+
+  function cLum(hex){ var c=String(hex||"").replace("#",""); if(c.length===3)c=c.split("").map(function(x){return x+x;}).join(""); if(c.length<6)return 1; var r=parseInt(c.slice(0,2),16)/255,g=parseInt(c.slice(2,4),16)/255,b=parseInt(c.slice(4,6),16)/255; function f(x){return x<=0.03928?x/12.92:Math.pow((x+0.055)/1.055,2.4);} return 0.2126*f(r)+0.7152*f(g)+0.0722*f(b); }
+  function cTxt(hex){ return cLum(hex)>0.42?"#15181d":"#ffffff"; }
+  function cardPattern(pattern, col, op){
+    function uri(svg,w,h){ return {image:"url(\"data:image/svg+xml,"+encodeURIComponent(svg)+"\")", size:w+"px "+h+"px"}; }
+    var f="fill='"+col+"' fill-opacity='"+op+"'", s="fill='none' stroke='"+col+"' stroke-opacity='"+op+"'";
+    if(pattern==="dots") return uri("<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16'><circle cx='8' cy='8' r='2' "+f+"/></svg>",16,16);
+    if(pattern==="circles") return uri("<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24'><circle cx='12' cy='12' r='8' "+s+" stroke-width='1.6'/></svg>",24,24);
+    if(pattern==="waves") return uri("<svg xmlns='http://www.w3.org/2000/svg' width='40' height='16'><path d='M0 8 C 10 0 10 0 20 8 S 30 16 40 8' "+s+" stroke-width='1.8'/></svg>",40,16);
+    if(pattern==="hex"){ var r=12, W=Math.sqrt(3)*r, H=3*r, cs=[[0,0],[W,0],[W/2,1.5*r],[0,3*r],[W,3*r]];
+      var polys=cs.map(function(c){ var pts=[]; for(var k=0;k<6;k++){ var a=(-90+k*60)*Math.PI/180; pts.push((c[0]+r*Math.cos(a)).toFixed(2)+","+(c[1]+r*Math.sin(a)).toFixed(2)); } return "<polygon points='"+pts.join(" ")+"' "+s+" stroke-width='1.4'/>"; }).join("");
+      return uri("<svg xmlns='http://www.w3.org/2000/svg' width='"+W.toFixed(2)+"' height='"+H+"'>"+polys+"</svg>", W.toFixed(2), H);
+    }
+    return {image:"", size:"auto"};
+  }
+  function applyColorCard(thumb,card){
+    thumb.style.backgroundColor=card.color;
+    var ink=cTxt(card.color), op = ink==="#ffffff"?0.34:0.26;
+    var pat=cardPattern(card.pattern, ink, op);
+    thumb.style.backgroundImage=pat.image; thumb.style.backgroundSize=pat.size; thumb.style.backgroundRepeat="repeat";
+    var bt=thumb.querySelector(".boxtext");
+    if(bt){ bt.textContent=card.text||""; bt.style.color=cTxt(card.color); bt.style.display="flex"; }
+    hidePh(thumb);
+    var img=thumb.querySelector("img"); if(img) img.classList.remove("show");
+  }
+  function poster(url){
+    var m;
+    if((m=url.match(/drive\.google\.com\/file\/d\/([\w-]+)/))||(m=url.match(/[?&]id=([\w-]+)/)))
+      return "https://drive.google.com/thumbnail?id="+m[1]+"&sz=w1600";
+    if((m=url.match(/(?:youtube\.com\/.*[?&]v=|youtu\.be\/)([\w-]{6,})/)))
+      return "https://img.youtube.com/vi/"+m[1]+"/hqdefault.jpg";
+    return "";
+  }
+  function extractData(text){
+    var key="window.__FLOW_DATA__=";
+    var i=text.indexOf(key); if(i<0) return null;
+    var rest=text.slice(i+key.length);
+    var end=rest.indexOf(";window.__VIEW_ONLY__"); if(end<0) return null;
+    try{ return JSON.parse(rest.slice(0,end)); }catch(e){ return null; }
+  }
+  function pickCover(data){
+    var first=null, flagged=null;
+    if(data && data.steps){
+      for(var i=0;i<data.steps.length;i++){
+        var md=data.steps[i].media||[];
+        for(var j=0;j<md.length;j++){
+          var it=md[j], cand=null;
+          if(it.type==="image" && it.src){ cand={src:it.src,video:false}; }
+          else if(it.type==="embed" && it.src){ var p=poster(it.src); if(p){ cand={src:p,video:true}; } }
+          if(cand){ if(it.cover && !flagged) flagged=cand; if(!first) first=cand; }
+        }
+      }
+    }
+    var list=[];
+    if(flagged) list.push(flagged);
+    if(data && data.shareImage) list.push({src:data.shareImage,video:false});
+    if(first && (!list.length || list[0].src!==first.src)) list.push(first);
+    return list;
+  }
+
+  // Read each export file, give the card its real title + its own card design (or first image).
+  function loadThumb(thumb){
+    var file=thumb.getAttribute("data-file");
+    var img=thumb.querySelector("img");
+    fetch("./"+EXPORTS+"/"+encodeURIComponent(file),{cache:"force-cache"})
+      .then(function(r){ return r.ok ? r.text() : Promise.reject(); })
+      .then(function(text){
+        var data=extractData(text);
+        if(data && data.title){ var card=thumb.parentNode, n=card&&card.querySelector(".name"); if(n) n.textContent=data.title; }
+        if(data && data.card && data.card.color){ applyColorCard(thumb,data.card); return; }
+        var tried=pickCover(data);
+        if(!tried.length) return;
+        var k=0;
+        img.onload=function(){ img.classList.add("show"); hidePh(thumb); thumb.classList.toggle("is-video", !!tried[k].video); };
+        img.onerror=function(){ k++; if(k<tried.length){ img.src=tried[k].src; } };
+        img.src=tried[0].src;
+      })
+      .catch(function(){ /* keep gradient + name */ });
+  }
+
+  var io = ("IntersectionObserver" in window) ? new IntersectionObserver(function(entries,obs){
+    entries.forEach(function(en){ if(en.isIntersecting){ obs.unobserve(en.target); loadThumb(en.target); } });
+  },{rootMargin:"300px"}) : null;
+
+  function makeCard(file){
+    var base=file.replace(/\.html?$/i,"");
+    var editURL=TOOL+"?edit="+EXPORTS+"/"+encodeURIComponent(file);
+    var viewURL="./"+EXPORTS+"/"+encodeURIComponent(file);
+    var card=document.createElement("div");
+    card.className="card";
+    card.innerHTML=
+      '<div class="thumb" data-file="'+esc(file)+'">'+
+        '<img alt="" referrerpolicy="no-referrer">'+
+        '<div class="boxtext"></div>'+
+        '<div class="ph">'+esc(pretty(base))+'</div>'+
+        '<div class="play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>'+
+      '</div>'+
+      '<div class="body">'+
+        '<div class="name">'+esc(pretty(base))+'</div>'+
+        '<div class="slug">'+EXPORTS+'/'+esc(file)+'</div>'+
+        '<div class="actions">'+
+          '<span class="go">Edit '+arrow()+'</span>'+
+          '<a class="view" href="'+viewURL+'" target="_blank" rel="noopener">View</a>'+
+        '</div>'+
+      '</div>';
+    // whole card opens the flow in the builder for editing
+    card.addEventListener("click",function(){ window.location.href=editURL; });
+    // the View link opens the flow read-only in a new tab without triggering edit
+    var v=card.querySelector(".view");
+    v.addEventListener("click",function(e){ e.stopPropagation(); });
+    return card;
+  }
+
+  fetch(API+EXPORTS,{headers:{"Accept":"application/vnd.github+json"}})
+    .then(function(r){ if(!r.ok) throw new Error("HTTP "+r.status); return r.json(); })
+    .then(function(items){
+      if(!Array.isArray(items)){ throw new Error("unexpected response"); }
+      var files=items.filter(function(i){ return i.type==="file" && /\.html?$/i.test(i.name); })
+                     .sort(function(a,b){ return a.name.localeCompare(b.name); });
+      if(!files.length){
+        state.innerHTML='No flows in <span class="mono">exports/</span> yet. Export one from the builder and it lands here.';
+        return;
+      }
+      state.style.display="none";
+      files.forEach(function(f){
+        var card=makeCard(f.name);
+        grid.appendChild(card);
+        var thumb=card.querySelector(".thumb");
+        if(io){ io.observe(thumb); } else { loadThumb(thumb); }
+      });
+      var c=document.getElementById("count"); if(c) c.textContent="· "+files.length+" flow"+(files.length===1?"":"s");
+    })
+    .catch(function(e){
+      state.className="state err";
+      if(/HTTP 404/.test(e.message)){
+        state.innerHTML='No <span class="mono">exports/</span> folder yet. Export a flow from the builder — committing the first file creates it, and it\'ll show up here.';
+      } else {
+        state.innerHTML='Couldn\'t read your flow list ('+esc(e.message)+'). This page reads the repo via GitHub\'s public API, which limits anonymous requests to ~60/hour per network — try again in a bit.';
+      }
+    });
+})();
+</script>
+</body>
+</html>
