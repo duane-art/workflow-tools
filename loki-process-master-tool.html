@@ -196,6 +196,13 @@
   .modal input.ver{width:46px; padding:4px 5px; font-size:11px; text-align:center; margin-left:auto}
   .modal label.date-opt{display:flex; align-items:center; gap:7px; margin:10px 0 0; font-size:12.5px; letter-spacing:normal; text-transform:none; color:var(--muted); cursor:pointer}
   .fname-prev{margin-top:10px; font-family:var(--mono); font-size:11px; color:var(--cool-hi); background:var(--surface); border:1px dashed var(--border2); border-radius:8px; padding:8px 10px; word-break:break-all}
+  .pub-prev{margin:12px 0 4px; font-family:var(--mono); font-size:11px; background:var(--surface); border:1px solid var(--border2); border-radius:8px; padding:9px 11px; display:flex; flex-direction:column; gap:5px}
+  .pub-prev>div{display:flex; gap:10px; align-items:baseline}
+  .pub-k{flex:0 0 76px; color:var(--faint); text-transform:uppercase; letter-spacing:.06em; font-size:9.5px}
+  .pub-prev #sh-appended{color:var(--text); font-family:var(--body); font-weight:600; font-size:13px}
+  .pub-prev #sh-fname{color:var(--text)}
+  .pub-link{color:var(--cool-hi); word-break:break-all}
+  .pub-sec{font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); margin:16px 0 8px; padding-bottom:5px; border-bottom:1px solid var(--border)}
   .card-prev{margin-top:16px; border:1px solid var(--border); border-radius:12px; overflow:hidden; max-width:248px}
   .card-prev .cpt{position:relative; width:100%; aspect-ratio:16/10; display:flex; align-items:center; justify-content:center; padding:14px}
   .card-prev .cpt span{font-family:var(--display); font-weight:600; font-size:21px; line-height:1.15; text-align:center; word-break:break-word}
@@ -242,7 +249,7 @@
   <div class="bar">
     <div class="brand"><span class="dot"></span>Process Flow</div>
     <div id="proj-label"></div>
-    <a class="btn editing-only" id="b-hub" href="https://duane-art.github.io/workflow-tools/" target="_blank" rel="noopener" title="Open your public portfolio in a new tab" style="text-decoration:none"><svg viewBox="0 0 24 24"><path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z"/></svg>Portfolio</a>
+    <a class="btn" id="b-hub" href="https://duane-art.github.io/workflow-tools/" target="_blank" rel="noopener" title="Browse the full portfolio" style="text-decoration:none"><svg viewBox="0 0 24 24"><path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z"/></svg>Portfolio</a>
     <span class="spacer"></span>
     <div class="seg editing-only" id="seg"><button data-m="edit" class="on">Edit</button><button data-m="canvas">Preview</button></div>
     <button class="btn editing-only" id="b-add"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Add step</button>
@@ -251,10 +258,8 @@
     <select class="btn" id="orient" title="Paper orientation for the Print button"><option value="portrait">Print: Portrait</option><option value="landscape">Print: Landscape</option></select>
     <button class="btn" id="b-print"><svg viewBox="0 0 24 24"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-3a2 2 0 012-2h16a2 2 0 012 2v3a2 2 0 01-2 2h-2M6 14h12v8H6z"/></svg>Print</button>
     <button class="btn editing-only" id="b-card" title="Set this flow's hub card color and text"><svg viewBox="0 0 24 24"><path d="M3 5h18v14H3zM3 9h18"/></svg>Card</button>
-    <button class="btn btn-share" id="b-share"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>Share</button>
+    <button class="btn btn-share" id="b-share" title="Update on GitHub and send your client the link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 13v8M8 17l4-4 4 4M20 16.7A5 5 0 0018 7h-1.26A8 8 0 104 15.25"/></svg>Publish</button>
     <select class="btn editing-only" id="imgq" title="Image quality on export"><option value="balanced">Images: Balanced</option><option value="high">Images: High</option><option value="small">Images: Small</option><option value="original">Images: Original</option></select>
-    <button class="btn editing-only" id="b-portfolio" title="Add this flow to your public portfolio folder on GitHub"><svg viewBox="0 0 24 24"><path d="M12 13v8M8 17l4-4 4 4M20 16.7A5 5 0 0018 7h-1.26A8 8 0 104 15.25"/></svg>Add to portfolio</button>
-    <button class="btn editing-only" id="b-export"><svg viewBox="0 0 24 24"><path d="M4 12v7a1 1 0 001 1h14a1 1 0 001-1v-7M16 6l-4-4-4 4M12 2v13"/></svg>Export page</button>
   </div>
 
   <div id="editor">
@@ -281,22 +286,28 @@
   <div class="modal" id="share">
     <div class="modal-card">
       <button class="modal-x" id="sh-x" aria-label="Close" title="Close"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
-      <div class="modal-h">Share this flow</div>
-      <div class="modal-sub">Name the file you're sending and tag a version, then choose how to send it — or paste a hosted link to share a URL instead.</div>
-      <label>Share name</label>
-      <input id="sh-name" placeholder="Flow name" autocomplete="off">
-      <label>Version tag (optional)</label>
+      <div class="modal-h">Publish</div>
+      <div class="modal-sub">Update this flow on GitHub, then send your client the link. The link never changes — the version label just tells them it's the latest.</div>
+      <label>Flow file name — your permanent link, keep it stable</label>
+      <input id="sh-name" placeholder="birthdayland-process" autocomplete="off">
+      <label>Version label — shown to the client, never in the link</label>
       <div class="stage-row">
         <div class="stage-opt" data-stage="ALPHA"><input type="checkbox" id="st-alpha"><label for="st-alpha" class="lbl">ALPHA</label><input class="ver" type="number" min="1" step="1" value="1" aria-label="Alpha version"></div>
         <div class="stage-opt" data-stage="BETA"><input type="checkbox" id="st-beta"><label for="st-beta" class="lbl">BETA</label><input class="ver" type="number" min="1" step="1" value="1" aria-label="Beta version"></div>
         <div class="stage-opt" data-stage="FINAL"><input type="checkbox" id="st-final"><label for="st-final" class="lbl">FINAL</label><input class="ver" type="number" min="1" step="1" value="1" aria-label="Final version"></div>
       </div>
-      <label class="date-opt"><input type="checkbox" id="sh-date" checked> Add today's date</label>
-      <div class="fname-prev" id="sh-fname">flow.html</div>
-      <label>Hosted link (optional)</label>
-      <input id="sh-url" placeholder="https://your-site.com/flow.html" autocomplete="off">
-      <label>Preview image URL (optional — shows in link previews)</label>
-      <input id="sh-img" placeholder="https://…/thumbnail.jpg" autocomplete="off">
+      <label class="date-opt"><input type="checkbox" id="sh-date" checked> Add today's date to the label</label>
+      <div class="pub-prev">
+        <div><span class="pub-k">GitHub file</span><span id="sh-fname">flow.html</span></div>
+        <div><span class="pub-k">Client sees</span><span id="sh-appended">Flow</span></div>
+        <div><span class="pub-k">Link</span><span id="sh-link" class="pub-link">…</span></div>
+      </div>
+      <div class="pub-sec">1 · Update on GitHub</div>
+      <div class="share-row">
+        <button id="pb-export">Update working (exports/)</button>
+        <button id="pb-portfolio">Add to portfolio</button>
+      </div>
+      <div class="pub-sec">2 · Send the client the link</div>
       <div class="share-grid">
         <button data-ch="email"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3.6 6.7l8.4 5.8 8.4-5.8" fill="none" stroke="currentColor" stroke-width="2"/></svg>Email</button>
         <button data-ch="slack"><svg viewBox="0 0 24 24"><path d="M9 3.5L7 20.5M17 3.5l-2 17M4.5 9h15M3.5 15h15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Slack</button>
@@ -304,10 +315,10 @@
         <button data-ch="linkedin"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M7.5 10.5v5M7.5 7.7v.01M11 15.5v-3a2 2 0 014 0v3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>LinkedIn</button>
       </div>
       <div class="share-row">
-        <button id="sh-primary">Download flow file</button>
+        <button id="sh-primary">Copy link</button>
         <button id="sh-copymsg">Copy message</button>
       </div>
-      <div class="modal-note" id="sh-note"></div>
+      <div class="modal-note" id="sh-note">The link works once you've updated on GitHub and committed.</div>
       <button class="modal-close" id="sh-close">Done</button>
     </div>
   </div>
@@ -701,112 +712,70 @@
     });
   }
 
-  // Export a uniquely-named HTML into the repo's "exports/" folder (the Launchpad reads that folder).
-  function exportToHub(){
+  // Publish the current flow to a GitHub folder under the stable file name (name comes from the Publish modal).
+  function publishTo(folder){
     var win=window.open("about:blank","_blank");   // open synchronously so the popup blocker allows it
-    var def=state.exportName||safeName();
-    var nm=window.prompt(
-      "Export to your exports folder.\n\n"+
-      "File name (no extension). Re-use the same name to UPDATE an existing flow; "+
-      "use a new name to create a new one:", def);
-    if(nm===null){ if(win) win.close(); return; }
-    nm=nm.trim().replace(/[^a-z0-9_-]+/gi,"-").replace(/^-+|-+$/g,"")||safeName();
-    state.exportName=nm;
-    var fileName=nm+".html";
-    var url=ghUploadUrl("exports");
+    var nm=pubFileBase();
+    if(!nm){ if(win) win.close(); toast("Type a file name first."); if($("sh-name")) $("sh-name").focus(); return; }
+    if(folder==="exports") state.exportName=nm;
+    var fileName=nm+".html", url=ghUploadUrl(folder), where=(folder==="exports"?"exports":"portfolio");
     if(win){ try{ win.opener=null; }catch(e){} win.location.href=url; }
     else { window.prompt("Popup blocked. Copy this link, open it, then drop the HTML there:", url); }
     exportHTML(fileName).then(function(){
-      toast("Saved "+fileName+" — drag it into the exports tab, then Commit.");
+      toast("Saved "+fileName+" — drag it into the "+where+" tab, then Commit.");
     });
   }
 
-  // Add the current flow to the PUBLIC portfolio folder (dr3d-flow-portfolio/, read by the portfolio page).
-  function exportToPortfolio(){
-    var win=window.open("about:blank","_blank");
-    var def=state.exportName||safeName();
-    var nm=window.prompt(
-      "Add to your PUBLIC portfolio.\n\n"+
-      "Anything here shows on your portfolio page to prospects.\n"+
-      "File name (no extension). Re-use a name to update; new name to add:", def);
-    if(nm===null){ if(win) win.close(); return; }
-    nm=nm.trim().replace(/[^a-z0-9_-]+/gi,"-").replace(/^-+|-+$/g,"")||safeName();
-    var fileName=nm+".html";
-    var url=ghUploadUrl("dr3d-flow-portfolio");
-    if(win){ try{ win.opener=null; }catch(e){} win.location.href=url; }
-    else { window.prompt("Popup blocked. Copy this link, open it, then drop the HTML there:", url); }
-    exportHTML(fileName).then(function(){
-      toast("Saved "+fileName+" — drag it into the portfolio tab, then Commit.");
-    });
-  }
-
-  /* ---------------- SHARE (link or file) ---------------- */
-  function curLink(){ var v=$("sh-url").value.trim(); return v||(VIEW?location.href:""); }
-  function shareMsg(link){ var base="Duane is sharing the workflow for "+(state.title||"Untitled process")+"."; return link?(base+" Please click the link below to see it in action!"):(base+" Open the attached file in any browser to see it in action!"); }
+  /* ---------------- PUBLISH (update on GitHub + send the link) ---------------- */
   function goURL(url){ var a=document.createElement("a"); a.href=url; document.body.appendChild(a); a.click(); a.remove(); }
-  function updShareUI(){ var l=curLink(); $("sh-primary").textContent=l?"Copy link":"Download flow file"; $("sh-note").textContent=l?"Sharing the hosted link.":"No link yet — channels send the file. X & LinkedIn need a link."; }
-
-  /* ----- share file name + version tag ----- */
+  function prettyName(s){ return String(s||"").replace(/[-_]+/g," ").replace(/\s+/g," ").trim().replace(/\b\w/g,function(c){return c.toUpperCase();}); }
   function todayStr(){ var d=new Date(),m=("0"+(d.getMonth()+1)).slice(-2),day=("0"+d.getDate()).slice(-2); return d.getFullYear()+"-"+m+"-"+day; }
   function stageEls(){ return Array.prototype.slice.call(document.querySelectorAll(".stage-opt")); }
   function activeStage(){ var r=null; stageEls().forEach(function(o){ if(o.querySelector("input[type=checkbox]").checked) r={stage:o.getAttribute("data-stage"), ver:(o.querySelector(".ver").value||"1")}; }); return r; }
-  function composeShareBase(){ var nm=($("sh-name")&&$("sh-name").value.trim())||state.title||"process"; var parts=[nm]; var st=activeStage(); if(st) parts.push(st.stage+" v"+st.ver); if($("sh-date")&&$("sh-date").checked) parts.push(todayStr()); return parts.join("_"); }
-  function sanitizeFile(s){ return String(s).replace(/[\/\\:*?"<>|]+/g,"-").replace(/\s+/g," ").trim(); }
-  function composeShareFile(){ return sanitizeFile(composeShareBase())+".html"; }
-  function updFnamePrev(){ var el=$("sh-fname"); if(el) el.textContent=composeShareFile(); }
+
+  /* ----- the stable GitHub name: drives the file AND the permanent link ----- */
+  function pubFileBase(){ var nm=($("sh-name")&&$("sh-name").value.trim())||state.exportName||safeName(); return nm.replace(/[^a-z0-9_-]+/gi,"-").replace(/^-+|-+$/g,""); }
+  function pubFile(){ return pubFileBase()+".html"; }
+  function pubLink(){ var owner=(state.ghRepo.split("/")[0]||"duane-art"), repo=(state.ghRepo.split("/")[1]||"workflow-tools"); return "https://"+owner+".github.io/"+repo+"/exports/"+encodeURIComponent(pubFile()); }
+
+  /* ----- the version label: only ever shown to the client, never in the link ----- */
+  function verLabel(){ var parts=[]; var st=activeStage(); if(st) parts.push(st.stage+" v"+st.ver); if($("sh-date")&&$("sh-date").checked) parts.push(todayStr()); return parts.join(" · "); }
+  function appendedName(){ var nm=prettyName(pubFileBase())||(state.title||"Flow"); var v=verLabel(); return v?(nm+" — "+v):nm; }
+  function clientBody(){ return "Hello,\n\nHere's your latest workflow: "+appendedName()+".\n\nClick the link to access:\n"+pubLink(); }
+  function updPubPrev(){ if($("sh-fname")) $("sh-fname").textContent=pubFile(); if($("sh-appended")) $("sh-appended").textContent=appendedName(); if($("sh-link")) $("sh-link").textContent=pubLink(); }
+
   function reflectStageClasses(){ stageEls().forEach(function(o){ o.classList.toggle("on", o.querySelector("input[type=checkbox]").checked); }); }
   function saveShareLabel(){ var vers={}; stageEls().forEach(function(o){ vers[o.getAttribute("data-stage")]=o.querySelector(".ver").value; }); var st=activeStage(); lsSet("pfb_shareLabel", JSON.stringify({stage:st?st.stage:null, vers:vers, date:!!($("sh-date")&&$("sh-date").checked)})); }
   function loadShareLabel(){ var raw=lsGet("pfb_shareLabel"); if(raw){ try{ var d=JSON.parse(raw); stageEls().forEach(function(o){ var s=o.getAttribute("data-stage"); if(d.vers&&d.vers[s]!=null) o.querySelector(".ver").value=d.vers[s]; o.querySelector("input[type=checkbox]").checked=(d.stage===s); }); if($("sh-date")&&typeof d.date==="boolean") $("sh-date").checked=d.date; }catch(e){} } reflectStageClasses(); }
-  function pickStage(cb){ stageEls().forEach(function(o){ var c=o.querySelector("input[type=checkbox]"); if(c!==cb) c.checked=false; }); reflectStageClasses(); saveShareLabel(); updFnamePrev(); }
+  function pickStage(cb){ stageEls().forEach(function(o){ var c=o.querySelector("input[type=checkbox]"); if(c!==cb) c.checked=false; }); reflectStageClasses(); saveShareLabel(); updPubPrev(); }
   stageEls().forEach(function(o){
     var cb=o.querySelector("input[type=checkbox]"), ver=o.querySelector(".ver");
     cb.addEventListener("change",function(){ pickStage(cb); });
     ver.addEventListener("input",function(){ cb.checked=true; pickStage(cb); });
   });
-  if($("sh-name")) $("sh-name").addEventListener("input",updFnamePrev);
-  if($("sh-date")) $("sh-date").addEventListener("change",function(){ saveShareLabel(); updFnamePrev(); });
+  if($("sh-name")) $("sh-name").addEventListener("input",updPubPrev);
+  if($("sh-date")) $("sh-date").addEventListener("change",function(){ saveShareLabel(); updPubPrev(); });
   if($("sh-x")) $("sh-x").onclick=function(){ $("share").classList.remove("open"); };
+
   function doShare(ch){
-    var link=curLink(), proj=state.title||"Untitled process", E=encodeURIComponent;
-    if(link){
-      var msg=shareMsg(link);
-      if(ch==="email") goURL("mailto:?subject="+E(proj)+"&body="+E(msg+"\n\n"+link+" \n"));
-      else if(ch==="x") window.open("https://x.com/intent/post?text="+E(msg)+"&url="+E(link)+"&via=DLooseDesign","_blank");
-      else if(ch==="linkedin") window.open("https://www.linkedin.com/sharing/share-offsite/?url="+E(link),"_blank");
-      else if(ch==="slack") copyText(msg+" "+link).then(function(){ toast("Message copied — paste into Slack"); window.open("https://slack.com","_blank"); });
-    } else {
-      if(ch==="x"||ch==="linkedin"){ toast("Add a hosted link to post on "+(ch==="x"?"X":"LinkedIn")); $("sh-url").focus(); return; }
-      var msg2=shareMsg(""), fname=composeShareFile(), subj=composeShareBase();
-      exportHTML(fname);
-      if(ch==="email"){ goURL("mailto:?subject="+E(subj)+"&body="+E(msg2+"\n\n(The flow file \""+fname+"\" just downloaded — attach it to this message.)")); toast("File downloaded — attach it in your email"); }
-      else if(ch==="slack"){ copyText(msg2).then(function(){ window.open("https://slack.com","_blank"); toast("File downloaded & message copied"); }); }
-    }
+    var link=pubLink(), subj=appendedName(), body=clientBody(), E=encodeURIComponent;
+    if(ch==="email") goURL("mailto:?subject="+E(subj)+"&body="+E(body));
+    else if(ch==="slack") copyText(body).then(function(){ toast("Message copied — paste into Slack"); window.open("https://slack.com","_blank"); });
+    else if(ch==="x") window.open("https://x.com/intent/post?text="+E(subj)+"&url="+E(link)+"&via=DLooseDesign","_blank");
+    else if(ch==="linkedin") window.open("https://www.linkedin.com/sharing/share-offsite/?url="+E(link),"_blank");
   }
   $("b-share").onclick=function(){
-    var link=state.shareUrl;
-    if(!link && VIEW) link=location.href;
-    // A flow exported to exports/ lives right beside this tool — build its real, exact link.
-    if(!link && state.exportName && /^https?:$/.test(location.protocol)){
-      try{ link=new URL("exports/"+state.exportName+".html", location.href).href; }catch(e){}
-    }
-    // A flow published to its own folder: use the actual folder name (never a slug guess).
-    if(!link){
-      var base=lsGet("pfb_shareBase")||state.shareBase||"";
-      if(base && /^https?:\/\/[^/]+\/.+/.test(base) && state.ghFolder) link=base.replace(/\/?$/,"/")+state.ghFolder+"/";
-    }
-    $("sh-url").value=link||""; $("sh-img").value=state.shareImage||""; $("sh-name").value=state.title||""; loadShareLabel(); updFnamePrev(); updShareUI(); $("share").classList.add("open");
+    if($("sh-name")) $("sh-name").value=state.exportName||safeName();
+    loadShareLabel(); updPubPrev();
+    $("share").classList.add("open");
   };
-  $("sh-url").oninput=function(){
-    var v=$("sh-url").value.trim(); state.shareUrl=v;
-    var base=deriveBase(v); if(base){ state.shareBase=base; lsSet("pfb_shareBase",base); }
-    updShareUI();
-  };
-  $("sh-img").oninput=function(){ state.shareImage=$("sh-img").value.trim(); };
+  $("pb-export").onclick=function(){ publishTo("exports"); };
+  $("pb-portfolio").onclick=function(){ publishTo("dr3d-flow-portfolio"); };
   $("share").addEventListener("click",function(e){ if(e.target===$("share")) $("share").classList.remove("open"); });
   $("sh-close").onclick=function(){ $("share").classList.remove("open"); };
   document.querySelector(".share-grid").addEventListener("click",function(e){ var b=e.target.closest("button[data-ch]"); if(b)doShare(b.dataset.ch); });
-  $("sh-primary").onclick=function(){ var l=curLink(); if(l){ copyText(l).then(function(){ toast("Link copied"); }); } else { exportHTML(composeShareFile()); toast("Flow file downloaded"); } };
-  $("sh-copymsg").onclick=function(){ copyText(shareMsg(curLink())).then(function(){ toast("Message copied"); }); };
+  $("sh-primary").onclick=function(){ copyText(pubLink()).then(function(){ toast("Link copied"); }); };
+  $("sh-copymsg").onclick=function(){ copyText(clientBody()).then(function(){ toast("Message copied"); }); };
 
   // ---- hub card menu (background color + box text) ----
   function cardLum(hex){ var c=String(hex||"").replace("#",""); if(c.length===3)c=c.split("").map(function(x){return x+x;}).join(""); if(c.length<6)return 1; var r=parseInt(c.slice(0,2),16)/255,g=parseInt(c.slice(2,4),16)/255,b=parseInt(c.slice(4,6),16)/255; function f(x){return x<=0.03928?x/12.92:Math.pow((x+0.055)/1.055,2.4);} return 0.2126*f(r)+0.7152*f(g)+0.0722*f(b); }
@@ -911,7 +880,7 @@
   if(!VIEW){
     $title.oninput=function(){ state.title=$title.value; $proj.textContent=state.title||"Untitled process"; };
     $intro.oninput=function(){ state.intro=$intro.value; autoGrow($intro); };
-    $("b-add").onclick=addStep; $("b-save").onclick=save; $("b-export").onclick=exportToHub; $("b-portfolio").onclick=exportToPortfolio;
+    $("b-add").onclick=addStep; $("b-save").onclick=save;
     $("b-load").onclick=function(){ $json.value=""; $json.click(); };
     $("seg").addEventListener("click",function(e){ var b=e.target.closest("button[data-m]"); if(b)setMode(b.dataset.m); });
     $img.onchange=function(){ if(activeStep)addFiles(activeStep,$img.files); };
