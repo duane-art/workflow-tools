@@ -766,11 +766,14 @@
   $("b-share").onclick=function(){
     var link=state.shareUrl;
     if(!link && VIEW) link=location.href;
+    // A flow exported to exports/ lives right beside this tool — build its real, exact link.
+    if(!link && state.exportName && /^https?:$/.test(location.protocol)){
+      try{ link=new URL("exports/"+state.exportName+".html", location.href).href; }catch(e){}
+    }
+    // A flow published to its own folder: use the actual folder name (never a slug guess).
     if(!link){
       var base=lsGet("pfb_shareBase")||state.shareBase||"";
-      // only auto-build when the base has a path beyond the host (e.g. /workflow-tools/),
-      // so we never produce a wrong root-level URL like host/<project>/
-      if(base && /^https?:\/\/[^/]+\/.+/.test(base) && state.title) link=base.replace(/\/?$/,"/")+slugify(state.title)+"/";
+      if(base && /^https?:\/\/[^/]+\/.+/.test(base) && state.ghFolder) link=base.replace(/\/?$/,"/")+state.ghFolder+"/";
     }
     $("sh-url").value=link||""; $("sh-img").value=state.shareImage||""; $("sh-name").value=state.title||""; loadShareLabel(); updFnamePrev(); updShareUI(); $("share").classList.add("open");
   };

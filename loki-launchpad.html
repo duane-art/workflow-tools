@@ -52,12 +52,16 @@
   .body{padding:15px 18px 16px; display:flex; flex-direction:column; gap:3px}
   .card .name{font-family:var(--display); font-weight:600; font-size:18px; color:var(--text); letter-spacing:-.01em; line-height:1.2}
   .card .slug{font-family:var(--mono); font-size:11px; color:var(--faint); overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
-  .actions{display:flex; align-items:center; justify-content:space-between; margin-top:11px}
+  .actions{display:flex; align-items:center; justify-content:space-between; gap:8px; margin-top:11px; flex-wrap:wrap}
   .actions .go{font-size:13.5px; font-weight:600; color:var(--cool-hi); display:flex; align-items:center; gap:6px}
   .actions .go svg{width:15px;height:15px;stroke:currentColor;stroke-width:2;fill:none; transition:.16s}
   .card:hover .go svg{transform:translateX(3px)}
   .actions .view{font-family:var(--mono); font-size:11px; letter-spacing:.04em; text-transform:uppercase; color:var(--faint); text-decoration:none; padding:4px 8px; border:1px solid var(--border2); border-radius:7px; transition:.15s}
   .actions .view:hover{color:var(--text); border-color:var(--muted)}
+  .actions .util{display:flex; align-items:center; gap:6px}
+  .actions .copy{font-family:var(--mono); font-size:11px; letter-spacing:.04em; text-transform:uppercase; color:var(--cool-hi); background:none; border:1px solid var(--border2); border-radius:7px; padding:4px 8px; cursor:pointer; transition:.15s}
+  .actions .copy:hover{border-color:var(--cool); color:var(--text)}
+  .actions .copy.done{color:#86e6d7; border-color:var(--cool)}
 
   .state{color:var(--muted); font-size:15px; padding:34px 0; font-family:var(--body); line-height:1.55}
   .state.err{color:#e0846b}
@@ -100,6 +104,10 @@
   function arrow(){ return '<svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>'; }
   function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c];}); }
   function hidePh(thumb){ var ph=thumb.querySelector(".ph"); if(ph) ph.style.display="none"; }
+  function copyToClip(text){
+    if(navigator.clipboard && navigator.clipboard.writeText) return navigator.clipboard.writeText(text);
+    return new Promise(function(res,rej){ try{ var t=document.createElement("textarea"); t.value=text; t.style.position="fixed"; t.style.opacity="0"; document.body.appendChild(t); t.focus(); t.select(); document.execCommand("copy"); t.remove(); res(); }catch(e){ rej(e); } });
+  }
 
   function cLum(hex){ var c=String(hex||"").replace("#",""); if(c.length===3)c=c.split("").map(function(x){return x+x;}).join(""); if(c.length<6)return 1; var r=parseInt(c.slice(0,2),16)/255,g=parseInt(c.slice(2,4),16)/255,b=parseInt(c.slice(4,6),16)/255; function f(x){return x<=0.03928?x/12.92:Math.pow((x+0.055)/1.055,2.4);} return 0.2126*f(r)+0.7152*f(g)+0.0722*f(b); }
   function cTxt(hex){ return cLum(hex)>0.42?"#15181d":"#ffffff"; }
@@ -202,7 +210,10 @@
         '<div class="slug">'+EXPORTS+'/'+esc(file)+'</div>'+
         '<div class="actions">'+
           '<span class="go">Edit '+arrow()+'</span>'+
-          '<a class="view" href="'+viewURL+'" target="_blank" rel="noopener">View</a>'+
+          '<span class="util">'+
+            '<button class="copy" type="button">Copy link</button>'+
+            '<a class="view" href="'+viewURL+'" target="_blank" rel="noopener">View</a>'+
+          '</span>'+
         '</div>'+
       '</div>';
     // whole card opens the flow in the builder for editing
@@ -210,6 +221,13 @@
     // the View link opens the flow read-only in a new tab without triggering edit
     var v=card.querySelector(".view");
     v.addEventListener("click",function(e){ e.stopPropagation(); });
+    // Copy link: put the absolute, Slack-ready hosted URL on the clipboard
+    var cp=card.querySelector(".copy"), absURL=new URL(viewURL, location.href).href;
+    cp.addEventListener("click",function(e){
+      e.stopPropagation(); e.preventDefault();
+      copyToClip(absURL).then(function(){ cp.textContent="Copied!"; cp.classList.add("done"); setTimeout(function(){ cp.textContent="Copy link"; cp.classList.remove("done"); },1300); })
+                        .catch(function(){ cp.textContent="Copy failed"; setTimeout(function(){ cp.textContent="Copy link"; },1300); });
+    });
     return card;
   }
 
