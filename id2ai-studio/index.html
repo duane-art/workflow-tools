@@ -104,6 +104,8 @@
              font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--txt-dim)}
   .site-foot a{color:var(--blueprint);text-decoration:none}
   .site-foot a:hover{color:var(--chartreuse);text-decoration:underline}
+  .site-links{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .site-links a:not(:first-child){border-left:1px solid var(--line);padding-left:12px}
   @media (prefers-reduced-motion:reduce){.plate{animation:none}*{transition:none!important}}
 </style>
 </head>
@@ -244,7 +246,11 @@
 
   <footer class="site-foot">
     <span>ID2AI · Studio — an instrument by Duane Loose</span>
-    <a href="https://dloose.com" target="_blank" rel="noopener">dloose.com</a>
+    <nav class="site-links">
+      <a href="https://dloose.com" target="_blank" rel="noopener">dloose.com</a>
+      <a href="https://www.linkedin.com/in/dloosedesign/" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="https://x.com/DLooseDesign" target="_blank" rel="noopener">@DLooseDesign</a>
+    </nav>
   </footer>
 </div>
 
