@@ -99,6 +99,11 @@
 
   .hint{font-family:var(--mono);font-size:11px;color:var(--txt-dim);margin-top:14px;line-height:1.6}
   .hint b{color:var(--txt-dim)}
+  .site-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+             margin-top:36px;padding-top:16px;border-top:1px solid var(--line);
+             font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--txt-dim)}
+  .site-foot a{color:var(--blueprint);text-decoration:none}
+  .site-foot a:hover{color:var(--chartreuse);text-decoration:underline}
   @media (prefers-reduced-motion:reduce){.plate{animation:none}*{transition:none!important}}
 </style>
 </head>
@@ -236,6 +241,11 @@
     <div id="r-out"><div class="empty">Set options and build.<br>Paste with image 1 (sketch) + image 2 (style reference) uploaded.</div></div>
     <div class="hint"><b>Use:</b> works in GPT or Nano Banana. NB renders eagerly, which is what you want here.</div>
   </section>
+
+  <footer class="site-foot">
+    <span>ID2AI · Studio — an instrument by Duane Loose</span>
+    <a href="https://dloose.com" target="_blank" rel="noopener">dloose.com</a>
+  </footer>
 </div>
 
 <script>
