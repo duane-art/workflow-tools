@@ -1,0 +1,420 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>UoD · Shot maker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0b1016; --panel:#111923; --panel-2:#0e151d; --line:#1e2a37; --line-soft:#18222d;
+    --txt:#d6dee7; --txt-dim:#7e8b9c; --txt-faint:#4f5c69;
+    --amber:#f0a23b; --amber-soft:#3a2a14; --cyan:#3fd0c9; --cyan-soft:#0f2b2c;
+    --paper:#f4f1e8; --graphite:#1c1f24; --radius:3px;
+    --disp:'Archivo',sans-serif; --body:'Inter',system-ui,sans-serif; --mono:'JetBrains Mono',ui-monospace,monospace;
+  }
+  *{box-sizing:border-box} html,body{margin:0}
+  body{background:var(--ink);color:var(--txt);font-family:var(--body);font-size:14px;line-height:1.5;min-height:100vh;-webkit-font-smoothing:antialiased}
+  ::selection{background:var(--amber);color:#000}
+  .wrap{max-width:720px;margin:0 auto;padding:0 18px 80px}
+
+  .topbar{padding:16px 0 0}
+  .back{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--txt-dim);text-decoration:none}
+  .back:hover{color:var(--cyan)} .back .a{display:inline-block;margin-right:5px;transition:transform .14s}
+  .back:hover .a{transform:translateX(-3px)}
+  header{display:flex;align-items:baseline;gap:14px;padding:14px 0 4px;border-bottom:1px solid var(--line)}
+  .mark{font-family:var(--disp);font-weight:800;letter-spacing:.02em;font-size:26px;line-height:1;color:var(--paper)}
+  .mark b{color:var(--amber);font-weight:800}
+  .tagline{font-family:var(--mono);font-size:11px;color:var(--txt-faint);text-transform:uppercase;letter-spacing:.14em}
+
+  .seclbl{font-family:var(--mono);font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--txt-faint);margin-top:18px}
+
+  .legend{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+  .leg{flex:1 1 200px;background:var(--panel);border:1px solid var(--line);border-radius:5px;padding:10px 12px}
+  .leg .num{font-family:var(--disp);font-weight:800;font-size:13px;color:#000;background:var(--amber);width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;border-radius:3px;margin-bottom:6px}
+  .leg .num.cyan{background:var(--cyan)}
+  .leg .t{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--txt)}
+  .leg .d{font-size:12.5px;color:var(--txt-dim);margin-top:3px}
+
+  .card{background:linear-gradient(180deg,rgba(17,25,35,.7),rgba(17,25,35,.35));border:1px solid var(--line);border-radius:6px;padding:18px;margin-top:12px}
+  .grp{margin-top:16px} .grp:first-child{margin-top:0}
+  .lbl{font-family:var(--mono);font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--cyan);margin-bottom:8px}
+  .lbl .opt{color:var(--txt-faint);letter-spacing:.02em;text-transform:none}
+  input[type=text], select{width:100%;background:var(--panel-2);color:var(--txt);border:1px solid var(--line);border-radius:var(--radius);font-family:var(--body);font-size:14px;padding:11px}
+  input[type=text]:focus, select:focus{outline:none;border-color:var(--cyan);box-shadow:0 0 0 1px var(--cyan-soft)}
+  ::placeholder{color:var(--txt-faint)}
+  select{appearance:none;-webkit-appearance:none;cursor:pointer;padding-right:34px;
+         background-image:linear-gradient(45deg,transparent 50%,var(--txt-dim) 50%),linear-gradient(135deg,var(--txt-dim) 50%,transparent 50%);
+         background-position:calc(100% - 17px) 20px,calc(100% - 12px) 20px;background-size:5px 5px,5px 5px;background-repeat:no-repeat}
+
+  .tabs{display:flex;gap:6px;margin-top:18px;border-bottom:1px solid var(--line)}
+  .tabs button{flex:1;background:transparent;border:none;border-bottom:2px solid transparent;color:var(--txt-dim);
+               font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;padding:11px 6px 12px;cursor:pointer;transition:color .12s,border-color .12s}
+  .tabs button:hover{color:var(--txt)}
+  .tabs button[aria-selected=true]{color:var(--amber);border-bottom-color:var(--amber)}
+
+  .panel{display:none} .panel.active{display:block}
+  .intro{font-size:13.5px;color:var(--txt-dim);margin:16px 0 4px;line-height:1.5}
+
+  .seg{display:flex;gap:6px;flex-wrap:wrap}
+  .seg button{flex:1 1 auto;background:var(--panel-2);border:1px solid var(--line);color:var(--txt-dim);
+              font-family:var(--mono);font-size:11px;letter-spacing:.04em;padding:9px 8px;border-radius:var(--radius);cursor:pointer;text-transform:uppercase;transition:.12s}
+  .seg button:hover{color:var(--txt);border-color:#2d3d4d}
+  .seg button[aria-pressed=true]{background:var(--amber-soft);border-color:var(--amber);color:var(--amber)}
+  .seg.disabled{opacity:.4;pointer-events:none}
+  .seg-note{font-family:var(--mono);font-size:11px;color:var(--txt-dim);margin-top:8px;line-height:1.5}
+
+  .toggle-stack{display:flex;flex-direction:column;gap:12px}
+  .rule{height:1px;background:var(--line)}
+  .toggle{display:flex;align-items:flex-start;gap:11px;cursor:pointer;user-select:none}
+  .toggle .track{flex:0 0 auto;width:42px;height:22px;background:var(--panel-2);border:1px solid var(--line);border-radius:12px;position:relative;transition:.15s;margin-top:1px}
+  .toggle .knob{position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:var(--txt-dim);transition:.15s}
+  .toggle.on .track{background:var(--amber-soft);border-color:var(--amber)} .toggle.on .knob{transform:translateX(20px);background:var(--amber)}
+  .toggle.disabled{opacity:.4;pointer-events:none}
+  .toggle .txt{font-size:13.5px;color:var(--txt);line-height:1.45} .toggle .txt small{display:block;color:var(--txt-dim);font-size:12px;margin-top:2px}
+
+  .go{width:100%;height:46px;margin-top:18px;font-family:var(--disp);font-weight:800;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:#000;background:var(--amber);border:none;border-radius:var(--radius);cursor:pointer;transition:filter .12s,transform .04s}
+  .go:hover{filter:brightness(1.08)} .go:active{transform:translateY(1px)}
+
+  .res-head{margin:24px 0 12px} .res-head h2{font-family:var(--disp);font-weight:700;font-size:14px;letter-spacing:.08em;text-transform:uppercase;margin:0;color:var(--paper)}
+  .empty{border:1px dashed var(--line);border-radius:5px;padding:26px 22px;text-align:center;color:var(--txt-faint);font-family:var(--mono);font-size:12.5px;line-height:1.7}
+  .plate{background:var(--paper);color:var(--graphite);border-radius:5px;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,.3);animation:in .22s ease both}
+  @keyframes in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .prompt{font-family:var(--mono);font-size:12.5px;line-height:1.62;color:var(--graphite);white-space:pre-wrap;word-break:break-word;margin:0;padding:15px 15px 6px}
+  .foot{display:flex;align-items:center;gap:8px;background:#ece8da;border-top:1px solid #d8d3c4;padding:8px 12px}
+  .copy{font-family:var(--mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;background:var(--graphite);color:var(--paper);border:none;padding:7px 13px;border-radius:2px;cursor:pointer}
+  .copy:hover{background:#000} .copy.done{background:var(--amber);color:var(--graphite)}
+  .foot .stamp{margin-left:auto;font-family:var(--mono);font-size:10px;color:#8a8472}
+
+  .hint{font-family:var(--mono);font-size:11px;color:var(--txt-faint);margin-top:14px;line-height:1.7}
+  .hint b{color:var(--txt-dim)}
+  .site-foot{margin-top:34px;padding-top:16px;border-top:1px solid var(--line);font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--txt-faint)}
+  @media (prefers-reduced-motion:reduce){.plate{animation:none}*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar"><a class="back" href="index.html"><span class="a">←</span>UoD Studio</a></div>
+  <header>
+    <div class="mark">U<b>o</b>D</div>
+    <div class="tagline">Universes of Devotion · Shot maker</div>
+  </header>
+
+  <div class="seclbl">The shot</div>
+  <div class="legend" id="ref-legend"></div>
+
+  <div class="card" id="shot-card">
+    <div class="grp">
+      <div class="lbl">Format</div>
+      <select id="format">
+        <option value="169">16:9 — landscape</option>
+        <option value="916">9:16 — vertical</option>
+        <option value="gn">Graphic novel — trade / bookshelf (portrait)</option>
+        <option value="85x11">8.5 &times; 11 — portrait page</option>
+        <option value="11x85">11 &times; 8.5 — landscape page</option>
+      </select>
+    </div>
+
+    <div class="grp">
+      <div class="lbl">Shot type</div>
+      <select id="shot">
+        <option value="cu">Close-Up (CU)</option>
+        <option value="ecu">Extreme Close-Up (ECU)</option>
+        <option value="macro">Macro — eye</option>
+        <option value="high">High Angle</option>
+        <option value="low">Low Angle</option>
+        <option value="ots">Over-the-Shoulder (OTS)</option>
+        <option value="two">Two Shot</option>
+        <option value="dutch">Dutch Angle</option>
+        <option value="wide">Wide Shot</option>
+        <option value="est">Establishing Shot</option>
+        <option value="bird">Bird's-Eye View</option>
+        <option value="pov">Point of View (POV)</option>
+        <option value="track">Tracking / Dolly</option>
+        <option value="crane">Crane / Jib</option>
+        <option value="hand">Handheld / Shaky Cam</option>
+        <option value="rack">Rack Focus</option>
+        <option value="static">Static Shot</option>
+      </select>
+    </div>
+
+    <div class="grp" id="c-expression" style="display:none">
+      <div class="lbl">Expression <span class="opt">— what's happening</span></div>
+      <input id="expression" type="text" placeholder="e.g. she looks scared, glancing over her shoulder" />
+    </div>
+    <div class="grp" id="c-emotion" style="display:none">
+      <div class="lbl">Emotion</div>
+      <select id="emotion">
+        <option value="default">Default — from the close-up note</option>
+        <option value="scared">Scared</option><option value="surprised">Surprised</option>
+        <option value="angry">Angry</option><option value="sad">Sad</option><option value="happy">Happy</option>
+      </select>
+    </div>
+    <div class="grp" id="c-eye" style="display:none">
+      <div class="lbl">Eye color</div>
+      <select id="eye">
+        <option value="ref">From master reference (default)</option>
+        <option value="brown">Brown</option><option value="blue">Blue</option><option value="green">Green</option>
+        <option value="hazel">Hazel</option><option value="black">Black</option><option value="white">White</option>
+        <option value="orange glow">Orange glow</option><option value="red glow">Red glow</option>
+        <option value="albino pink">Albino pink</option><option value="custom">Custom hex&hellip;</option>
+      </select>
+    </div>
+    <div class="grp" id="c-hex" style="display:none">
+      <input id="hex" type="text" placeholder="hex code — # optional, e.g. 4FC3E8" />
+    </div>
+    <div class="grp" id="c-ots" style="display:none">
+      <div class="lbl">Over-the-shoulder focus</div>
+      <select id="ots">
+        <option value="bg">Use the master image background</option>
+        <option value="refb">Use reference image B</option>
+      </select>
+    </div>
+    <div class="grp" id="c-motion" style="display:none">
+      <div class="lbl">Motion <span class="opt">— what the character is doing</span></div>
+      <input id="motion" type="text" placeholder="e.g. running, falling, getting up and running" />
+    </div>
+  </div>
+
+  <div class="tabs" role="tablist">
+    <button role="tab" data-tab="shots" aria-selected="true">Stills</button>
+    <button role="tab" data-tab="motion" aria-selected="false">Motion</button>
+  </div>
+
+  <section class="panel active" id="panel-shots">
+    <p class="intro">Generate the shot above as a single still, off your master reference — the variation you picked, or any storyboard frame.</p>
+    <button class="go" id="s-go">Build still prompt</button>
+    <div class="res-head"><h2>Still prompt</h2></div>
+    <div id="s-out"><div class="empty">Compose the shot above, then build.<br>Paste with your master reference uploaded.</div></div>
+    <div class="hint"><b>Use:</b> upload your master reference into GPT / Nano Banana, paste this, generate. For Two-Shot and Rack-Focus, also upload references A and B as labelled above.</div>
+  </section>
+
+  <section class="panel" id="panel-motion">
+    <p class="intro">Animate that same shot. Choose the camera move and the sound — everything else stays locked to the reference.</p>
+    <div class="card">
+      <div class="grp">
+        <div class="lbl">Camera move</div>
+        <div class="seg" id="camera">
+          <button data-c="push" aria-pressed="true">Push-in</button>
+          <button data-c="pull" aria-pressed="false">Pull-back</button>
+          <button data-c="static" aria-pressed="false">Static</button>
+        </div>
+        <div class="seg-note" id="camera-note"></div>
+      </div>
+      <div class="grp">
+        <div class="lbl">Sound</div>
+        <div class="toggle-stack">
+          <div class="toggle" id="m-silent" role="switch" aria-checked="false">
+            <div class="track"><div class="knob"></div></div>
+            <div class="txt">Silent<small>Fully silent — no ambient, effects, music, or dialogue. Overrides everything below.</small></div>
+          </div>
+          <div class="rule"></div>
+          <div class="toggle" id="m-sfx" role="switch" aria-checked="false">
+            <div class="track"><div class="knob"></div></div>
+            <div class="txt">Sound effects<small>Natural ambient sound matched to whatever the image shows.</small></div>
+          </div>
+          <div class="toggle" id="m-vo" role="switch" aria-checked="false">
+            <div class="track"><div class="knob"></div></div>
+            <div class="txt">Voiceover<small>Spoken line over the shot — write it below.</small></div>
+          </div>
+          <div class="toggle" id="m-nodialog" role="switch" aria-checked="false">
+            <div class="track"><div class="knob"></div></div>
+            <div class="txt">No dialog<small>Suppress spoken character dialogue.</small></div>
+          </div>
+          <div class="toggle" id="m-nomusic" role="switch" aria-checked="false">
+            <div class="track"><div class="knob"></div></div>
+            <div class="txt">No music<small>Suppress background music.</small></div>
+          </div>
+        </div>
+      </div>
+      <div class="grp" id="m-vo-grp" style="display:none">
+        <div class="lbl">Voiceover line</div>
+        <input id="m-vo-text" type="text" placeholder="Type exactly what the voiceover should say&hellip;" />
+      </div>
+      <button class="go" id="m-go">Build motion prompt</button>
+    </div>
+    <div class="res-head"><h2>Motion prompt</h2></div>
+    <div id="m-out"><div class="empty">Compose the shot above, set camera + sound, then build.<br>Paste with your master still uploaded as the source image.</div></div>
+    <div class="hint"><b>Use:</b> in your image-to-video model (e.g. Veo 3.1), upload the master still as the source image, paste this prompt, generate.</div>
+  </section>
+
+  <footer class="site-foot">Universes of Devotion · Shot maker — an instrument by Duane Loose</footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  const $=s=>document.querySelector(s);
+
+  function copy(text,btn){
+    const done=()=>{if(btn){const t=btn.textContent;btn.textContent="Copied";btn.classList.add("done");setTimeout(()=>{btn.textContent=t;btn.classList.remove("done");},1100);}};
+    if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(text).then(done).catch(()=>fb(text,done));}else fb(text,done);
+  }
+  function fb(text,cb){const ta=document.createElement("textarea");ta.value=text;ta.style.position="fixed";ta.style.opacity="0";document.body.appendChild(ta);ta.select();try{document.execCommand("copy");}catch(e){}document.body.removeChild(ta);if(cb)cb();}
+  function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+  function plate(container, body, stamp){
+    container.innerHTML="";
+    const el=document.createElement("article"); el.className="plate";
+    el.innerHTML='<pre class="prompt">'+esc(body)+'</pre><div class="foot"><button class="copy">Copy prompt</button><span class="stamp">'+esc(stamp)+'</span></div>';
+    el.querySelector(".copy").onclick=function(){copy(body,this);};
+    container.appendChild(el);
+  }
+  function cap(s){return s? s.charAt(0).toUpperCase()+s.slice(1) : s;}
+
+  const tabBtns=[...document.querySelectorAll('.tabs button[role=tab]')];
+  const panels={shots:$("#panel-shots"),motion:$("#panel-motion")};
+  tabBtns.forEach(b=>b.onclick=()=>{
+    tabBtns.forEach(x=>x.setAttribute("aria-selected",x===b));
+    Object.entries(panels).forEach(([k,p])=>p.classList.toggle("active",k===b.dataset.tab));
+  });
+
+  function expr(){return ($("#expression").value||"").trim();}
+  function emo(){return $("#emotion").value;}
+  function irisClause(){
+    const v=$("#eye").value;
+    if(v==="ref") return "matching the character's natural eye color from the master reference";
+    if(v==="custom"){let h=($("#hex").value||"").trim().replace(/^#+/,""); return h ? "in a vivid #"+h+" iris color" : "in the specified color";}
+    return "in vivid "+v;
+  }
+  function otsText(){ return $("#ots").value==="refb" ? "the subject shown in reference image B" : "the background from the master image"; }
+  function emoForEcu(){ const e=emo(); if(e==="default"){ const x=expr(); return x ? " — "+x : ""; } return " — a clearly "+e+" expression"; }
+  function emoForMacro(){ const e=emo(); if(e==="default"){ const x=expr(); return x ? x : "raw emotion"; } return e; }
+
+  const SHOTDEF = {
+    cu:   {label:"Close-Up (CU)", kinetic:false, needs:["expression"], desc(){
+      return "Close-up shot of the subject, tightly framed from the chest up. Eye-level camera, capturing subtle facial expression and upper-body posture. Soft, even lighting picks out contours and texture; the background falls softly out of focus to hold attention on the subject"+(expr()? ". "+cap(expr())+"." : "."); }},
+    ecu:  {label:"Extreme Close-Up (ECU)", kinetic:false, needs:["emotion"], desc(){
+      return "Extreme close-up, tightly framing the character's face, showing detailed emotional expression"+emoForEcu()+"."; }},
+    macro:{label:"Macro — Eye", kinetic:false, needs:["emotion","eye"], desc(){
+      return "Extreme macro cinematic shot of the character's eye — hyper-detailed iris patterns "+irisClause()+", light reflections in the pupil, fine texture of eyelashes and skin pores, ultra-shallow depth of field, dramatic film lighting, photoreal 85mm macro-lens look, emphasizing "+emoForMacro()+" and intensity."; }},
+    high: {label:"High Angle", kinetic:false, needs:[], desc(){
+      return "High-angle cinematic shot, camera positioned above the character looking straight down, dramatic overhead light casting long shadows, emphasizing vulnerability; the character stares up directly into the lens."; }},
+    low:  {label:"Low Angle", kinetic:false, needs:[], desc(){
+      return "Dramatic low-angle shot looking up at the character from below, making them appear powerful, imposing, and heroic."; }},
+    ots:  {label:"Over-the-Shoulder (OTS)", kinetic:false, needs:["ots"], desc(){
+      return "Close cinematic shot framed over the character's shoulder, focusing on "+otsText()+"."; }},
+    two:  {label:"Two Shot", kinetic:false, needs:["refsAB"], desc(){
+      return "Wide cinematic two-shot framing both characters together with equal focus — the main character from reference image A, the second character from reference image B."; }},
+    dutch:{label:"Dutch Angle", kinetic:false, needs:[], desc(){
+      return "Cinematic shot with a tilted horizon (Dutch angle), creating unease, tension, and chaos."; }},
+    wide: {label:"Wide Shot", kinetic:false, needs:[], desc(){
+      return "Cinematic wide shot showing the full character head to toe within the environment from the master image."; }},
+    est:  {label:"Establishing Shot", kinetic:false, needs:[], desc(){
+      return "Sweeping cinematic establishing shot of the environment, the character small within it, emphasizing the location and its scale."; }},
+    bird: {label:"Bird's-Eye View", kinetic:false, needs:[], desc(){
+      return "Cinematic top-down bird's-eye shot looking straight down at the character from directly above, emphasizing scale and insignificance."; }},
+    pov:  {label:"Point of View (POV)", kinetic:false, needs:[], desc(){
+      return "Point-of-view shot of the location as the character would see it."; }},
+    track:{label:"Tracking / Dolly", kinetic:true, needs:["motion"], desc(){
+      const m=($("#motion").value||"").trim();
+      return "Tracking / dolly shot: the camera moves smoothly alongside the character"+(m? " "+m : "")+", fluid continuous movement."; }},
+    crane:{label:"Crane / Jib", kinetic:true, needs:[], desc(){
+      return "Sweeping crane / jib shot rising high above the scene, dramatic camera movement, epic atmosphere."; }},
+    hand: {label:"Handheld / Shaky Cam", kinetic:true, needs:[], desc(){
+      return "Handheld, shaky camera movement — raw, chaotic, documentary-style realism."; }},
+    rack: {label:"Rack Focus", kinetic:true, needs:["refsAB"], desc(){
+      return "Rack-focus shot: open on an over-the-shoulder framing of the character (reference image A) in sharp focus, then shift focus so the background (reference image B) resolves sharp as the character softens."; }},
+    static:{label:"Static Shot", kinetic:false, needs:[], desc(){
+      return "Perfectly still cinematic shot, no camera movement; the character holds a dramatic stare into the lens."; }}
+  };
+
+  function formatText(){
+    const M={ "169":"Compose for a 16:9 landscape frame.","916":"Compose for a 9:16 vertical frame.",
+      "gn":"Compose for a portrait trade graphic-novel page (about 2:3, e.g. 6 x 9 in).",
+      "85x11":"Compose for a portrait 8.5 x 11 page.","11x85":"Compose for a landscape 11 x 8.5 page." };
+    return M[$("#format").value]||"";
+  }
+
+  function setLegend(){
+    const s=$("#shot").value; let items;
+    if(s==="two"){ items=[["A","Reference A — main character","The lead. Forms and design preserved."],["B","Reference B — second character","The other character in the frame."]]; }
+    else if(s==="rack"){ items=[["A","Reference A — character","Foreground subject, over-the-shoulder."],["B","Reference B — background","What pulls into sharp focus."]]; }
+    else if(s==="ots" && $("#ots").value==="refb"){ items=[["1","Master reference","The character and their environment."],["B","Reference B — focus subject","What sits over the shoulder."]]; }
+    else { items=[["1","Master reference","Your chosen variation or storyboard frame. Carries design, wardrobe, and setting."]]; }
+    $("#ref-legend").innerHTML = items.map(it=>{
+      const cls = (it[0]==="B") ? " cyan" : "";
+      return '<div class="leg"><span class="num'+cls+'">'+esc(it[0])+'</span><div class="t">'+esc(it[1])+'</div><div class="d">'+esc(it[2])+'</div></div>';
+    }).join("");
+  }
+
+  function show(id,on){$("#"+id).style.display = on?"block":"none";}
+  function setControls(){
+    const s=$("#shot").value, need=SHOTDEF[s].needs;
+    show("c-expression", need.indexOf("expression")>-1);
+    show("c-emotion",    need.indexOf("emotion")>-1);
+    show("c-eye",        need.indexOf("eye")>-1);
+    show("c-hex",        need.indexOf("eye")>-1 && $("#eye").value==="custom");
+    show("c-ots",        need.indexOf("ots")>-1);
+    show("c-motion",     need.indexOf("motion")>-1);
+    const kin=SHOTDEF[s].kinetic;
+    $("#camera").classList.toggle("disabled", kin);
+    $("#camera-note").textContent = kin ? "This shot carries its own camera movement — push / pull / static doesn't apply." : "";
+    setLegend();
+  }
+  $("#shot").addEventListener("change", setControls);
+  $("#eye").addEventListener("change", setControls);
+  $("#ots").addEventListener("change", setLegend);
+
+  let camera="push";
+  $("#camera").addEventListener("click",e=>{
+    if($("#camera").classList.contains("disabled")) return;
+    const b=e.target.closest("button"); if(!b) return; camera=b.dataset.c;
+    [...$("#camera").querySelectorAll("button")].forEach(x=>x.setAttribute("aria-pressed",x===b));
+  });
+
+  const T={ silent:$("#m-silent"), sfx:$("#m-sfx"), vo:$("#m-vo"), nodialog:$("#m-nodialog"), nomusic:$("#m-nomusic") };
+  const S={ silent:false, sfx:false, vo:false, nodialog:false, nomusic:false };
+  function sync(){
+    const silent=S.silent;
+    ["sfx","vo","nodialog","nomusic"].forEach(k=>{ T[k].classList.toggle("disabled",silent); });
+    $("#m-vo-grp").style.display = (S.vo && !silent) ? "block" : "none";
+  }
+  Object.keys(T).forEach(k=>{
+    T[k].addEventListener("click",function(){
+      if(this.classList.contains("disabled")) return;
+      S[k]=!S[k]; this.classList.toggle("on",S[k]); this.setAttribute("aria-checked",S[k]?"true":"false"); sync();
+    });
+  });
+  function joinList(a){ if(a.length===0)return""; if(a.length===1)return a[0]; if(a.length===2)return a[0]+" and "+a[1]; return a.slice(0,-1).join(", ")+", and "+a[a.length-1]; }
+  function audioLine(){
+    if(S.silent) return "Audio: completely silent — no ambient sound, effects, music, or dialogue.";
+    const pos=[];
+    if(S.sfx) pos.push("natural ambient sound effects that match the scene shown in the image");
+    if(S.vo){ const t=($("#m-vo-text").value||"").trim(); pos.push("a clear voiceover that says: \u201C"+(t||"[write your VO line]")+"\u201D"); }
+    const neg=[];
+    if(S.nomusic) neg.push("no background music");
+    if(S.nodialog) neg.push("no spoken character dialogue");
+    if(pos.length===0 && neg.length===0) return "";
+    if(pos.length) return "Audio: "+joinList(pos)+(neg.length ? ", with "+joinList(neg) : "")+".";
+    return "Audio: ambient room tone only, with "+joinList(neg)+".";
+  }
+
+  $("#s-go").onclick=()=>{
+    const s=$("#shot").value;
+    const p="Generate a single still image from the uploaded master reference (the character and their environment). Keep the character design, wardrobe, and setting consistent with the reference.\n\n"
+      + "Shot — "+SHOTDEF[s].label+":\n"+SHOTDEF[s].desc()+"\n\n"
+      + formatText()+" Render at the highest resolution possible.";
+    plate($("#s-out"), p, "UoD · Shot");
+  };
+  $("#m-go").onclick=()=>{
+    const s=$("#shot").value, kin=SHOTDEF[s].kinetic;
+    const cam = kin ? "Camera movement is defined by the shot itself."
+      : (camera==="push" ? "The camera makes a very slow, smooth push-in."
+        : camera==="pull" ? "The camera makes a very slow, smooth pull-back."
+        : "The camera stays completely locked off with no movement.");
+    let p="Animate the uploaded master reference as a moving shot. Keep the character, wardrobe, and environment exactly consistent with the reference; add only subtle, natural motion appropriate to the scene. No morphing, no distortion, nothing added or removed.\n\n"
+      + "Shot — "+SHOTDEF[s].label+":\n"+SHOTDEF[s].desc()+"\n\n"
+      + "Camera: "+cam;
+    const a=audioLine();
+    if(a) p+="\n"+a;
+    p+="\n\n"+formatText()+" Render at the highest resolution possible.";
+    plate($("#m-out"), p, "UoD · Motion");
+  };
+
+  setControls(); sync();
+})();
+</script>
+</body>
+</html>
