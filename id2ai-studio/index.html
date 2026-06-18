@@ -10,7 +10,7 @@
 <style>
   :root{
     --ink:#0B0E14; --panel:#141A24; --panel-2:#1B232F; --line:#2A3645;
-    --blueprint:#4FC3E8; --chartreuse:#C6E84B; --amber:#E8A33A;
+    --blueprint:#4FC3E8; --chartreuse:#C6E84B; --amber:#E8A33A; --orange:#FF6A00;
     --paper:#F4F1E8; --graphite:#1c1f24; --txt:#D7E0EA; --txt-dim:#7E8B9C;
     --disp:'Saira Condensed','Arial Narrow',sans-serif;
     --body:'Inter',system-ui,sans-serif; --mono:'Space Mono',ui-monospace,monospace;
@@ -37,15 +37,17 @@
         transition:border-color .14s,transform .08s,box-shadow .14s}
   .tool.green{border-top-color:var(--chartreuse)}
   .tool.blue{border-top-color:var(--blueprint)}
+  .tool.orange{border-top-color:var(--orange)}
   .tool:hover{transform:translateY(-3px)}
   .tool.green:hover{border-color:var(--chartreuse);box-shadow:0 10px 30px rgba(198,232,75,.10)}
   .tool.blue:hover{border-color:var(--blueprint);box-shadow:0 10px 30px rgba(79,195,232,.12)}
+  .tool.orange:hover{border-color:var(--orange);box-shadow:0 10px 30px rgba(255,106,0,.13)}
   .tool:focus-visible{outline:none;border-color:var(--paper);box-shadow:0 0 0 2px rgba(244,241,232,.35)}
   .tool:active{transform:translateY(-1px)}
 
   .tool-top{display:flex;align-items:center;gap:9px}
   .dot{width:9px;height:9px;border-radius:2px;flex:0 0 auto}
-  .green .dot{background:var(--chartreuse)} .blue .dot{background:var(--blueprint)}
+  .green .dot{background:var(--chartreuse)} .blue .dot{background:var(--blueprint)} .orange .dot{background:var(--orange)}
   .tag{font-family:var(--mono);font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--txt-dim)}
 
   .tool-name{font-family:var(--disp);font-weight:700;letter-spacing:.02em;line-height:.95;
@@ -53,6 +55,7 @@
   .tool-name .x{font-weight:700}
   .green .tool-name{color:var(--chartreuse)} .green .tool-name .x{color:var(--blueprint)}
   .blue .tool-name{color:var(--blueprint)} .blue .tool-name .x{color:var(--chartreuse)}
+  .orange .tool-name{color:var(--orange)} .orange .tool-name .x{color:#FFFFFF}
 
   .tool-desc{font-size:13px;color:var(--txt-dim);line-height:1.5;flex:1 1 auto}
 
@@ -60,7 +63,7 @@
              margin-top:2px;padding-top:11px;border-top:1px solid var(--line)}
   .stages{font-family:var(--mono);font-size:10.5px;letter-spacing:.05em;color:var(--txt-dim)}
   .enter{font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.04em;white-space:nowrap}
-  .green .enter{color:var(--chartreuse)} .blue .enter{color:var(--blueprint)}
+  .green .enter{color:var(--chartreuse)} .blue .enter{color:var(--blueprint)} .orange .enter{color:var(--orange)}
   .enter .arr{display:inline-block;transition:transform .14s}
   .tool:hover .enter .arr{transform:translateX(4px)}
 
@@ -109,6 +112,16 @@
       <div class="tool-desc">Build the prompt that brings a finished still to life — choose the camera move and the sound, everything else stays locked.</div>
       <div class="tool-foot">
         <span class="stages">Motion</span>
+        <span class="enter">Open&nbsp;<span class="arr">→</span></span>
+      </div>
+    </a>
+
+    <a class="tool orange" href="sheets4ai.html">
+      <div class="tool-top"><span class="dot"></span><span class="tag">From a reference</span></div>
+      <div class="tool-name">SHEETS<span class="x">4</span>AI</div>
+      <div class="tool-desc">Turn a reference into a locked production-sheet prompt — character, prop, signage, vehicle, device — plus video turnarounds, expression grids, and exploded views.</div>
+      <div class="tool-foot">
+        <span class="stages">Asset&nbsp;Sheet · Video · xPLODE</span>
         <span class="enter">Open&nbsp;<span class="arr">→</span></span>
       </div>
     </a>

@@ -1,0 +1,908 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>SHEETS4AI · ID2AI Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@600;700&family=Inter:wght@400;500&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0B0E14; --panel:#141A24; --panel-2:#1B232F; --line:#2A3645;
+    --blueprint:#4FC3E8; --accent:#FF6A00; --amber:#E8A33A;
+    --paper:#F4F1E8; --graphite:#1c1f24; --txt:#D7E0EA; --txt-dim:#7E8B9C;
+    --disp:'Saira Condensed','Arial Narrow',sans-serif;
+    --body:'Inter',system-ui,sans-serif; --mono:'Space Mono',ui-monospace,monospace;
+  }
+  *{box-sizing:border-box} html,body{margin:0}
+  body{background:radial-gradient(1000px 500px at 50% -10%, #16202d 0%, transparent 60%), var(--ink);
+       color:var(--txt);font-family:var(--body);line-height:1.5;min-height:100vh;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:700px;margin:0 auto;padding:0 18px 90px}
+
+  .topbar{padding:18px 0 0}
+  .back{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--txt-dim);text-decoration:none}
+  .back:hover{color:var(--accent)}
+  .back .a{display:inline-block;margin-right:5px;transition:transform .14s}
+  .back:hover .a{transform:translateX(-3px)}
+  header{display:flex;align-items:baseline;gap:14px;padding:12px 0 6px}
+  .mark{font-family:var(--disp);font-weight:700;letter-spacing:.04em;font-size:28px;line-height:1;color:var(--accent)}
+  .mark .x{color:#FFFFFF}
+  .tagline{font-family:var(--mono);font-size:11px;color:var(--txt-dim);text-transform:uppercase;letter-spacing:.16em}
+
+  .intro{font-size:13.5px;color:var(--txt-dim);margin:18px 0 4px;line-height:1.5}
+
+  /* image-role legend */
+  .legend{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}
+  .leg{flex:1 1 210px;background:var(--panel);border:1px solid var(--line);border-radius:5px;padding:11px 13px}
+  .leg .num{font-family:var(--disp);font-weight:700;font-size:14px;color:var(--ink);background:var(--accent);
+            width:24px;height:24px;display:inline-flex;align-items:center;justify-content:center;border-radius:3px;margin-bottom:7px}
+  .leg .num.blue{background:var(--blueprint)}
+  .leg .t{font-family:var(--mono);font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--txt)}
+  .leg .d{font-size:12.5px;color:var(--txt-dim);margin-top:3px}
+
+  .card{background:linear-gradient(180deg,rgba(20,26,36,.7),rgba(20,26,36,.35));border:1px solid var(--line);border-radius:6px;padding:18px;margin-top:14px}
+  .lbl{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--blueprint);margin-bottom:8px}
+  .opt{color:var(--txt-dim);letter-spacing:0;text-transform:none}
+  input[type=text], select{width:100%;background:var(--panel);color:var(--txt);border:1px solid var(--line);border-radius:4px;font-family:var(--body);font-size:14px;padding:11px}
+  input[type=text]:focus, select:focus{outline:none;border-color:var(--blueprint);box-shadow:0 0 0 2px rgba(79,195,232,.18)}
+  select{appearance:none;-webkit-appearance:none;cursor:pointer;padding-right:34px;
+         background-image:linear-gradient(45deg,transparent 50%,var(--txt-dim) 50%),linear-gradient(135deg,var(--txt-dim) 50%,transparent 50%);
+         background-position:calc(100% - 17px) 20px,calc(100% - 12px) 20px;background-size:5px 5px,5px 5px;background-repeat:no-repeat}
+  ::placeholder{color:#566270}
+  .grp{margin-top:16px} .grp:first-child{margin-top:0}
+  .row2{display:flex;gap:12px} .row2 .grp{flex:1;margin-top:0}
+
+  /* sheet-type preset grid */
+  .presets{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+  .presets button{background:var(--panel);border:1px solid var(--line);color:var(--txt-dim);
+                  font-family:var(--mono);font-size:10.5px;letter-spacing:.03em;padding:11px 5px;border-radius:4px;cursor:pointer;text-transform:uppercase;transition:.12s;line-height:1.25}
+  .presets button:hover{color:var(--txt);border-color:#3a4858}
+  .presets button[aria-pressed=true]{background:rgba(255,106,0,.12);border-color:var(--accent);color:var(--accent)}
+  .type-note{font-family:var(--mono);font-size:11px;color:var(--txt-dim);margin-top:9px;line-height:1.55}
+
+  /* orientation segmented */
+  .seg2{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+  .seg2 button{background:var(--panel);border:1px solid var(--line);color:var(--txt-dim);
+               font-family:var(--mono);font-size:11px;letter-spacing:.05em;padding:10px 6px;border-radius:4px;cursor:pointer;text-transform:uppercase;transition:.12s;line-height:1.25}
+  .seg2 button:hover{color:var(--txt);border-color:#3a4858}
+  .seg2 button[aria-pressed=true]{background:rgba(255,106,0,.12);border-color:var(--accent);color:var(--accent)}
+  .seg2.three{grid-template-columns:1fr 1fr 1fr}
+  .seg2.three button{font-size:10.5px;letter-spacing:.02em;padding:9px 4px}
+
+  /* xPLODE preset button */
+  .preset-x{width:100%;margin-top:14px;background:transparent;border:1px solid var(--accent);color:var(--accent);
+            font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;padding:12px;border-radius:4px;cursor:pointer;transition:.12s}
+  .preset-x:hover{background:rgba(255,106,0,.10)}
+  .preset-x.on{background:rgba(255,106,0,.16)}
+
+  /* chip checklist (views / callouts / locks) */
+  .chips{display:flex;flex-wrap:wrap;gap:6px}
+  .chip{background:var(--panel);border:1px solid var(--line);color:var(--txt-dim);
+        font-family:var(--mono);font-size:11px;letter-spacing:.03em;padding:8px 11px;border-radius:4px;cursor:pointer;transition:.12s;user-select:none}
+  .chip:hover{color:var(--txt);border-color:#3a4858}
+  .chip[aria-pressed=true]{background:rgba(79,195,232,.12);border-color:var(--blueprint);color:var(--blueprint)}
+  .chip.lock[aria-pressed=true]{background:rgba(255,106,0,.12);border-color:var(--accent);color:var(--accent)}
+
+  /* toggle */
+  .toggle{display:flex;align-items:flex-start;gap:11px;cursor:pointer;user-select:none}
+  .toggle .track{flex:0 0 auto;width:42px;height:22px;background:var(--panel);border:1px solid var(--line);border-radius:12px;position:relative;transition:.15s;margin-top:1px}
+  .toggle .knob{position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:var(--txt-dim);transition:.15s}
+  .toggle.on .track{background:rgba(255,106,0,.16);border-color:var(--accent)}
+  .toggle.on .knob{transform:translateX(20px);background:var(--accent)}
+  .toggle .txt{font-size:13.5px;color:var(--txt);line-height:1.45}
+  .toggle .txt small{display:block;color:var(--txt-dim);font-size:12px;margin-top:2px}
+
+  .go{width:100%;height:46px;margin-top:18px;font-family:var(--disp);font-weight:700;font-size:18px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink);background:var(--accent);border:none;border-radius:4px;cursor:pointer;transition:filter .12s,transform .04s}
+  .go:hover{filter:brightness(1.08)} .go:active{transform:translateY(1px)}
+
+  .res-head{display:flex;align-items:center;gap:12px;margin:24px 0 12px}
+  .res-head h2{font-family:var(--disp);font-weight:600;font-size:18px;letter-spacing:.04em;margin:0;color:var(--paper)}
+  .empty{border:1px dashed var(--line);border-radius:5px;padding:28px 22px;text-align:center;color:var(--txt-dim);font-family:var(--mono);font-size:13px;line-height:1.7}
+
+  .plate{background:var(--paper);color:var(--graphite);border:1px solid #d8d3c4;border-radius:5px;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,.3);animation:in .24s ease both}
+  @keyframes in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .prompt{font-family:var(--mono);font-size:12.5px;line-height:1.62;color:var(--graphite);white-space:pre-wrap;word-break:break-word;margin:0;padding:15px 15px 4px}
+  .hardlock{display:inline-block;font-family:var(--mono);font-weight:700;font-size:12px;letter-spacing:.1em;background:var(--graphite);color:var(--accent);padding:5px 10px;border-radius:2px;margin:0 15px 14px}
+  .foot{display:flex;align-items:center;gap:8px;background:#ece8da;border-top:1px solid #d8d3c4;padding:8px 12px}
+  .copy{font-family:var(--mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;background:var(--graphite);color:var(--paper);border:none;padding:7px 13px;border-radius:2px;cursor:pointer}
+  .copy:hover{background:#000} .copy.done{background:var(--accent);color:var(--graphite)}
+  .foot .stamp{margin-left:auto;font-family:var(--mono);font-size:10px;color:#8a8472}
+
+  .hint{font-family:var(--mono);font-size:11px;color:var(--txt-dim);margin-top:14px;line-height:1.6}
+  .hint b{color:var(--txt-dim)}
+  .site-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+             margin-top:36px;padding-top:16px;border-top:1px solid var(--line);
+             font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--txt-dim)}
+  .site-foot a{color:var(--blueprint);text-decoration:none}
+  .site-foot a:hover{color:var(--accent);text-decoration:underline}
+  .site-links{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .site-links a:not(:first-child){border-left:1px solid var(--line);padding-left:12px}
+  @media (max-width:480px){.presets{grid-template-columns:repeat(2,1fr)}}
+  @media (prefers-reduced-motion:reduce){.plate{animation:none}*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar"><a class="back" href="index.html"><span class="a">&larr;</span>ID2AI Studio</a></div>
+
+  <header>
+    <div class="mark">SHEETS<span class="x">4</span>AI</div>
+    <div class="tagline">Asset Sheet</div>
+  </header>
+
+  <section class="panel">
+    <p class="intro">Turn one uploaded reference into a clean, repeatable production-sheet prompt — character, prop, environmental, signage, vehicle, device, location, or wardrobe. Pick the sheet type, name the subject in the frame, choose the views and callouts. The subject stays locked; nothing gets redesigned.</p>
+
+    <div class="legend">
+      <div class="leg"><span class="num">1</span><div class="t">Reference image</div><div class="d">Upload it. The sheet is built from the subject inside it — locked, not reinvented.</div></div>
+    </div>
+
+    <div class="card">
+
+      <div class="grp">
+        <div class="lbl">Asset name <span class="opt">titles the sheet + names the file</span></div>
+        <input id="name" type="text" placeholder="e.g. Pinehurst Monument Sign · HAL-9000 · Vane Skiff" />
+      </div>
+
+      <div class="grp">
+        <div class="lbl">Sheet type</div>
+        <div class="presets" id="types"></div>
+        <div class="type-note" id="type-note"></div>
+      </div>
+
+      <div class="grp" id="grp-omode" style="display:none">
+        <div class="lbl">Output mode</div>
+        <div class="seg2 three" id="omode">
+          <button data-m="standard" aria-pressed="true">Standard</button>
+          <button data-m="body" aria-pressed="false">Video · Body</button>
+          <button data-m="emotion" aria-pressed="false">Video · Emotion</button>
+        </div>
+      </div>
+
+      <div class="grp">
+        <div class="lbl">Subject source <span class="opt">which thing in the frame</span></div>
+        <select id="src">
+          <option value="main">Obvious main subject</option>
+          <option value="fg">Foreground object</option>
+          <option value="bg">Background object</option>
+          <option value="left">Object at left</option>
+          <option value="center">Object at center</option>
+          <option value="right">Object at right</option>
+          <option value="refA">Reference A — use as master subject</option>
+          <option value="refB">Reference B — use as treatment / style</option>
+          <option value="custom">Custom — describe in the note</option>
+        </select>
+      </div>
+
+      <div class="grp">
+        <div class="lbl">Subject note <span class="opt">short ID — pins the model to the right thing</span></div>
+        <input id="note" type="text" placeholder="e.g. large monument sign at lower right · HAL floor-stand mode" />
+      </div>
+
+      <div id="video-body-ctrls" style="display:none">
+        <div class="grp">
+          <div class="lbl">Body turnaround — views locked</div>
+          <div class="type-note">4 full-body views, left &rarr; right: <b>1</b> 3/4 &middot; <b>2</b> ortho front &middot; <b>3</b> ortho side &middot; <b>4</b> ortho back. 16:9 landscape, clean neutral background, no sheet graphics.</div>
+        </div>
+        <div class="grp">
+          <div class="lbl">Body options</div>
+          <div class="chips" id="vopts"></div>
+        </div>
+      </div>
+
+      <div id="emotion-ctrls" style="display:none">
+        <div class="grp">
+          <div class="lbl">Expression sheet — grid</div>
+          <div class="type-note">Head-and-shoulders portraits of the same face, one per emotion, even grid (4 across). 16:9 landscape, clean neutral background. Same person every cell — only the expression changes.</div>
+        </div>
+        <div class="grp">
+          <div class="lbl">Emotions <span class="opt">order is fixed; Neutral leads</span></div>
+          <div class="chips" id="emos"></div>
+        </div>
+        <div class="grp">
+          <div class="lbl">Expression options</div>
+          <div class="chips" id="eopts"></div>
+        </div>
+      </div>
+
+      <div class="toggle grp" id="t-vtitle" style="display:none">
+        <div class="track"><div class="knob"></div></div>
+        <div class="txt">Show title
+          <small>Render the asset name as a small title on the board. Off = no overall title on the sheet (per-emotion captions are controlled separately).</small>
+        </div>
+      </div>
+
+      <div id="xplode-ctrls" style="display:none">
+        <div class="grp">
+          <div class="lbl">xPLODE — exploded assembly view</div>
+          <div class="type-note">Subject is the identity lock — silhouette, proportions, forms, details all preserved. Style reference (if supplied) controls presentation only. Parts float along believable assembly axes, never random scatter.</div>
+        </div>
+
+        <button class="preset-x" id="x-duane">&#9670; Duane Sketch Exploded View</button>
+
+        <div class="row2 grp">
+          <div class="grp">
+            <div class="lbl">Detail level</div>
+            <select id="x-detail">
+              <option value="simple">Simple — 6–10 parts</option>
+              <option value="standard" selected>Standard — 12–20 parts</option>
+              <option value="detailed">Detailed — 20–35 parts</option>
+            </select>
+          </div>
+          <div class="grp">
+            <div class="lbl">Annotation</div>
+            <select id="x-annot">
+              <option value="none">None</option>
+              <option value="numbers">Numbers only</option>
+              <option value="light" selected>Light callouts</option>
+              <option value="full">Full tech sheet</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grp">
+          <div class="lbl">Style mode</div>
+          <select id="x-style">
+            <option value="duane">Duane sketch exploded view</option>
+            <option value="match">Match style reference</option>
+            <option value="clean" selected>Clean industrial design sketch</option>
+            <option value="patent">Patent drawing</option>
+            <option value="lineart">Technical line art</option>
+            <option value="blueprint">Blueprint</option>
+            <option value="marker">Marker render</option>
+            <option value="photoreal">Photoreal exploded product render</option>
+          </select>
+        </div>
+
+        <div class="toggle grp" id="x-styleref">
+          <div class="track"><div class="knob"></div></div>
+          <div class="txt">Style reference supplied
+            <small>A second image (IMAGE 2) sets presentation — line quality, page, callouts. It never overrides the subject's design.</small>
+          </div>
+        </div>
+
+        <div class="row2 grp">
+          <div class="grp">
+            <div class="lbl">Output format</div>
+            <select id="x-fmt">
+              <option value="16x9">Landscape 16:9</option>
+              <option value="4x3" selected>Landscape 4:3</option>
+              <option value="portrait">Portrait</option>
+              <option value="square">Square</option>
+            </select>
+          </div>
+          <div class="grp">
+            <div class="lbl">Title block <span class="opt">optional</span></div>
+            <input id="x-title" type="text" placeholder="e.g. VANE SKIFF · EXPLODED ASSY" />
+          </div>
+        </div>
+
+        <div class="grp">
+          <div class="lbl">Notes <span class="opt">optional direction</span></div>
+          <input id="x-notes" type="text" placeholder="e.g. split the drivetrain, keep fasteners grouped" />
+        </div>
+      </div>
+
+      <div class="grp" id="grp-views">
+        <div class="lbl">Views</div>
+        <div class="chips" id="views"></div>
+      </div>
+
+      <div class="grp" id="grp-calls">
+        <div class="lbl">Callouts</div>
+        <div class="chips" id="calls"></div>
+      </div>
+
+      <div class="grp" id="grp-orient">
+        <div class="lbl">Orientation</div>
+        <div class="seg2" id="orient">
+          <button data-o="land" aria-pressed="true">Landscape</button>
+          <button data-o="port" aria-pressed="false">Portrait</button>
+        </div>
+      </div>
+
+      <div class="row2 grp" id="grp-fmt">
+        <div class="grp">
+          <div class="lbl">Aspect / format</div>
+          <select id="fmt">
+            <option value="wide">16:9 / 9:16</option>
+            <option value="classic">4:3 / 3:4</option>
+            <option value="five">5:4 / 4:5</option>
+            <option value="page">8.5 × 11 page</option>
+            <option value="board">Concept-art board</option>
+          </select>
+        </div>
+        <div class="grp">
+          <div class="lbl">Background</div>
+          <select id="bg">
+            <option value="neutral">Clean light neutral</option>
+            <option value="white">Clean white</option>
+            <option value="dark">Neutral dark</option>
+            <option value="paper">Warm neutral paper</option>
+            <option value="transparent">Transparent / isolated PNG</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="grp" id="grp-locks">
+        <div class="lbl">Locks+ <span class="opt">appended modifiers</span></div>
+        <div class="chips" id="locks"></div>
+      </div>
+
+      <div class="toggle on grp" id="t-labels">
+        <div class="track"><div class="knob"></div></div>
+        <div class="txt">Readable labels
+          <small>Simple, clean labels on views and callouts. Off = isolated forms only, no text on the sheet.</small>
+        </div>
+      </div>
+
+      <div class="toggle grp" id="t-claude">
+        <div class="track"><div class="knob"></div></div>
+        <div class="txt">Claude mode
+          <small>Output a plain structured spec instead of an image-generation prompt — for writing, planning, or feeding another system.</small>
+        </div>
+      </div>
+
+      <button class="go" id="go">Build sheet prompt</button>
+    </div>
+
+    <div class="res-head"><h2>Sheet prompt</h2></div>
+    <div id="out"><div class="empty">Pick a sheet type and name the subject, then build.<br>Paste into GPT / Claude with your reference uploaded as image 1.</div></div>
+    <div class="hint"><b>Use:</b> upload the reference, paste this prompt, generate. The subject is held as a locked master — turnarounds and callouts only, no redesign.</div>
+  </section>
+
+  <footer class="site-foot">
+    <span>ID2AI · Studio — an instrument by Duane Loose</span>
+    <nav class="site-links">
+      <a href="https://dloose.com" target="_blank" rel="noopener">dloose.com</a>
+      <a href="https://www.linkedin.com/in/dloosedesign/" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="https://x.com/DLooseDesign" target="_blank" rel="noopener">@DLooseDesign</a>
+    </nav>
+  </footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  const $=s=>document.querySelector(s);
+
+  /* =====================================================================
+     DECLARATIVE TAXONOMY — add to these objects to extend the tool.
+     Nothing in the interface is hard-coded to a sheet type; the UI is
+     rebuilt from VIEWS / CALLS / LOCKS / TYPES on every change.
+  ===================================================================== */
+
+  // master view vocabulary  (key -> label, sheet-prompt phrase)
+  const VIEWS = {
+    hero:   {label:"Hero view",        say:"one large hero view"},
+    front:  {label:"Front",            say:"front"},
+    threeq: {label:"3/4",              say:"3/4"},
+    side:   {label:"Side",             say:"side"},
+    rear:   {label:"Rear",             say:"rear"},
+    top:    {label:"Top",              say:"top"},
+    bottom: {label:"Bottom",           say:"bottom"},
+    expr:   {label:"Expression row",   say:"a row of expressions"},
+    usage:  {label:"Usage / context",  say:"a small usage / in-context view"}
+  };
+
+  // master callout vocabulary
+  const CALLS = {
+    detail: {label:"Detail callouts",   say:"detail callouts"},
+    swatch: {label:"Material swatches",  say:"material / finish swatches"},
+    light:  {label:"Lighting variants",  say:"lighting / illumination variants"},
+    scale:  {label:"Scale reference",    say:"a scale reference"}
+  };
+
+  // LOCKS+ tokens (Duane's modifier vocabulary)
+  const LOCKS = {
+    HARDLOCK:{def:true},  PLOCK:{def:true},  APPLY:{def:false},
+    ISO:{def:false},      FIREFLIES:{def:false}, RESET:{def:false}
+  };
+
+  // sheet types: label, purpose note, default views/callouts, preservation emphasis
+  const TYPES = {
+    character:{
+      name:"Character Sheet",
+      note:"People, creatures, mascots, recurring cast, HAL modes — turnarounds, expressions, wardrobe, scale.",
+      src:"main",
+      views:["hero","front","threeq","side","rear","expr"],
+      calls:["detail","scale"],
+      keep:"facial identity, costume, silhouette, body proportions, and material details"
+    },
+    prop:{
+      name:"Prop Asset Sheet",
+      note:"Objects, furniture, tools, weapons, equipment, set dressing — hero, turnarounds, materials, details, scale.",
+      src:"main",
+      views:["hero","front","side","rear"],
+      calls:["detail","swatch","scale"],
+      keep:"proportions, silhouette, materials, surface finish, and construction logic"
+    },
+    envprop:{
+      name:"Environmental Prop Asset Sheet",
+      note:"Architectural / set objects — monument signs, doors, kiosks, reception desks, wall panels, columns.",
+      src:"main",
+      views:["hero","front","threeq","side","rear"],
+      calls:["detail","swatch","light","scale"],
+      keep:"overall proportions, materials, surface finish, construction logic, and lighting treatment"
+    },
+    signage:{
+      name:"Signage / Logo Sheet",
+      note:"Exterior signs, monument signs, LED signs, wayfinding, brand lockups — face graphics, type, illumination.",
+      src:"main",
+      views:["hero","front","threeq","side"],
+      calls:["detail","swatch","light"],
+      keep:"exact typography, face graphics, brand lockup, proportions, materials, and illumination treatment"
+    },
+    vehicle:{
+      name:"Vehicle Sheet",
+      note:"Cars, carts, mechs, aircraft, drones, pods, machines on wheels — front/side/rear/top, scale, details.",
+      src:"main",
+      views:["hero","front","side","rear","top"],
+      calls:["detail","swatch","scale"],
+      keep:"vehicle class, proportions, silhouette, materials, and mechanical detail logic"
+    },
+    device:{
+      name:"Device Sheet",
+      note:"Tech objects, HMI stations, cameras, scanners, reactor components, interface hardware.",
+      src:"main",
+      views:["hero","front","threeq","side"],
+      calls:["detail","light","scale"],
+      keep:"form, ports / buttons / interface layout, materials, and functional detail logic"
+    },
+    location:{
+      name:"Location / Set Sheet",
+      note:"Rooms, stages, facilities, interiors, stores, restaurants, soundstages — wide hero, plan, zones, palette.",
+      src:"main",
+      views:["hero","top","usage"],
+      calls:["swatch","light","detail"],
+      keep:"spatial layout, key zones, material palette, lighting, and set-dressing logic"
+    },
+    costume:{
+      name:"Costume / Wardrobe Sheet",
+      note:"Outfits, armor, uniforms, jackets, helmets, pins, accessories — front/back/side, layers, palette.",
+      src:"main",
+      views:["front","rear","side"],
+      calls:["detail","swatch"],
+      keep:"garment layers, cut, materials, color palette, and trim / accessory detail"
+    },
+    xplode:{
+      name:"xPLODE",
+      note:"Exploded assembly view — float the subject's components apart along believable axes while keeping its design identity locked. Products, vehicles, props, devices, machines, structures.",
+      src:"main",
+      views:[], calls:[],
+      keep:"design identity, silhouette, proportions, major forms, and recognizable details"
+    }
+  };
+
+  // subject-source phrasing
+  const SRC = {
+    main:"the obvious main subject",
+    fg:"the foreground object",
+    bg:"the background object",
+    left:"the object at the left of the frame",
+    center:"the object at the center of the frame",
+    right:"the object at the right of the frame",
+    refA:"the subject from Reference A",
+    refB:"the subject from Reference A",
+    custom:""
+  };
+  const FMT = {
+    wide:    {land:"a 16:9 landscape production sheet", port:"a 9:16 portrait production sheet"},
+    classic: {land:"a 4:3 landscape production sheet",  port:"a 3:4 portrait production sheet"},
+    five:    {land:"a 5:4 landscape production sheet",  port:"a 4:5 portrait production sheet"},
+    page:    {land:"an 11 × 8.5 landscape page layout", port:"an 8.5 × 11 portrait page layout"},
+    board:   {land:"a landscape concept-art board",     port:"a portrait concept-art board"}
+  };
+  const BG = {
+    neutral:"clean light neutral",
+    white:"clean white",
+    dark:"neutral dark",
+    paper:"warm neutral paper",
+    transparent:"transparent (isolated, no scenery)"
+  };
+
+  /* ---- xPLODE maps ---- */
+  const X_DETAIL = {
+    simple:  "6–10 major",
+    standard:"12–20",
+    detailed:"20–35"
+  };
+  const X_ANNOT = {
+    none:    "Use no labels, numbers, or callouts of any kind — clean exploded geometry only.",
+    numbers: "Use part numbers only — small, clean numerals on each component, no text labels.",
+    light:   "Use light callouts — clean part numbers plus simple leader lines and only short, readable labels where helpful. Avoid dense text.",
+    full:    "Use a full tech-sheet treatment — numbered parts with a tidy numbered parts list, simple leader lines, a title block, and brief material notes. Keep every label short and legible; no dense paragraphs."
+  };
+  const X_STYLE = {
+    duane:    "Match Duane Loose's vintage industrial-design exploded-view sketch language: black ink on white paper, loose confident linework, clear floating assemblies, numbered callouts, dashed alignment lines, sparse handwritten-style labels, light hatching, and a product-design concept-sheet feel. Keep it sketch-based — not rendered, not photoreal, not polished CAD.",
+    match:    "Match the supplied style reference's drawing language, line quality, page treatment, looseness/tightness, annotation style, and overall technical presentation.",
+    clean:    "Render as a clean industrial-design sketch — confident linework, light construction logic, minimal shading.",
+    patent:   "Render as a formal patent drawing — black line on white, even hatching for surfaces, numbered reference characters, plain technical presentation.",
+    lineart:  "Render as crisp technical line art — even-weight outlines, clean geometry, minimal tone.",
+    blueprint:"Render as a blueprint — white linework on blueprint-blue ground, technical and even.",
+    marker:   "Render as a marker concept render — confident ink linework with marker tone blocking and highlights.",
+    photoreal:"Render as a photoreal exploded product render — accurate materials, soft studio lighting, clean shadows on a neutral ground."
+  };
+  const X_FMT = {
+    "16x9":"a 16:9 landscape format",
+    "4x3":"a 4:3 landscape format",
+    "portrait":"a portrait format",
+    "square":"a square format"
+  };
+
+  /* ---------------- state ---------------- */
+  let type="signage";
+  let vSel=new Set(), cSel=new Set(), lSel=new Set();
+  let labels=true, claudeMode=false, orient="land";
+  let omode="standard", showTitle=false;
+  let xStyleRef=false;
+
+  // video-turnaround (body) options — default all on
+  const VOPTS = {
+    notext:{label:"No text · body only"},
+    edge:  {label:"Edge-to-edge"},
+    ortho: {label:"True ortho F/S/B"},
+    marks: {label:"Preserve markings"}
+  };
+  let voSel = new Set(Object.keys(VOPTS));
+
+  // expression-sheet emotions — fixed display order; canonical 8 on by default.
+  const EMOS = {
+    neutral:"Neutral", happy:"Happiness", sad:"Sadness", fear:"Fear",
+    disgust:"Disgust", anger:"Anger", surprise:"Surprise", contempt:"Contempt",
+    joy:"Joy", confusion:"Confusion", determination:"Determination", exhaustion:"Exhaustion"
+  };
+  const EMO_ORDER = Object.keys(EMOS);
+  let emoSel = new Set(["neutral","happy","sad","fear","disgust","anger","surprise","contempt"]);
+
+  // expression-sheet options — default all on
+  const EOPTS = {
+    labels:{label:"Emotion labels"},
+    grid:  {label:"Even grid · edge-to-edge"},
+    frame: {label:"Consistent framing"},
+    marks: {label:"Preserve markings"}
+  };
+  let eoSel = new Set(Object.keys(EOPTS));
+
+  /* ---------------- build sheet-type presets ---------------- */
+  const typesEl=$("#types"), typeNote=$("#type-note");
+  Object.entries(TYPES).forEach(([k,t])=>{
+    const b=document.createElement("button");
+    b.dataset.k=k; b.textContent=t.name.replace(/ Sheet$| Asset Sheet$/,"").replace(" / "," / ");
+    b.setAttribute("aria-pressed", k===type);
+    b.onclick=()=>selectType(k);
+    typesEl.appendChild(b);
+  });
+
+  /* ---------------- chip group renderers ---------------- */
+  function renderChips(host, dict, sel, lockStyle){
+    host.innerHTML="";
+    Object.entries(dict).forEach(([k,v])=>{
+      const c=document.createElement("div");
+      c.className="chip"+(lockStyle?" lock":"");
+      c.dataset.k=k;
+      c.textContent = v.label || k;
+      c.setAttribute("aria-pressed", sel.has(k));
+      c.onclick=()=>{ sel.has(k)?sel.delete(k):sel.add(k); c.setAttribute("aria-pressed", sel.has(k)); };
+      host.appendChild(c);
+    });
+  }
+  renderChips($("#views"), VIEWS, vSel, false);
+  renderChips($("#calls"), CALLS, cSel, false);
+  renderChips($("#vopts"), VOPTS, voSel, false);
+  renderChips($("#emos"),
+    Object.fromEntries(EMO_ORDER.map(k=>[k,{label:EMOS[k]}])), emoSel, false);
+  renderChips($("#eopts"), EOPTS, eoSel, false);
+  renderChips($("#locks"),
+    Object.fromEntries(Object.keys(LOCKS).map(k=>[k,{label:k}])), lSel, true);
+
+  /* ---------------- output-mode visibility ---------------- */
+  // Output mode only applies to Character. In Video Turnaround we hide every
+  // standard-sheet control the spec says to override.
+  function applyMode(){
+    const isChar = type==="character";
+    const isXplode = type==="xplode";
+    $("#grp-omode").style.display = isChar ? "" : "none";
+    if(!isChar){ omode="standard"; }
+    [...$("#omode").children].forEach(b=>b.setAttribute("aria-pressed", b.dataset.m===omode));
+    const body    = isChar && omode==="body";
+    const emotion = isChar && omode==="emotion";
+    const video   = body || emotion;
+    $("#video-body-ctrls").style.display = body ? "" : "none";
+    $("#emotion-ctrls").style.display    = emotion ? "" : "none";
+    $("#t-vtitle").style.display         = video ? "" : "none";
+    $("#xplode-ctrls").style.display     = isXplode ? "" : "none";
+    const hideStd = video || isXplode;
+    ["#grp-views","#grp-calls","#grp-orient","#grp-fmt","#grp-locks","#t-labels","#t-claude"]
+      .forEach(sel=>{ $(sel).style.display = hideStd ? "none" : ""; });
+  }
+
+  /* ---------------- select a sheet type (sets sensible defaults) ---------------- */
+  function selectType(k){
+    type=k; const t=TYPES[k];
+    [...typesEl.children].forEach(b=>b.setAttribute("aria-pressed", b.dataset.k===k));
+    typeNote.textContent=t.note;
+    vSel=new Set(t.views); cSel=new Set(t.calls);
+    $("#src").value=t.src;
+    renderChips($("#views"), VIEWS, vSel, false);
+    renderChips($("#calls"), CALLS, cSel, false);
+    omode="standard";
+    applyMode();
+    // typography lock is implicit in signage via the prompt body; keep LOCKS+ at defaults
+  }
+
+  // seed locks defaults + initial type
+  Object.entries(LOCKS).forEach(([k,v])=>{ if(v.def) lSel.add(k); });
+  renderChips($("#locks"),
+    Object.fromEntries(Object.keys(LOCKS).map(k=>[k,{label:k}])), lSel, true);
+  selectType(type);
+
+  /* ---------------- toggles ---------------- */
+  $("#orient").addEventListener("click",e=>{
+    const b=e.target.closest("button"); if(!b) return;
+    orient=b.dataset.o;
+    [...e.currentTarget.querySelectorAll("button")].forEach(x=>x.setAttribute("aria-pressed", x===b));
+  });
+  $("#omode").addEventListener("click",e=>{
+    const b=e.target.closest("button"); if(!b) return;
+    omode=b.dataset.m; applyMode();
+  });
+  $("#t-vtitle").addEventListener("click",function(){ showTitle=!showTitle; this.classList.toggle("on",showTitle); });
+
+  /* ---- xPLODE controls ---- */
+  const xStyleSel=$("#x-style");
+  function syncXduane(){ $("#x-duane").classList.toggle("on", xStyleSel.value==="duane"); }
+  xStyleSel.addEventListener("change", syncXduane);
+  $("#x-duane").addEventListener("click",()=>{
+    xStyleSel.value="duane";
+    $("#x-detail").value="standard";
+    $("#x-annot").value="light";
+    $("#x-fmt").value="4x3";
+    syncXduane();
+  });
+  $("#x-styleref").addEventListener("click",function(){
+    xStyleRef=!xStyleRef; this.classList.toggle("on",xStyleRef);
+    // honor the spec's conditional default without overriding a manual pick
+    if(xStyleRef && xStyleSel.value==="clean"){ xStyleSel.value="match"; }
+    else if(!xStyleRef && xStyleSel.value==="match"){ xStyleSel.value="clean"; }
+    syncXduane();
+  });
+  syncXduane();
+  $("#t-labels").addEventListener("click",function(){ labels=!labels; this.classList.toggle("on",labels); });
+  $("#t-claude").addEventListener("click",function(){ claudeMode=!claudeMode; this.classList.toggle("on",claudeMode); });
+
+  /* ---------------- helpers ---------------- */
+  function listPhrase(arr){
+    if(arr.length===0) return "";
+    if(arr.length===1) return arr[0];
+    if(arr.length===2) return arr[0]+" and "+arr[1];
+    return arr.slice(0,-1).join(", ")+", and "+arr[arr.length-1];
+  }
+  function subjectDesc(){
+    const note=$("#note").value.trim(), src=$("#src").value;
+    if(src==="custom") return note || "the main subject in the reference";
+    let base=SRC[src]||"the main subject";
+    return note ? base+" — "+note : base;
+  }
+  function viewClause(){
+    const keys=Object.keys(VIEWS).filter(k=>vSel.has(k));
+    if(keys.length===0) return "one clean hero view";
+    const hasHero=keys.includes("hero");
+    const heroSay = hasHero ? VIEWS.hero.say : "";
+    const rest=keys.filter(k=>k!=="hero").map(k=>VIEWS[k].say);
+    if(hasHero && rest.length) return heroSay+", plus smaller "+listPhrase(rest)+" views";
+    if(hasHero) return heroSay;
+    return listPhrase(rest)+" views";
+  }
+  function callClause(){
+    const keys=Object.keys(CALLS).filter(k=>cSel.has(k));
+    return keys.length ? listPhrase(keys.map(k=>CALLS[k].say)) : "";
+  }
+  function lockStr(){
+    return Object.keys(LOCKS).filter(k=>lSel.has(k)).join(" ");
+  }
+
+  /* ---------------- copy + plate ---------------- */
+  function copy(text,btn){
+    const done=()=>{if(btn){const t=btn.textContent;btn.textContent="Copied";btn.classList.add("done");setTimeout(()=>{btn.textContent=t;btn.classList.remove("done");},1100);}};
+    if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(done).catch(()=>fb(text,done));}else fb(text,done);
+  }
+  function fb(text,cb){const ta=document.createElement("textarea");ta.value=text;ta.style.position="fixed";ta.style.opacity="0";document.body.appendChild(ta);ta.select();try{document.execCommand("copy");}catch(e){}document.body.removeChild(ta);if(cb)cb();}
+  function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+
+  function plate(container, body, badge, stamp){
+    container.innerHTML="";
+    const el=document.createElement("article"); el.className="plate";
+    const full = body + (badge?("\n\nLOCKS+: "+badge):"");
+    el.innerHTML = `<pre class="prompt">${esc(body)}</pre>`
+      + (badge?`<div class="hardlock">${esc(badge)}</div>`:"")
+      + `<div class="foot"><button class="copy">Copy prompt</button><span class="stamp">${esc(stamp)}</span></div>`;
+    el.querySelector(".copy").onclick=function(){copy(full,this);};
+    container.appendChild(el);
+  }
+
+  /* ---------------- build ---------------- */
+  $("#go").onclick=()=>{
+    const t=TYPES[type];
+    const name=$("#name").value.trim();
+    const subj=subjectDesc();
+
+    /* ===== xPLODE — EXPLODED ASSEMBLY VIEW ===== */
+    if(type==="xplode"){
+      const detail=$("#x-detail").value, annot=$("#x-annot").value;
+      const smode=$("#x-style").value, xfmt=$("#x-fmt").value;
+      const titleBlock=$("#x-title").value.trim(), xnotes=$("#x-notes").value.trim();
+      const fmtPhrase=X_FMT[xfmt];
+
+      const head = "Create an exploded technical assembly view from the uploaded SUBJECT IMAGE (IMAGE 1).";
+
+      const subjectLock = `SUBJECT LOCK:\nUse ${subj} as the locked master subject (IMAGE 1). Preserve its design identity, silhouette, proportions, major forms, surface details, recognizable features, and visual logic. Do not redesign it or replace it with a generic version.`;
+
+      const styleLock = xStyleRef
+        ? "STYLE LOCK:\nIMAGE 2 is the style reference. Match its line quality, looseness/tightness, callout treatment, paper/background treatment, and overall presentation language. The style reference controls presentation only — it must not change the subject's design or identity."
+        : "STYLE LOCK:\nNo style reference is supplied. Follow the style direction below for presentation, and keep the subject's design and identity fully intact.";
+
+      let explode = `EXPLODED ASSEMBLY INSTRUCTIONS:\nSeparate the subject into ${X_DETAIL[detail]} logical components. Float the components apart along believable assembly axes so the viewer can read how the object comes apart and goes back together. Keep parts spatially organized and aligned with the original structure — imply assembly, never random scatter.`;
+      if(xnotes) explode += ` ${xnotes}.`;
+
+      const annotation = `ANNOTATION INSTRUCTIONS:\n${X_ANNOT[annot]}`;
+
+      let comp = `COMPOSITION INSTRUCTIONS:\nLay out a clean technical concept sheet in ${fmtPhrase}. Keep the exploded assembly centered, readable, and visually balanced on a light/white background.`;
+      comp += titleBlock ? ` Include a small, clean title block reading "${titleBlock}".` : " No title block unless noted.";
+      comp += `\nStyle direction: ${X_STYLE[smode]}`;
+
+      const forbidden = "FORBIDDEN / NEGATIVE:\nDo not redesign the subject or change its identity. Do not replace it with a generic object. Do not modernize or restyle it unless requested. Do not invent unrelated parts. Do not over-render a sketch style. Do not bury the drawing in text, let labels dominate, or produce messy/gibberish text — keep labels short and legible.";
+
+      const body=[head,"",subjectLock,"",styleLock,"",explode,"",annotation,"",comp,"",forbidden].join("\n");
+      plate($("#out"), body, "HARDLOCK PLOCK", "ID2AI · SHEETS4AI · xPLODE");
+      return;
+    }
+
+    /* ===== VIDEO · BODY TURNAROUND (overrides standard character-sheet output) ===== */
+    if(type==="character" && omode==="body"){
+      const noText = voSel.has("notext");
+      const edge   = voSel.has("edge");
+      const ortho  = voSel.has("ortho");
+      const marks  = voSel.has("marks");
+      const titleOn = showTitle && !!name;
+
+      const marksKeep = marks ? ", logos/patches/markings that are naturally part of the costume" : "";
+      const f = ortho ? "true orthographic FRONT view" : "front view";
+      const s = ortho ? "true orthographic SIDE view"  : "side view";
+      const b = ortho ? "true orthographic BACK view"  : "back view";
+
+      let p = "Create a clean video-reference character turnaround sheet from the uploaded reference image.\n\n";
+      p += `Use ${subj} as the locked master subject. Preserve the subject's facial identity, body proportions, costume, silhouette, materials, color palette, surface details${marksKeep}, and overall visual treatment from the reference. Do not redesign the subject.\n\n`;
+
+      let pres = "Present only body views on a clean light neutral background in a 16:9 landscape layout.";
+      if(titleOn){
+        pres += ` Render one small, clean title reading "${name}" at the top of the sheet — the only text permitted aside from costume markings.`;
+        if(noText) pres += " No labels, no callouts, no scale reference, no boxes, no extra graphics, no scenery, and no other text of any kind except text/logos that are physically part of the character costume or gear.";
+      } else if(noText){
+        pres += " No header, no title, no labels, no callouts, no scale reference, no boxes, no extra graphics, no scenery, and no text of any kind except text/logos that are physically part of the character costume or gear.";
+      }
+      p += pres + "\n\n";
+
+      p += "Generate exactly 4 full-body views arranged left to right:\n";
+      p += `1. 3/4 view\n2. ${f}\n3. ${s}\n4. ${b}\n\n`;
+
+      let constr = "Each figure must be fully visible from head to toe, consistently scaled, evenly lit, and isolated cleanly on the background.";
+      if(edge)  constr += " Keep the views edge-to-edge across the frame with minimal margins.";
+      if(ortho) constr += " Use a neutral upright pose for the orthographic views.";
+      p += constr + "\n\n";
+
+      const forb = ["unrelated people","scenery","extra props","new logos","altered markings"];
+      if(!titleOn) forb.push("labels","title text","callout text","scale graphics");
+      else         forb.push("extra labels","callout text","scale graphics");
+      forb.push("random design changes","scale drift","material drift","style drift");
+      p += "Forbidden: Do not add " + forb.join(", ") + ".";
+
+      plate($("#out"), p, "HARDLOCK", "ID2AI · SHEETS4AI · Body");
+      return;
+    }
+
+    /* ===== VIDEO · EMOTION EXPRESSION SHEET ===== */
+    if(type==="character" && omode==="emotion"){
+      const labelsOn = eoSel.has("labels");
+      const gridOn   = eoSel.has("grid");
+      const frameOn  = eoSel.has("frame");
+      const marks    = eoSel.has("marks");
+      const titleOn  = showTitle && !!name;
+
+      let picked = EMO_ORDER.filter(k=>emoSel.has(k));
+      if(picked.length===0) picked=["neutral"];
+      const N = picked.length;
+
+      const marksKeep = marks ? ", glasses, logos/markings that are naturally part of the costume" : ", glasses";
+
+      let p = "Create a clean video-reference facial-expression sheet from the uploaded reference image.\n\n";
+      p += `Use ${subj} as the locked master subject. Preserve the subject's facial identity, head and hair shape, facial features${marksKeep}, linework / render treatment, costume collar, color palette, surface details, and overall visual treatment from the reference. Do not redesign the subject.\n\n`;
+
+      let pres = `Present a grid of head-and-shoulders portraits of the SAME character on a clean light neutral background in a 16:9 landscape layout. Generate exactly ${N} expressions`;
+      if(frameOn) pres += ", with identical framing, head angle, scale, and lighting in every cell";
+      pres += gridOn
+        ? ", arranged in an even edge-to-edge grid (4 across), reading left to right then top to bottom:"
+        : ", arranged in a grid (4 across), reading left to right then top to bottom:";
+      p += pres + "\n";
+      picked.forEach((k,i)=>{ p += `${i+1}. ${EMOS[k]}\n`; });
+      p += "\n";
+
+      p += "Only the facial expression changes between cells — same person, same crop, same render style throughout.";
+      if(titleOn) p += ` Add one small, clean title reading "${name}" at the top of the sheet.`;
+      p += "\n\n";
+
+      p += labelsOn
+        ? "Caption each portrait with its emotion name in a small, clean label beneath it."
+        : "No captions or labels of any kind — portraits only.";
+      p += "\n\n";
+
+      const forb = ["unrelated people","scenery","extra props","new logos","altered markings",
+                    "full-body or figure views","random design changes","identity drift","material drift","style drift"];
+      p += "Forbidden: Do not add " + forb.join(", ")
+         + ". Keep it the same person in every cell — only the expression changes; never let a cell drift into a different individual.";
+
+      plate($("#out"), p, "HARDLOCK", "ID2AI · SHEETS4AI · Emotion");
+      return;
+    }
+
+    const views=viewClause();
+    const calls=callClause();
+    const fmt=FMT[$("#fmt").value][orient];
+    const bg=BG[$("#bg").value];
+    const src=$("#src").value;
+    const locks=lockStr();
+    const labelLine = labels
+      ? "Use simple, clean, readable labels only."
+      : "No text or labels of any kind — isolated forms only.";
+    const sigEmphasis = type==="signage"
+      ? " Keep all sign text, logos, and typography exactly as in the reference — no substitutions, no invented copy, no font drift."
+      : "";
+
+    let body;
+
+    if(claudeMode){
+      // ---- Claude mode: structured spec ----
+      const L=[];
+      L.push("PRODUCTION SHEET SPEC — "+(name? name.toUpperCase()+"  ·  ":"")+t.name.toUpperCase());
+      L.push("");
+      L.push("Source        : uploaded reference image");
+      if(name) L.push("Asset name    : "+name);
+      L.push("Subject (lock): "+subj);
+      L.push("Purpose       : "+t.note);
+      L.push("Views         : "+(Object.keys(VIEWS).filter(k=>vSel.has(k)).map(k=>VIEWS[k].label).join(", ")||"hero only"));
+      L.push("Callouts      : "+(Object.keys(CALLS).filter(k=>cSel.has(k)).map(k=>CALLS[k].label).join(", ")||"none"));
+      L.push("Layout        : "+fmt+" · "+bg+" background");
+      L.push("Labels        : "+(labels?"clean readable labels":"none — isolated forms"));
+      L.push("Preserve      : "+t.keep+(type==="signage"?"; all sign text and typography verbatim":"")+".");
+      L.push("Forbidden     : redesign, extra people, environment clutter, extra props, invented logos, incorrect text, scale drift, material drift, style drift.");
+      if(src==="refB") L.push("Treatment     : apply the visual treatment / style of Reference B; do not let it alter the subject's design.");
+      if(locks) L.push("Locks+        : "+locks);
+      body=L.join("\n");
+      plate($("#out"), body, "", "ID2AI · SHEETS4AI");
+      return;
+    }
+
+    // ---- image-generation prompt ----
+    body = `Create a professional ${t.name} from the uploaded reference image.\n\n`
+         + `Use ${subj} as the locked master subject. Preserve its ${t.keep}, plus its identity, color palette, and overall visual treatment from the reference. Do not redesign it.${sigEmphasis}\n\n`
+         + `Present the subject as ${fmt} on a ${bg} background. Include: ${views}.`
+         + (calls ? ` Add ${calls} where appropriate.` : "")
+         + ` ${labelLine}`;
+
+    if(name && labels){
+      body += ` Add a small, clean header titling the sheet "${name}".`;
+    }
+
+    if(src==="refB"){
+      body += `\n\nApply the visual treatment / rendering style of Reference B to the sheet, but do not let it change the subject's design, proportions, or graphics.`;
+    }
+
+    body += `\n\nForbidden: do not add unrelated people, scenery, or extra props; no new or altered logos; no incorrect text; no random design changes; no scale drift, material drift, or style drift. Build the whole sheet from the single reference subject only.`;
+
+    plate($("#out"), body, locks, "ID2AI · SHEETS4AI");
+  };
+})();
+</script>
+</body>
+</html>
