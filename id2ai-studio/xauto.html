@@ -1,0 +1,748 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>xAUTO · ID2AI Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@600;700&family=Inter:wght@400;500&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0B0E14; --panel:#141A24; --panel-2:#1B232F; --line:#2A3645;
+    --blueprint:#4FC3E8; --accent:#FF2EA6; --amber:#E8A33A;
+    --paper:#F4F1E8; --graphite:#1c1f24; --txt:#D7E0EA; --txt-dim:#7E8B9C;
+    --disp:'Saira Condensed','Arial Narrow',sans-serif;
+    --body:'Inter',system-ui,sans-serif; --mono:'Space Mono',ui-monospace,monospace;
+  }
+  *{box-sizing:border-box} html,body{margin:0}
+  body{background:radial-gradient(1000px 500px at 50% -10%, #1b1424 0%, transparent 60%), var(--ink);
+       color:var(--txt);font-family:var(--body);line-height:1.5;min-height:100vh;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:700px;margin:0 auto;padding:0 18px 90px}
+
+  .topbar{padding:18px 0 0}
+  .back{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--txt-dim);text-decoration:none}
+  .back:hover{color:var(--accent)}
+  .back .a{display:inline-block;margin-right:5px;transition:transform .14s}
+  .back:hover .a{transform:translateX(-3px)}
+  header{display:flex;align-items:baseline;gap:14px;padding:12px 0 6px}
+  .mark{font-family:var(--disp);font-weight:700;letter-spacing:.04em;font-size:28px;line-height:1;color:var(--accent)}
+  .mark .x{color:#FFFFFF}
+  .tagline{font-family:var(--mono);font-size:11px;color:var(--txt-dim);text-transform:uppercase;letter-spacing:.16em}
+
+  .intro{font-size:13.5px;color:var(--txt-dim);margin:18px 0 4px;line-height:1.5}
+
+  .legend{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}
+  .leg{flex:1 1 210px;background:var(--panel);border:1px solid var(--line);border-radius:5px;padding:11px 13px}
+  .leg .num{font-family:var(--disp);font-weight:700;font-size:14px;color:var(--ink);background:var(--accent);
+            width:24px;height:24px;display:inline-flex;align-items:center;justify-content:center;border-radius:3px;margin-bottom:7px}
+  .leg .num.blue{background:var(--blueprint)}
+  .leg .t{font-family:var(--mono);font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--txt)}
+  .leg .d{font-size:12.5px;color:var(--txt-dim);margin-top:3px}
+
+  .card{background:linear-gradient(180deg,rgba(20,26,36,.7),rgba(20,26,36,.35));border:1px solid var(--line);border-radius:6px;padding:18px;margin-top:14px}
+  .lbl{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--blueprint);margin-bottom:8px}
+  .opt{color:var(--txt-dim);letter-spacing:0;text-transform:none}
+  input[type=text], select, textarea{width:100%;background:var(--panel);color:var(--txt);border:1px solid var(--line);border-radius:4px;font-family:var(--body);font-size:14px;padding:11px}
+  textarea{font-family:var(--mono);font-size:13px;line-height:1.55;resize:vertical;min-height:70px}
+  input[type=text]:focus, select:focus, textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 2px rgba(255,46,166,.18)}
+  select{appearance:none;-webkit-appearance:none;cursor:pointer;padding-right:34px;
+         background-image:linear-gradient(45deg,transparent 50%,var(--txt-dim) 50%),linear-gradient(135deg,var(--txt-dim) 50%,transparent 50%);
+         background-position:calc(100% - 17px) 20px,calc(100% - 12px) 20px;background-size:5px 5px,5px 5px;background-repeat:no-repeat}
+  ::placeholder{color:#566270}
+  .grp{margin-top:16px} .grp:first-child{margin-top:0}
+  .row2{display:flex;gap:12px} .row2 .grp{flex:1;margin-top:0}
+
+  .presets{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+  .presets button{background:var(--panel);border:1px solid var(--line);color:var(--txt-dim);
+                  font-family:var(--mono);font-size:10.5px;letter-spacing:.03em;padding:11px 5px;border-radius:4px;cursor:pointer;text-transform:uppercase;transition:.12s;line-height:1.25}
+  .presets button:hover{color:var(--txt);border-color:#3a4858}
+  .presets button[aria-pressed=true]{background:rgba(255,46,166,.12);border-color:var(--accent);color:var(--accent)}
+
+  .seg2{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+  .seg2 button{background:var(--panel);border:1px solid var(--line);color:var(--txt-dim);
+               font-family:var(--mono);font-size:11px;letter-spacing:.05em;padding:10px 6px;border-radius:4px;cursor:pointer;text-transform:uppercase;transition:.12s;line-height:1.25}
+  .seg2 button:hover{color:var(--txt);border-color:#3a4858}
+  .seg2 button[aria-pressed=true]{background:rgba(255,46,166,.12);border-color:var(--accent);color:var(--accent)}
+  .seg2.three{grid-template-columns:1fr 1fr 1fr}
+  .seg2.three button{font-size:10.5px;letter-spacing:.02em;padding:9px 4px}
+
+  .chips{display:flex;flex-wrap:wrap;gap:6px}
+  .chip{background:var(--panel);border:1px solid var(--line);color:var(--txt-dim);
+        font-family:var(--mono);font-size:11px;letter-spacing:.03em;padding:8px 11px;border-radius:4px;cursor:pointer;transition:.12s;user-select:none}
+  .chip:hover{color:var(--txt);border-color:#3a4858}
+  .chip[aria-pressed=true]{background:rgba(79,195,232,.12);border-color:var(--blueprint);color:var(--blueprint)}
+  .chip.lock[aria-pressed=true]{background:rgba(255,46,166,.12);border-color:var(--accent);color:var(--accent)}
+
+  .toggle{display:flex;align-items:flex-start;gap:11px;cursor:pointer;user-select:none}
+  .toggle .track{flex:0 0 auto;width:42px;height:22px;background:var(--panel);border:1px solid var(--line);border-radius:12px;position:relative;transition:.15s;margin-top:1px}
+  .toggle .knob{position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:var(--txt-dim);transition:.15s}
+  .toggle.on .track{background:rgba(255,46,166,.16);border-color:var(--accent)}
+  .toggle.on .knob{transform:translateX(20px);background:var(--accent)}
+  .toggle .txt{font-size:13.5px;color:var(--txt);line-height:1.45}
+  .toggle .txt small{display:block;color:var(--txt-dim);font-size:12px;margin-top:2px}
+
+  /* driver sub-panel */
+  .subpanel{border:1px solid var(--line);border-left:2px solid var(--accent);border-radius:5px;
+            background:rgba(255,46,166,.03);padding:16px;margin-top:14px}
+  .subpanel .sub-head{font-family:var(--disp);font-weight:600;font-size:16px;letter-spacing:.04em;color:var(--accent);text-transform:uppercase;margin-bottom:4px}
+  .subpanel .sub-note{font-family:var(--mono);font-size:11px;color:var(--txt-dim);line-height:1.55;margin-bottom:4px}
+  .warn{font-family:var(--mono);font-size:11px;color:var(--amber);line-height:1.5;margin-top:8px;display:none}
+  .warn.show{display:block}
+
+  .go{width:100%;height:46px;margin-top:18px;font-family:var(--disp);font-weight:700;font-size:18px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink);background:var(--accent);border:none;border-radius:4px;cursor:pointer;transition:filter .12s,transform .04s}
+  .go:hover{filter:brightness(1.08)} .go:active{transform:translateY(1px)}
+
+  .res-head{display:flex;align-items:center;gap:12px;margin:24px 0 12px}
+  .res-head h2{font-family:var(--disp);font-weight:600;font-size:18px;letter-spacing:.04em;margin:0;color:var(--paper)}
+  .empty{border:1px dashed var(--line);border-radius:5px;padding:28px 22px;text-align:center;color:var(--txt-dim);font-family:var(--mono);font-size:13px;line-height:1.7}
+
+  .plate{background:var(--paper);color:var(--graphite);border:1px solid #d8d3c4;border-radius:5px;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,.3);animation:in .24s ease both}
+  @keyframes in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .prompt{font-family:var(--mono);font-size:12.5px;line-height:1.62;color:var(--graphite);white-space:pre-wrap;word-break:break-word;margin:0;padding:15px 15px 4px}
+  .hardlock{display:inline-block;font-family:var(--mono);font-weight:700;font-size:12px;letter-spacing:.1em;background:var(--graphite);color:var(--accent);padding:5px 10px;border-radius:2px;margin:0 15px 14px}
+  .foot{display:flex;align-items:center;gap:8px;background:#ece8da;border-top:1px solid #d8d3c4;padding:8px 12px}
+  .copy{font-family:var(--mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;background:var(--graphite);color:var(--paper);border:none;padding:7px 13px;border-radius:2px;cursor:pointer}
+  .copy:hover{background:#000} .copy.done{background:var(--accent);color:var(--graphite)}
+  .foot .stamp{margin-left:auto;font-family:var(--mono);font-size:10px;color:#8a8472}
+
+  .hint{font-family:var(--mono);font-size:11px;color:var(--txt-dim);margin-top:14px;line-height:1.6}
+  .hint b{color:var(--txt-dim)}
+  .site-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+             margin-top:36px;padding-top:16px;border-top:1px solid var(--line);
+             font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--txt-dim)}
+  .site-foot a{color:var(--blueprint);text-decoration:none}
+  .site-foot a:hover{color:var(--accent);text-decoration:underline}
+  .site-links{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .site-links a:not(:first-child){border-left:1px solid var(--line);padding-left:12px}
+  @media (max-width:480px){.presets{grid-template-columns:repeat(2,1fr)}}
+  @media (prefers-reduced-motion:reduce){.plate{animation:none}*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar"><a class="back" href="index.html"><span class="a">&larr;</span>ID2AI Studio</a></div>
+
+  <header>
+    <div class="mark"><span class="x">x</span>AUTO</div>
+    <div class="tagline">Vehicle · Driver Module</div>
+  </header>
+
+  <section class="panel">
+    <p class="intro">Lock an uploaded vehicle as the master design, then optionally drop in a driver, pilot, rider, mechanic, or scale figure from a second character reference. Both stay locked — pose and placement move, the designs never drift, and the vehicle is never resized or redesigned to fit the figure.</p>
+
+    <div class="legend">
+      <div class="leg"><span class="num">1</span><div class="t">Vehicle reference</div><div class="d">The locked master. Every view and render is built from this design — not reinvented.</div></div>
+      <div class="leg"><span class="num blue">2</span><div class="t">Driver reference</div><div class="d">Optional. The locked character — face, body, wardrobe, silhouette held true.</div></div>
+    </div>
+
+    <div class="card">
+
+      <!-- ===== VEHICLE ===== -->
+      <div class="grp">
+        <div class="lbl">Vehicle name <span class="opt">titles the sheet + names the file</span></div>
+        <input id="vname" type="text" placeholder="e.g. EM Foundry Scout · Vane Skiff · MAD-3R Marauder" />
+      </div>
+
+      <div class="grp">
+        <div class="lbl">Vehicle note <span class="opt">short ID — pins the model to the right design</span></div>
+        <input id="vnote" type="text" placeholder="e.g. four-wheel desert scout, exposed running gear, single canopy" />
+      </div>
+
+      <div class="grp">
+        <div class="lbl">Output mode</div>
+        <div class="presets" id="omode"></div>
+        <div class="sub-note" id="omode-note" style="margin-top:9px"></div>
+      </div>
+
+      <div class="row2 grp">
+        <div class="grp">
+          <div class="lbl">Style mode</div>
+          <select id="style"></select>
+        </div>
+        <div class="grp">
+          <div class="lbl">Background</div>
+          <select id="bg">
+            <option value="neutral">Clean light neutral</option>
+            <option value="white">Clean white</option>
+            <option value="dark">Neutral dark</option>
+            <option value="paper">Warm neutral paper</option>
+            <option value="studio">Studio sweep</option>
+            <option value="context">In-context / scene</option>
+            <option value="transparent">Transparent / isolated PNG</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="grp">
+        <div class="lbl">Aspect / format</div>
+        <select id="fmt">
+          <option value="wide">16:9 / 9:16</option>
+          <option value="classic">4:3 / 3:4</option>
+          <option value="five">5:4 / 4:5</option>
+          <option value="page">8.5 × 11 page</option>
+          <option value="square">Square</option>
+        </select>
+      </div>
+
+      <!-- ===== SHOW DRIVER ===== -->
+      <div class="toggle grp" id="t-driver">
+        <div class="track"><div class="knob"></div></div>
+        <div class="txt">Show driver / scale figure
+          <small>Off = vehicle only. On = include a driver, pilot, rider, mechanic, or scale figure from a second reference (Image 2).</small>
+        </div>
+      </div>
+
+      <!-- ===== DRIVER PANEL ===== -->
+      <div class="subpanel" id="driver-panel" style="display:none">
+        <div class="sub-head">Driver / Scale Figure Settings</div>
+        <div class="sub-note">The uploaded driver reference (Image 2) is the locked master character. Identity, face, body proportions, wardrobe, silhouette, color palette, and visual style are preserved unless you explicitly allow a change.</div>
+
+        <div class="grp">
+          <div class="lbl">Reference type</div>
+          <select id="dref">
+            <option value="char">Character sheet</option>
+            <option value="head">Headshot sheet</option>
+            <option value="body">Full-body reference</option>
+            <option value="wardrobe">Wardrobe reference</option>
+            <option value="pose">Pose reference</option>
+            <option value="scale">Scale reference</option>
+            <option value="custom">Custom / other</option>
+          </select>
+        </div>
+
+        <div class="grp">
+          <div class="lbl">Driver position</div>
+          <div class="presets three" id="pos"></div>
+        </div>
+
+        <!-- placement (swaps by position) -->
+        <div class="grp" id="grp-place" style="display:none">
+          <div class="lbl" id="place-lbl">Placement</div>
+          <div class="seg2 three" id="place"></div>
+        </div>
+
+        <!-- cockpit poses -->
+        <div class="grp" id="grp-cockpit" style="display:none">
+          <div class="lbl">Cockpit pose <span class="opt">combine as needed</span></div>
+          <div class="chips" id="cockpit"></div>
+        </div>
+
+        <!-- kneeling -->
+        <div class="grp" id="grp-kneel" style="display:none">
+          <div class="lbl">Kneeling location</div>
+          <div class="seg2 three" id="kneel"></div>
+          <div class="chips" id="kneel-opts" style="margin-top:8px"></div>
+        </div>
+
+        <!-- default-from-ref note -->
+        <div class="sub-note" id="defref-note" style="display:none"></div>
+
+        <div class="grp">
+          <div class="lbl">Driver pose / action prompt <span class="opt">optional — appended verbatim</span></div>
+          <textarea id="dprompt" placeholder="Example: Driver stands on the left side of the vehicle with one hand resting on the roofline, looking toward camera. Preserve the uploaded driver character sheet exactly."></textarea>
+          <div class="warn" id="dwarn">⚠ Custom driver prompt overrides the selected driver position buttons.</div>
+        </div>
+
+        <div class="row2 grp">
+          <div class="grp">
+            <div class="lbl">Driver scale</div>
+            <select id="dscale">
+              <option value="real">Realistic human scale</option>
+              <option value="hero">Slightly heroic scale</option>
+              <option value="small">Small scale figure</option>
+              <option value="board">Design-board scale reference</option>
+              <option value="matchref">Match uploaded reference</option>
+              <option value="custom">Custom scale note</option>
+            </select>
+          </div>
+          <div class="grp">
+            <div class="lbl">Style behavior</div>
+            <select id="dstyle">
+              <option value="hybrid">Hybrid — keep identity, match scene</option>
+              <option value="vehsketch">Match vehicle sketch style</option>
+              <option value="preserve">Preserve driver reference style</option>
+              <option value="render">Match selected render style</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grp" id="grp-scalenote" style="display:none">
+          <div class="lbl">Custom scale note</div>
+          <input id="dscalenote" type="text" placeholder="e.g. read the driver at roughly shoulder-height to the canopy sill" />
+        </div>
+
+        <!-- conditional integration toggles -->
+        <div class="toggle grp" id="t-repeat" style="display:none">
+          <div class="track"><div class="knob"></div></div>
+          <div class="txt">Repeat driver in each view
+            <small>Orthographic sheets show the driver once by default. On = place the scale figure in every selected view.</small>
+          </div>
+        </div>
+
+        <div class="toggle grp" id="t-simple" style="display:none">
+          <div class="track"><div class="knob"></div></div>
+          <div class="txt">Simplified technical driver
+            <small>Technical / blueprint only. On = reduce the figure to a clean scale silhouette. Off = preserve full character identity.</small>
+          </div>
+        </div>
+
+        <!-- driver locks -->
+        <div class="grp">
+          <div class="lbl">Locks <span class="opt">enforced in the prompt</span></div>
+          <div class="chips" id="locks"></div>
+        </div>
+      </div>
+
+      <!-- ===== GLOBAL TOGGLES ===== -->
+      <div class="toggle grp" id="t-claude">
+        <div class="track"><div class="knob"></div></div>
+        <div class="txt">Claude mode
+          <small>Output a plain structured spec instead of an image-generation prompt — for writing, planning, or feeding another system.</small>
+        </div>
+      </div>
+
+      <button class="go" id="go">Build locked prompt</button>
+    </div>
+
+    <div class="res-head"><h2>Locked prompt</h2></div>
+    <div id="out"><div class="empty">Name the vehicle and pick an output mode, then build.<br>Upload the vehicle as image 1 — and the driver as image 2 if Show Driver is on.</div></div>
+    <div class="hint"><b>Use:</b> upload the vehicle reference as image 1 (and the driver reference as image 2), paste this prompt, generate. The vehicle is held as the locked master; the driver is locked to its own reference and only moves by the settings above.</div>
+  </section>
+
+  <footer class="site-foot">
+    <span>ID2AI · Studio — an instrument by Duane Loose</span>
+    <nav class="site-links">
+      <a href="https://dloose.com" target="_blank" rel="noopener">dloose.com</a>
+      <a href="https://www.linkedin.com/in/dloosedesign/" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="https://x.com/DLooseDesign" target="_blank" rel="noopener">@DLooseDesign</a>
+    </nav>
+  </footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  const $=s=>document.querySelector(s);
+
+  /* =====================================================================
+     DECLARATIVE TAXONOMY — extend these objects to grow the tool.
+  ===================================================================== */
+
+  // vehicle output modes
+  const OMODE = {
+    ortho:    {label:"Orthographic", say:"a clean orthographic view sheet of the vehicle", note:"Front / side / rear / top elevations as a flat technical sheet. Driver appears as a scale figure beside one view unless you repeat it."},
+    persp:    {label:"Perspective",  say:"a perspective view sheet of the vehicle", note:"One or more dramatic 3/4 perspective views. Driver scale and identity stay consistent across panels."},
+    render:   {label:"Style render", say:"a styled render sheet of the vehicle", note:"A finished render in the selected style mode — hero presentation of the locked design."},
+    single:   {label:"Single image", say:"a single finished image of the vehicle", note:"One framed image. Camera, background, and driver placement per the settings below."},
+    prod:     {label:"Production sheet", say:"a production sheet of the vehicle", note:"Hero plus supporting views and detail callouts — a repeatable reference sheet."},
+    running:  {label:"Running gear", say:"a running-gear / exposed-mechanical view of the vehicle", note:"Exposed mechanicals, drivetrain, suspension. Driver may stand, kneel, or sit in the open cockpit to inspect."}
+  };
+
+  // style modes
+  const STYLE = {
+    sketch:   {label:"Sketch",                say:"a loose, confident industrial-design concept sketch — clean linework, light construction logic, minimal shading", driver:"render the driver drawn in the same sketch language as the vehicle"},
+    cinematic:{label:"Cinematic",             say:"a cinematic shot with dramatic lighting and a filmic color grade", driver:"match the cinematic lighting and grade on the driver while fully preserving identity"},
+    beauty:   {label:"Product beauty shot",   say:"a clean product beauty-shot studio render — accurate materials, soft studio lighting, crisp shadows", driver:"integrate the driver cleanly without distracting from the vehicle"},
+    technical:{label:"Technical / blueprint", say:"a technical / blueprint drawing — even-weight line, measured and orderly", driver:"render the driver as a simplified scale figure only if Simplified technical driver is on; otherwise keep full character detail"},
+    marker:   {label:"Industrial marker",     say:"an industrial-design marker render — confident ink linework with marker tone blocking and highlights", driver:"render the driver marker-rendered in the same board style"}
+  };
+
+  // driver positions
+  const POS = {
+    stand:   {label:"Standing",      place:"sides"},
+    cockpit: {label:"In cockpit",    place:null},
+    kneel:   {label:"Kneeling",      place:null},
+    front:   {label:"In front",      place:"front"},
+    behind:  {label:"Behind",        place:"behind"},
+    defref:  {label:"From ref",      place:null},
+    custom:  {label:"Custom",        place:null}
+  };
+
+  // placement vocabularies (keyed to POS.place)
+  const PLACE = {
+    sides: {def:"left", opts:{
+      left:"left side", right:"right side", fl:"front-left", fr:"front-right", rl:"rear-left", rr:"rear-right"
+    }, lbl:"Side placement", say:p=>`standing beside the vehicle on the ${p}`},
+    front: {def:"cf", opts:{
+      cf:"center front", fl:"front-left", fr:"front-right"
+    }, lbl:"Front placement", say:p=>`standing in front of the vehicle, ${p}`},
+    behind:{def:"cr", opts:{
+      cr:"center rear", rl:"rear-left", rr:"rear-right"
+    }, lbl:"Rear placement", say:p=>`standing behind the vehicle, ${p}`}
+  };
+
+  // cockpit poses (multi-select chips)
+  const COCKPIT = {
+    seated:{label:"Seated normally", say:"seated normally"},
+    hands: {label:"Hands on controls", say:"hands on the wheel / controls"},
+    helmOn:{label:"Helmet on", say:"helmet on"},
+    helmOff:{label:"Helmet off", say:"helmet off"},
+    fwd:   {label:"Looking forward", say:"looking forward"},
+    cam:   {label:"Looking at camera", say:"looking toward camera"},
+    enter: {label:"Entering", say:"entering the cockpit"},
+    exit:  {label:"Exiting", say:"exiting the cockpit"},
+    canopy:{label:"Partial / canopy", say:"partially visible through the canopy"},
+    open:  {label:"Open cockpit", say:"fully visible in the open cockpit"}
+  };
+  const COCKPIT_DEF = new Set(["seated","hands"]);
+
+  // kneeling location (single) + options (chips)
+  const KNEEL = {
+    front:"by the front wheel", rear:"by the rear wheel", intake:"by a side intake / body opening",
+    gear:"by the exposed running gear", cockpit:"beside the cockpit"
+  };
+  const KNEEL_OPTS = {
+    inspect:{label:"Inspecting system", say:"inspecting the mechanical system"},
+    tool:   {label:"Holding tool", say:"holding a tool"}
+  };
+
+  // driver scale phrasing
+  const DSCALE = {
+    real:"realistic human scale", hero:"a slightly heroic scale", small:"a small scale figure",
+    board:"a design-board scale reference", matchref:"the scale shown in the driver reference", custom:""
+  };
+
+  // locks
+  const LOCKS = { "VEHICLE HARDLOCK":{def:true}, "DRIVER HARDLOCK":{def:true}, PLOCK:{def:true} };
+
+  // format phrasing
+  const FMT = {
+    wide:"a 16:9 / 9:16 frame", classic:"a 4:3 / 3:4 frame", five:"a 5:4 / 4:5 frame",
+    page:"an 8.5 × 11 page layout", square:"a square frame"
+  };
+  const BG = {
+    neutral:"a clean light neutral", white:"a clean white", dark:"a neutral dark", paper:"a warm neutral paper",
+    studio:"a studio sweep", context:"an in-context scene", transparent:"a transparent (isolated, no scenery)"
+  };
+
+  /* ---------------- state ---------------- */
+  let omode="single", style="sketch", pos="stand";
+  let place="left";
+  let cockSel=new Set(COCKPIT_DEF);
+  let kneel="front", kneelSel=new Set();
+  let lSel=new Set();
+  let driverOn=false, repeatOn=false, simpleOn=false, claudeMode=false;
+
+  /* ---------------- build button groups ---------------- */
+  function buildPresets(host, dict, cur, on){
+    host.innerHTML="";
+    Object.entries(dict).forEach(([k,v])=>{
+      const b=document.createElement("button");
+      b.dataset.k=k; b.textContent=v.label;
+      b.setAttribute("aria-pressed", k===cur);
+      b.onclick=()=>on(k);
+      host.appendChild(b);
+    });
+  }
+  function buildSelect(host, dict){
+    host.innerHTML="";
+    Object.entries(dict).forEach(([k,v])=>{
+      const o=document.createElement("option"); o.value=k; o.textContent=v.label; host.appendChild(o);
+    });
+  }
+  function renderChips(host, dict, sel, lockStyle){
+    host.innerHTML="";
+    Object.entries(dict).forEach(([k,v])=>{
+      const c=document.createElement("div");
+      c.className="chip"+(lockStyle?" lock":"");
+      c.dataset.k=k; c.textContent=v.label||k;
+      c.setAttribute("aria-pressed", sel.has(k));
+      c.onclick=()=>{ sel.has(k)?sel.delete(k):sel.add(k); c.setAttribute("aria-pressed", sel.has(k)); };
+      host.appendChild(c);
+    });
+  }
+  function renderSeg(host, opts, cur, on){
+    host.innerHTML="";
+    Object.entries(opts).forEach(([k,label])=>{
+      const b=document.createElement("button");
+      b.dataset.k=k; b.textContent=label;
+      b.setAttribute("aria-pressed", k===cur);
+      b.onclick=()=>on(k);
+      host.appendChild(b);
+    });
+  }
+
+  // output mode + style
+  buildPresets($("#omode"), OMODE, omode, selectMode);
+  buildSelect($("#style"), STYLE);
+  $("#style").value=style;
+  $("#style").addEventListener("change",()=>{ style=$("#style").value; applyVis(); });
+
+  function selectMode(k){
+    omode=k;
+    [...$("#omode").children].forEach(b=>b.setAttribute("aria-pressed", b.dataset.k===k));
+    $("#omode-note").textContent=OMODE[k].note;
+    applyVis();
+  }
+
+  // driver position
+  buildPresets($("#pos"), POS, pos, selectPos);
+  function selectPos(k){
+    pos=k;
+    [...$("#pos").children].forEach(b=>b.setAttribute("aria-pressed", b.dataset.k===k));
+    applyVis();
+  }
+
+  // cockpit + kneeling
+  renderChips($("#cockpit"), COCKPIT, cockSel, false);
+  renderSeg($("#kneel"), KNEEL, kneel, k=>{
+    kneel=k;
+    [...$("#kneel").children].forEach(x=>x.setAttribute("aria-pressed", x.dataset.k===k));
+  });
+  renderChips($("#kneel-opts"), KNEEL_OPTS, kneelSel, false);
+
+  // locks
+  Object.entries(LOCKS).forEach(([k,v])=>{ if(v.def) lSel.add(k); });
+  renderChips($("#locks"), Object.fromEntries(Object.keys(LOCKS).map(k=>[k,{label:k}])), lSel, true);
+
+  /* ---------------- placement (swaps by position) ---------------- */
+  function buildPlace(){
+    const cfg=PLACE[POS[pos].place];
+    if(!cfg) return;
+    if(!cfg.opts[place]) place=cfg.def;
+    $("#place-lbl").textContent=cfg.lbl;
+    renderSeg($("#place"), cfg.opts, place, k=>{
+      place=k;[...$("#place").children].forEach(x=>x.setAttribute("aria-pressed",x.dataset.k===k));
+    });
+    $("#place").className="seg2 three";
+  }
+
+  /* ---------------- toggles ---------------- */
+  $("#t-driver").addEventListener("click",function(){ driverOn=!driverOn; this.classList.toggle("on",driverOn); applyVis(); });
+  $("#t-repeat").addEventListener("click",function(){ repeatOn=!repeatOn; this.classList.toggle("on",repeatOn); });
+  $("#t-simple").addEventListener("click",function(){ simpleOn=!simpleOn; this.classList.toggle("on",simpleOn); });
+  $("#t-claude").addEventListener("click",function(){ claudeMode=!claudeMode; this.classList.toggle("on",claudeMode); });
+  $("#dprompt").addEventListener("input",function(){ $("#dwarn").classList.toggle("show", this.value.trim().length>0); });
+  $("#dscale").addEventListener("change",function(){ $("#grp-scalenote").style.display = this.value==="custom"?"":"none"; });
+
+  /* ---------------- conditional visibility ---------------- */
+  function applyVis(){
+    $("#driver-panel").style.display = driverOn ? "" : "none";
+    // position-driven groups
+    const placeCfg = POS[pos].place;
+    $("#grp-place").style.display   = placeCfg ? "" : "none";
+    $("#grp-cockpit").style.display = pos==="cockpit" ? "" : "none";
+    $("#grp-kneel").style.display   = pos==="kneel" ? "" : "none";
+    $("#defref-note").style.display = pos==="defref" ? "" : "none";
+    if(placeCfg) buildPlace();
+    if(pos==="defref"){
+      $("#defref-note").textContent = "Default from reference: use the pose, stance, body attitude, wardrobe, and visual style from the uploaded driver reference. If it is a headshot sheet, preserve the face and use a neutral standing body pose unless the prompt box adds direction.";
+    }
+    // mode-driven driver toggles
+    $("#t-repeat").style.display = (driverOn && omode==="ortho") ? "" : "none";
+    $("#t-simple").style.display = (driverOn && style==="technical") ? "" : "none";
+  }
+  selectMode(omode); applyVis();
+
+  /* ---------------- helpers ---------------- */
+  function listPhrase(arr){
+    if(arr.length===0) return "";
+    if(arr.length===1) return arr[0];
+    if(arr.length===2) return arr[0]+" and "+arr[1];
+    return arr.slice(0,-1).join(", ")+", and "+arr[arr.length-1];
+  }
+  function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+
+  function positionPhrase(){
+    const custom=$("#dprompt").value.trim();
+    if(custom) return "(per the driver pose / action note below)";
+    if(pos==="stand" || pos==="front" || pos==="behind"){
+      const cfg=PLACE[POS[pos].place];
+      return cfg.say(cfg.opts[place]);
+    }
+    if(pos==="cockpit"){
+      let arr=Object.keys(COCKPIT).filter(k=>cockSel.has(k)).map(k=>COCKPIT[k].say);
+      if(arr.length===0) arr=["seated normally"];
+      return "seated in the cockpit, "+listPhrase(arr);
+    }
+    if(pos==="kneel"){
+      let s="kneeling "+KNEEL[kneel];
+      const o=Object.keys(KNEEL_OPTS).filter(k=>kneelSel.has(k)).map(k=>KNEEL_OPTS[k].say);
+      if(o.length) s+=", "+listPhrase(o);
+      return s;
+    }
+    if(pos==="defref") return "in the pose, stance, and wardrobe taken from the uploaded driver reference";
+    return "positioned with the vehicle";
+  }
+  function placementToken(){
+    if(pos==="cockpit") return "COCKPIT";
+    if(pos==="kneel")   return "KNEELING — "+KNEEL[kneel].toUpperCase();
+    if(pos==="defref")  return "PER REFERENCE";
+    if($("#dprompt").value.trim()) return "CUSTOM";
+    const cfg=PLACE[POS[pos].place];
+    return cfg ? cfg.opts[place].toUpperCase() : "—";
+  }
+  function scalePhrase(){
+    const v=$("#dscale").value;
+    if(v==="custom") return $("#dscalenote").value.trim() || "a custom scale relationship to the vehicle";
+    return DSCALE[v];
+  }
+  function driverStylePhrase(){
+    const v=$("#dstyle").value;
+    if(v==="vehsketch")  return "draw the driver in the same sketch line language as the vehicle";
+    if(v==="preserve")   return "preserve the driver reference's own visual style";
+    if(v==="render")     return "render the driver to match the selected render style";
+    // hybrid
+    return "preserve the driver's identity while matching the scene treatment ("+STYLE[style].driver+")";
+  }
+  function lockStr(){ return Object.keys(LOCKS).filter(k=>lSel.has(k)).join(" "); }
+
+  /* ---------------- copy + plate ---------------- */
+  function copy(text,btn){
+    const done=()=>{if(btn){const t=btn.textContent;btn.textContent="Copied";btn.classList.add("done");setTimeout(()=>{btn.textContent=t;btn.classList.remove("done");},1100);}};
+    if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(done).catch(()=>fb(text,done));}else fb(text,done);
+  }
+  function fb(text,cb){const ta=document.createElement("textarea");ta.value=text;ta.style.position="fixed";ta.style.opacity="0";document.body.appendChild(ta);ta.select();try{document.execCommand("copy");}catch(e){}document.body.removeChild(ta);if(cb)cb();}
+  function plate(container, body, badge, stamp){
+    container.innerHTML="";
+    const el=document.createElement("article"); el.className="plate";
+    const full = body + (badge?("\n\nLOCKS: "+badge):"");
+    el.innerHTML = `<pre class="prompt">${esc(body)}</pre>`
+      + (badge?`<div class="hardlock">${esc(badge)}</div>`:"")
+      + `<div class="foot"><button class="copy">Copy prompt</button><span class="stamp">${esc(stamp)}</span></div>`;
+    el.querySelector(".copy").onclick=function(){copy(full,this);};
+    container.appendChild(el);
+  }
+
+  /* ---------------- build ---------------- */
+  $("#go").onclick=()=>{
+    const name=$("#vname").value.trim();
+    const vnote=$("#vnote").value.trim();
+    const subj = vnote ? `the uploaded vehicle — ${vnote}` : "the uploaded vehicle";
+    const out=OMODE[omode].say, styl=STYLE[style].say;
+    const fmt=FMT[$("#fmt").value], bg=BG[$("#bg").value];
+    const stampBase = "ID2AI · xAUTO";
+
+    /* ===== CLAUDE MODE — structured spec ===== */
+    if(claudeMode){
+      const L=[];
+      L.push("xAUTO LOCKED SPEC — "+(name?name.toUpperCase()+"  ·  ":"")+OMODE[omode].label.toUpperCase());
+      L.push("");
+      L.push("Vehicle source : uploaded vehicle reference (image 1) — LOCKED MASTER");
+      if(name) L.push("Vehicle name   : "+name);
+      if(vnote) L.push("Vehicle note   : "+vnote);
+      L.push("Output mode    : "+OMODE[omode].label);
+      L.push("Style mode     : "+STYLE[style].label);
+      L.push("Layout         : "+fmt+" · "+bg+" background");
+      if(driverOn){
+        L.push("");
+        L.push("Driver source  : uploaded driver reference (image 2) — LOCKED MASTER ("+$("#dref").selectedOptions[0].textContent+")");
+        L.push("Driver position: "+positionPhrase());
+        L.push("Driver scale   : "+scalePhrase());
+        L.push("Driver style   : "+driverStylePhrase());
+        const dp=$("#dprompt").value.trim(); if(dp) L.push("Driver note    : "+dp);
+        if(omode==="ortho") L.push("Ortho figure   : "+(repeatOn?"repeat in each view":"show once"));
+        if(style==="technical") L.push("Tech driver    : "+(simpleOn?"simplified scale figure":"full character detail"));
+      }
+      L.push("");
+      L.push("Vehicle preserve : class, proportions, silhouette, stance, wheel placement, cockpit, architecture, materials, and mechanical detail logic. No redesign, no resize to fit a driver.");
+      if(driverOn) L.push("Driver preserve  : face identity, body proportions, hair, wardrobe, silhouette, color palette, and character style.");
+      L.push("Forbidden        : vehicle redesign or drift; resizing the vehicle to the driver; redesigning the cockpit to the driver"+(driverOn?"; changing the driver's identity, face, body, wardrobe, or hair; extra people; impossible placement; floating or intersecting figure; scale drift; style drift.":"."));
+      if(lSel.size) L.push("Locks            : "+lockStr());
+      plate($("#out"), L.join("\n"), "", stampBase);
+      return;
+    }
+
+    /* ===== VEHICLE-ONLY ===== */
+    if(!driverOn){
+      let p = `Create ${out} from the uploaded vehicle reference (image 1), rendered as ${styl}.\n\n`;
+      p += `VEHICLE LOCK:\nUse ${subj} as the locked master design. Preserve its vehicle class, proportions, silhouette, stance, wheel placement, cockpit, architecture, materials, and mechanical detail logic exactly. Do not redesign it, restyle it, or replace it with a generic version.\n\n`;
+      p += `PRESENTATION:\nPresent the vehicle in ${fmt} on ${bg} background.`;
+      if(name) p += ` Title the sheet "${name}" with a small, clean label.`;
+      p += `\n\nFORBIDDEN / NEGATIVE:\nNo redesign, no proportion or stance drift, no altered wheel placement or cockpit, no invented parts, no generic substitute, no material drift, no style drift, no extra vehicles, no unrelated scenery beyond the chosen background.`;
+      plate($("#out"), p, lockStr(), stampBase);
+      return;
+    }
+
+    /* ===== VEHICLE + DRIVER ===== */
+    const drefLabel=$("#dref").selectedOptions[0].textContent;
+    const posTok=placementToken();
+    const dpose=positionPhrase();
+    const dscale=scalePhrase();
+    const dstyle=driverStylePhrase();
+    const dp=$("#dprompt").value.trim();
+    const plockOn=lSel.has("PLOCK");
+
+    // driver template block (always inside the final prompt)
+    let driverBlock = `DRIVER / SCALE FIGURE:\nInclude one driver / scale figure built from the uploaded driver reference (image 2, ${drefLabel.toLowerCase()}). Preserve the driver's face identity, body proportions, hair, wardrobe, silhouette, color palette, and visual style.\n`;
+    driverBlock += `· Position: ${dpose}.\n`;
+    driverBlock += `· Scale: ${dscale} — the driver must read as a believable scale reference; do not shrink the vehicle or enlarge the driver.\n`;
+    driverBlock += `· Style behavior: ${dstyle}.\n`;
+    if(omode==="ortho") driverBlock += `· Ortho sheet: ${repeatOn?"place the scale figure in each selected view at a consistent scale":"show the driver once beside the sheet"}.\n`;
+    if(style==="technical" && simpleOn) driverBlock += `· Technical mode: reduce the driver to a clean, simplified scale figure (silhouette only).\n`;
+    if(dp) driverBlock += `· Driver pose / action: ${dp}\n`;
+    driverBlock += `The driver must be correctly scaled and physically integrated into the scene. The driver must not alter the vehicle's design, proportions, cockpit, stance, wheel placement, or architecture. If seated, the driver must fit plausibly inside the cockpit without changing the vehicle; if the cockpit is enclosed, show the driver only in a physically plausible way.`;
+
+    const NEG = "NEGATIVE PROMPT:\nNo changed driver identity, no different face, no wrong wardrobe, no distorted body, no incorrect scale, no giant driver, no tiny vehicle, no extra people, no mannequin unless selected, no floating figure, no intersecting geometry, no driver merged with the vehicle, no impossible cockpit fit, no redesigned cockpit, no vehicle resized for the driver, no driver blocking the design read, no random helmet unless selected, no random costume changes, no vehicle redesign or drift.";
+
+    // SPEC CHECK
+    const spec = [
+      "Driver included (Show Driver on)",
+      "Driver matches uploaded character reference",
+      "Driver face identity preserved",
+      "Driver wardrobe + hair preserved",
+      "Driver body proportions preserved",
+      "Driver scale correct relative to vehicle",
+      "Driver position matches selected placement",
+      dp ? "Driver pose / action matches the prompt box" : "Driver pose follows selected buttons",
+      "Driver does not alter vehicle design",
+      "Driver does not block key vehicle features unless requested",
+      pos==="cockpit" ? "Driver fits cockpit plausibly" : "Driver placed plausibly beside / around vehicle",
+      "Driver does not float or intersect the vehicle",
+      "No extra people added",
+      "Driver style matches selected style behavior"
+    ].map(s=>"  [ ] "+s).join("\n");
+
+    if(plockOn){
+      // ===== FULL PLOCK STRUCTURE =====
+      const L=[];
+      L.push("xAUTO — VEHICLE + DRIVER · PLOCK"+(name?"  ·  "+name.toUpperCase():""));
+      L.push("");
+      L.push("1. VEHICLE LOCKED MASTER");
+      L.push(`Locked to the uploaded vehicle reference (image 1). ${subj.charAt(0).toUpperCase()+subj.slice(1)}. Preserve vehicle class, proportions, silhouette, stance, wheel placement, cockpit, architecture, materials, and mechanical detail logic.`);
+      L.push("");
+      L.push("2. DRIVER LOCKED MASTER");
+      L.push(`Locked to the uploaded driver reference (image 2, ${drefLabel.toLowerCase()}). Preserve face identity, body proportions, hair, wardrobe, silhouette, color palette, and character style.`);
+      L.push("");
+      L.push("3. ALLOWED VEHICLE CHANGES");
+      L.push("Camera angle, framing, lighting, background, and the selected render style only. No change to the design itself.");
+      L.push("");
+      L.push("4. ALLOWED DRIVER CHANGES");
+      L.push(`Pose and placement per the selected settings; scene / style treatment per the selected style behavior.${dp?" Pose / action per the driver note.":""} No identity, face, body, wardrobe, or hair change unless explicitly requested.`);
+      L.push("");
+      L.push("5. FORBIDDEN VEHICLE CHANGES");
+      L.push("Do not redesign, restyle, or drift the vehicle. Do not change proportions, stance, wheel placement, cockpit, or architecture. Do not resize the vehicle to fit the driver. Do not redesign the cockpit to fit the driver. Do not add extra vehicles.");
+      L.push("");
+      L.push("6. FORBIDDEN DRIVER CHANGES");
+      L.push("Do not change the driver's identity, face, body proportions, wardrobe (unless requested), or hairstyle (unless requested). Do not turn the driver into a different person or a mannequin (unless Technical simplification is selected). Do not let the driver obscure key vehicle features unless requested. Do not resize the driver unrealistically, add extra people, place the driver impossibly, float the driver, or intersect / merge the driver with the bodywork. Do not break the selected view logic.");
+      L.push("");
+      L.push("7. FINAL LOCKED PROMPT");
+      let fp = `Create ${out} from the uploaded vehicle reference (image 1), rendered as ${styl}.\n\n`;
+      fp += `VEHICLE LOCK:\nUse ${subj} as the locked master design — preserve it exactly per section 1. Do not redesign or resize it for any reason.\n\n`;
+      fp += driverBlock + `\n\n`;
+      fp += `PRESENTATION:\nPresent the result in ${fmt} on ${bg} background.`;
+      if(name) fp += ` Title the sheet "${name}" with a small, clean label.`;
+      L.push(fp);
+      L.push("");
+      L.push(NEG);
+      L.push("");
+      L.push("8. SPEC CHECK");
+      L.push(spec);
+      plate($("#out"), L.join("\n"), lockStr(), stampBase+" · PLOCK");
+      return;
+    }
+
+    // ===== LEAN (PLOCK off) =====
+    let p = `Create ${out} from the uploaded vehicle reference (image 1), rendered as ${styl}.\n\n`;
+    p += `VEHICLE LOCK:\nUse ${subj} as the locked master design. Preserve its class, proportions, silhouette, stance, wheel placement, cockpit, architecture, and materials exactly. Do not redesign or resize it for the driver.\n\n`;
+    p += driverBlock + `\n\n`;
+    p += `PRESENTATION:\nPresent the result in ${fmt} on ${bg} background.`;
+    if(name) p += ` Title the sheet "${name}" with a small, clean label.`;
+    p += `\n\n`+NEG;
+    plate($("#out"), p, lockStr(), stampBase);
+  };
+})();
+</script>
+</body>
+</html>
