@@ -1,0 +1,400 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AI2BOOK · ID2AI Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@600;700&family=Inter:wght@400;500&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0B0E14; --panel:#141A24; --panel-2:#1B232F; --line:#2A3645;
+    --blueprint:#4FC3E8; --accent:#ffcc00; --amber:#E8A33A;
+    --paper:#F4F1E8; --graphite:#1c1f24; --txt:#D7E0EA; --txt-dim:#7E8B9C;
+    --disp:'Saira Condensed','Arial Narrow',sans-serif;
+    --body:'Inter',system-ui,sans-serif; --mono:'Space Mono',ui-monospace,monospace;
+  }
+  *{box-sizing:border-box} html,body{margin:0}
+  body{background:radial-gradient(1000px 500px at 50% -10%, #241f10 0%, transparent 60%), var(--ink);
+       color:var(--txt);font-family:var(--body);line-height:1.5;min-height:100vh;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:700px;margin:0 auto;padding:0 18px 90px}
+
+  .topbar{padding:18px 0 0}
+  .back{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--txt-dim);text-decoration:none}
+  .back:hover{color:var(--accent)}
+  .back .a{display:inline-block;margin-right:5px;transition:transform .14s}
+  .back:hover .a{transform:translateX(-3px)}
+  header{display:flex;align-items:baseline;gap:14px;padding:12px 0 6px}
+  .mark{font-family:var(--disp);font-weight:700;letter-spacing:.04em;font-size:28px;line-height:1;color:var(--accent)}
+  .mark .x{color:#FFFFFF}
+  .tagline{font-family:var(--mono);font-size:11px;color:var(--txt-dim);text-transform:uppercase;letter-spacing:.16em}
+
+  .intro{font-size:13.5px;color:var(--txt-dim);margin:18px 0 4px;line-height:1.5}
+
+  .legend{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}
+  .leg{flex:1 1 210px;background:var(--panel);border:1px solid var(--line);border-radius:5px;padding:11px 13px}
+  .leg .num{font-family:var(--disp);font-weight:700;font-size:14px;color:var(--ink);background:var(--accent);
+            width:24px;height:24px;display:inline-flex;align-items:center;justify-content:center;border-radius:3px;margin-bottom:7px}
+  .leg .num.blue{background:var(--blueprint)}
+  .leg .t{font-family:var(--mono);font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--txt)}
+  .leg .d{font-size:12.5px;color:var(--txt-dim);margin-top:3px}
+
+  .card{background:linear-gradient(180deg,rgba(20,26,36,.7),rgba(20,26,36,.35));border:1px solid var(--line);border-radius:6px;padding:18px;margin-top:14px}
+  .cardhead{display:flex;align-items:center;gap:10px;margin-bottom:15px}
+  .cardhead .n{font-family:var(--disp);font-weight:700;font-size:14px;color:var(--ink);background:var(--accent);
+               width:24px;height:24px;display:inline-flex;align-items:center;justify-content:center;border-radius:3px}
+  .cardhead h3{font-family:var(--disp);font-weight:600;font-size:17px;letter-spacing:.04em;text-transform:uppercase;margin:0;color:var(--paper)}
+  .lbl{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--blueprint);margin-bottom:8px}
+  .opt{color:var(--txt-dim);letter-spacing:0;text-transform:none}
+  input[type=text], input[type=number], input[type=file], select, textarea{width:100%;background:var(--panel);color:var(--txt);border:1px solid var(--line);border-radius:4px;font-family:var(--body);font-size:14px;padding:11px}
+  input[type=file]{font-family:var(--mono);font-size:12px;color:var(--txt-dim);padding:9px}
+  input[type=file]::file-selector-button{background:rgba(255,204,0,.12);color:var(--accent);border:1px solid var(--accent);border-radius:3px;padding:6px 11px;margin-right:11px;cursor:pointer;font-family:var(--mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.05em}
+  textarea{font-family:var(--mono);font-size:13px;line-height:1.55;resize:vertical;min-height:70px}
+  input:focus, select:focus, textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 2px rgba(255,204,0,.18)}
+  select{appearance:none;-webkit-appearance:none;cursor:pointer;padding-right:34px;
+         background-image:linear-gradient(45deg,transparent 50%,var(--txt-dim) 50%),linear-gradient(135deg,var(--txt-dim) 50%,transparent 50%);
+         background-position:calc(100% - 17px) 20px,calc(100% - 12px) 20px;background-size:5px 5px,5px 5px;background-repeat:no-repeat}
+  ::placeholder{color:#566270}
+  .grp{margin-top:16px} .grp:first-child{margin-top:0}
+  .row2{display:flex;gap:12px} .row2 .grp{flex:1;margin-top:0}
+
+  .seg2{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+  .seg2 button{background:var(--panel);border:1px solid var(--line);color:var(--txt-dim);
+               font-family:var(--mono);font-size:11px;letter-spacing:.05em;padding:10px 6px;border-radius:4px;cursor:pointer;text-transform:uppercase;transition:.12s;line-height:1.25}
+  .seg2 button:hover{color:var(--txt);border-color:#3a4858}
+  .seg2 button[aria-pressed=true]{background:rgba(255,204,0,.12);border-color:var(--accent);color:var(--accent)}
+
+  .chips{display:flex;flex-wrap:wrap;gap:6px}
+  .chip{background:var(--panel);border:1px solid var(--line);color:var(--txt-dim);
+        font-family:var(--mono);font-size:11px;letter-spacing:.03em;padding:8px 11px;border-radius:4px;cursor:pointer;transition:.12s;user-select:none}
+  .chip:hover{color:var(--txt);border-color:#3a4858}
+  .chip[aria-pressed=true]{background:rgba(79,195,232,.12);border-color:var(--blueprint);color:var(--blueprint)}
+
+  .subpanel{border:1px solid var(--line);border-left:2px solid var(--accent);border-radius:5px;
+            background:rgba(255,204,0,.03);padding:16px;margin-top:14px}
+  .sub-note{font-family:var(--mono);font-size:11px;color:var(--txt-dim);line-height:1.55}
+
+  .go{width:100%;height:46px;margin-top:18px;font-family:var(--disp);font-weight:700;font-size:18px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink);background:var(--accent);border:none;border-radius:4px;cursor:pointer;transition:filter .12s,transform .04s}
+  .go:hover{filter:brightness(1.08)} .go:active{transform:translateY(1px)}
+  .go.ghost{background:transparent;border:1px solid var(--accent);color:var(--accent)}
+  .go.ghost:hover{background:rgba(255,204,0,.10);filter:none}
+  .gorow{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .gorow .go{margin-top:18px}
+
+  .res-head{display:flex;align-items:center;gap:12px;margin:24px 0 12px}
+  .res-head h2{font-family:var(--disp);font-weight:600;font-size:18px;letter-spacing:.04em;margin:0;color:var(--paper)}
+  .empty{border:1px dashed var(--line);border-radius:5px;padding:28px 22px;text-align:center;color:var(--txt-dim);font-family:var(--mono);font-size:13px;line-height:1.7}
+
+  .plate{background:var(--paper);color:var(--graphite);border:1px solid #d8d3c4;border-radius:5px;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,.3);animation:in .24s ease both}
+  @keyframes in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .prompt{font-family:var(--mono);font-size:12.5px;line-height:1.62;color:var(--graphite);white-space:pre-wrap;word-break:break-word;margin:0;padding:15px 15px 4px}
+  .hardlock{display:inline-block;font-family:var(--mono);font-weight:700;font-size:12px;letter-spacing:.1em;background:var(--graphite);color:var(--accent);padding:5px 10px;border-radius:2px;margin:0 15px 14px}
+  .foot{display:flex;align-items:center;gap:8px;background:#ece8da;border-top:1px solid #d8d3c4;padding:8px 12px}
+  .copy{font-family:var(--mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;background:var(--graphite);color:var(--paper);border:none;padding:7px 13px;border-radius:2px;cursor:pointer}
+  .copy:hover{background:#000} .copy.done{background:var(--accent);color:var(--graphite)}
+  .foot .stamp{margin-left:auto;font-family:var(--mono);font-size:10px;color:#8a8472}
+
+  .hint{font-family:var(--mono);font-size:11px;color:var(--txt-dim);margin-top:14px;line-height:1.6}
+  .hint b{color:var(--txt-dim)}
+  .site-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+             margin-top:36px;padding-top:16px;border-top:1px solid var(--line);
+             font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--txt-dim)}
+  .site-foot a{color:var(--blueprint);text-decoration:none}
+  .site-foot a:hover{color:var(--accent);text-decoration:underline}
+  .site-links{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .site-links a:not(:first-child){border-left:1px solid var(--line);padding-left:12px}
+  .hide{display:none}
+  @media (max-width:480px){.gorow{grid-template-columns:1fr}}
+  @media (prefers-reduced-motion:reduce){.plate{animation:none}*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar"><a class="back" href="index.html"><span class="a">&larr;</span>ID2AI Studio</a></div>
+
+  <header>
+    <div class="mark">AI<span class="x">2</span>BOOK</div>
+    <div class="tagline">Graphic Novel Module</div>
+  </header>
+
+  <section class="panel">
+    <p class="intro">Turn a document or a one-line prompt into a full graphic-novel production plan. Page count drives the structure; HAL returns the canon, the plate-by-plate breakdown, and the asset sheets to build first — you lock it, then build. Covers come last, clean for the Photoshop pass.</p>
+
+    <div class="legend">
+      <div class="leg"><span class="num">1</span><div class="t">The plan</div><div class="d">HAL returns a production document — asset canon, plate-by-plate, image list, sheets. You review and lock it.</div></div>
+      <div class="leg"><span class="num blue">2</span><div class="t">The build</div><div class="d">Test one page to lock the look, then build the album. Covers generate clean at 16:9 — text added in PSD.</div></div>
+    </div>
+
+    <!-- 1 INGEST -->
+    <div class="card">
+      <div class="cardhead"><span class="n">1</span><h3>Ingest</h3></div>
+      <div class="grp">
+        <div class="lbl">Source</div>
+        <div class="seg2" id="ingestSeg">
+          <button data-m="doc" aria-pressed="true" onclick="setIngest('doc')">Upload document</button>
+          <button data-m="prompt" aria-pressed="false" onclick="setIngest('prompt')">Simple prompt</button>
+        </div>
+      </div>
+      <div class="grp" id="ingestDoc">
+        <div class="lbl">Source document <span class="opt">script / treatment / bible — txt &amp; md prefill the fields</span></div>
+        <input id="docFile" type="file" accept=".txt,.md,.markdown,.json,.pdf,.docx" onchange="onDoc(event)" />
+        <div class="hint" id="docNote">No document attached. Attach the same file in HAL when you paste the prompt.</div>
+      </div>
+      <div class="grp hide" id="ingestPrompt">
+        <div class="lbl">Simple prompt</div>
+        <textarea id="simplePrompt" placeholder="Please create a 10 page graphic novel of me, based on what you know about me."></textarea>
+      </div>
+      <div class="row2 grp">
+        <div class="grp"><div class="lbl">Title</div><input id="title" type="text" placeholder="Hawley's Garage" /></div>
+        <div class="grp"><div class="lbl">Episode / subtitle</div><input id="subtitle" type="text" placeholder="Outside the Scope" /></div>
+      </div>
+      <div class="grp"><div class="lbl">Logline <span class="opt">optional — inferred if blank</span></div>
+        <input id="logline" type="text" placeholder="What it's about and what the turn is." /></div>
+    </div>
+
+    <!-- 2 FORMAT -->
+    <div class="card">
+      <div class="cardhead"><span class="n">2</span><h3>Format</h3></div>
+      <div class="row2 grp">
+        <div class="grp"><div class="lbl">Page count</div><input id="pages" type="number" min="1" max="48" value="10" /></div>
+        <div class="grp"><div class="lbl">Register</div>
+          <select id="register"><option>European album</option><option>US comic</option><option>Webtoon / vertical</option><option>Strip</option><option>One-shot poster</option></select></div>
+      </div>
+      <div class="grp"><div class="lbl">Panels / page rhythm</div>
+        <select id="rhythm"><option value="varied">Varied (splash → 6-up)</option><option>Dense (5–6)</option><option>Standard (3–4)</option><option>Cinematic (2–3 widescreen)</option><option>Splash-heavy (1–2)</option></select></div>
+      <div class="row2 grp">
+        <div class="grp"><div class="lbl">Trim size <span class="opt">KDP</span></div>
+          <select id="trim">
+            <optgroup label="KDP standard tier"><option>6 × 9 in</option><option>5 × 8 in</option><option>5.25 × 8 in</option><option>5.5 × 8.5 in</option><option>6.14 × 9.21 in</option><option>6.69 × 9.61 in</option></optgroup>
+            <optgroup label="KDP large / illustrated"><option>7 × 10 in</option><option>7.5 × 9.25 in</option><option>8 × 10 in</option><option>8.25 × 8.25 in (square)</option><option>8.5 × 8.5 in (square)</option><option selected>8.5 × 11 in (US Letter)</option><option>8.27 × 11.69 in (A4)</option></optgroup>
+            <optgroup label="Other"><option>6.625 × 10.25 in (comic)</option><option>Kindle fixed-layout (digital)</option><option>Custom</option></optgroup>
+          </select></div>
+        <div class="grp"><div class="lbl">Generation aspect <span class="opt">canvas before crop</span></div>
+          <select id="aspect"><option>16:9</option><option>3:2</option><option>4:3</option><option>1:1</option><option>2:3 portrait</option></select></div>
+      </div>
+      <div class="grp"><div class="lbl">Bleed / margin</div>
+        <select id="bleed"><option>KDP full-bleed (+0.125 in)</option><option>KDP no-bleed (0.375 in margin)</option><option>Gutter grid</option></select></div>
+      <div class="hint">Generation aspect is the canvas each image is produced at (16:9 default) before Topaz upscale and the Photoshop crop. Final panel shapes come from trim + rhythm.</div>
+    </div>
+
+    <!-- 3 VISUAL STYLE -->
+    <div class="card">
+      <div class="cardhead"><span class="n">3</span><h3>Visual style</h3></div>
+      <div class="grp">
+        <div class="seg2" id="styleSeg">
+          <button data-m="describe" aria-pressed="true" onclick="setStyle('describe')">Describe style</button>
+          <button data-m="ref" aria-pressed="false" onclick="setStyle('ref')">Upload reference</button>
+        </div>
+      </div>
+      <div id="styleDescribe">
+        <div class="grp"><div class="lbl">Lineage / medium</div><div class="chips" id="styleChips"></div></div>
+        <div class="row2 grp">
+          <div class="grp"><div class="lbl">Palette / grade</div><input id="palette" type="text" placeholder="warm amber vs cold blue; crushed blacks" /></div>
+          <div class="grp"><div class="lbl">Line / ink</div><input id="line" type="text" placeholder="fine crosshatch, heavy contour" /></div>
+        </div>
+        <div class="grp"><div class="lbl">Extra style notes</div><input id="styleNotes" type="text" placeholder="lens character, film grain…" /></div>
+      </div>
+      <div class="grp hide" id="styleRefBox">
+        <div class="lbl">Style reference image(s)</div>
+        <input id="styleRef" type="file" accept="image/*" multiple onchange="onRef(event,'styleRefNote','style')" />
+        <div class="hint" id="styleRefNote">No reference attached. The prompt tells HAL to match an attached style image — attach it there too.</div>
+      </div>
+    </div>
+
+    <!-- 4 TONE -->
+    <div class="card">
+      <div class="cardhead"><span class="n">4</span><h3>Tone</h3></div>
+      <div class="grp"><div class="lbl">Register</div><div class="chips" id="toneChips"></div></div>
+      <div class="grp"><div class="lbl">Tone notes <span class="opt">name performers as references</span></div>
+        <input id="toneNotes" type="text" placeholder="deadpan à la W.C. Fields · manic physicality à la Jim Carrey · flinty restraint à la Clint Eastwood" /></div>
+      <div class="hint"><b>Tone notes</b> accept named performers — pacing, delivery, and comedic register transfer; likeness does not. See the AI2BOOK guide for phrasing.</div>
+    </div>
+
+    <!-- 5 PLAN -->
+    <div class="card">
+      <div class="cardhead"><span class="n">5</span><h3>Build the plan</h3></div>
+      <div class="grp"><div class="lbl">Series rule <span class="opt">mandatory continuity law, injected into every panel</span></div>
+        <textarea id="seriesRule" placeholder="e.g. LOKI is Jake's co-pilot: in every panel where Jake appears, Loki also appears, materially engaged with Jake, the camera, the machine, or the beat — never hidden, cropped, or used as a prop."></textarea></div>
+      <div class="gorow">
+        <button class="go ghost" onclick="genTest()">Generate test page</button>
+        <button class="go" onclick="genFull()">Build full album</button>
+      </div>
+    </div>
+
+    <div class="res-head"><h2>The plan</h2></div>
+    <div id="out"><div class="empty">Set the source, format, style, and tone — then build.<br>Test one page to lock the look, then build the full album.</div></div>
+    <div class="hint"><b>Use:</b> paste into HAL with your source attached. HAL returns a full production plan — canon, plate-by-plate, image list, and the asset sheets to build first. Iterate in chat until it's locked, then build the pages.</div>
+
+    <!-- 6 COVERS -->
+    <div class="res-head"><h2>Covers</h2></div>
+    <div class="card">
+      <div class="subpanel" style="margin-top:0">
+        <div class="sub-note">Covers generate dead clean at <b>16:9</b> with <b>zero text</b> — no titles, no copy, no lettering. You add all type in Photoshop and crop to trim. Run last, at assembly.</div>
+      </div>
+      <div class="grp">
+        <div class="seg2" id="coverSeg">
+          <button data-m="describe" aria-pressed="true" onclick="setCover('describe')">Describe cover</button>
+          <button data-m="ref" aria-pressed="false" onclick="setCover('ref')">Upload reference</button>
+        </div>
+      </div>
+      <div id="coverDescribe">
+        <div class="grp"><div class="lbl">Front — hero composition</div><input id="frontHero" type="text" placeholder="protagonist + signature prop, seated, blue sphere foreground" /></div>
+        <div class="grp"><div class="lbl">Back — reverse-angle art direction</div><input id="backArt" type="text" placeholder="reverse angle, characters from behind, barn doors in distance" /></div>
+      </div>
+      <div class="grp hide" id="coverRefBox">
+        <div class="grp"><div class="lbl">Front cover reference</div>
+          <input id="frontRef" type="file" accept="image/*" multiple onchange="onRef(event,'frontRefNote','front')" />
+          <div class="hint" id="frontRefNote">No front reference attached.</div></div>
+        <div class="grp"><div class="lbl">Back cover reference</div>
+          <input id="backRef" type="file" accept="image/*" multiple onchange="onRef(event,'backRefNote','back')" />
+          <div class="hint" id="backRefNote">No back reference attached.</div></div>
+      </div>
+      <div class="gorow">
+        <button class="go ghost" onclick="genCover('front')">Front cover plate</button>
+        <button class="go ghost" onclick="genCover('back')">Back cover plate</button>
+      </div>
+    </div>
+    <div id="coverOut"></div>
+  </section>
+
+  <footer class="site-foot">
+    <span>ID2AI · Studio — an instrument by Duane Loose</span>
+    <nav class="site-links">
+      <a href="https://dloose.com" target="_blank" rel="noopener">dloose.com</a>
+      <a href="https://www.linkedin.com/in/dloosedesign/" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="https://x.com/DLooseDesign" target="_blank" rel="noopener">@DLooseDesign</a>
+    </nav>
+  </footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  const $=s=>document.querySelector(s);
+  const esc=s=>(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+
+  const STYLES=["Moebius / European album","Saga / painterly","Noir photoreal","Pen & ink crosshatch","Heavy Metal","Ligne claire","Manga ink","Watercolor BD","Concept-art realism"];
+  const TONES=["Serious","Elegiac","Wry","Funny","Absurd","Deadpan","Hopeful","Ominous","Satirical","Tender"];
+  let styleSel=new Set(["Noir photoreal"]), toneSel=new Set(["Wry"]);
+  let ingestMode="doc", styleMode="describe", coverMode="describe";
+  let docName="", styleRefNames=[], frontRefNames=[], backRefNames=[];
+
+  function buildChips(host,arr,set){
+    host.innerHTML=arr.map(t=>`<span class="chip" role="button" aria-pressed="${set.has(t)}">${esc(t)}</span>`).join("");
+    [...host.children].forEach(c=>c.onclick=()=>{const v=c.textContent;set.has(v)?set.delete(v):set.add(v);c.setAttribute("aria-pressed",set.has(v));});
+  }
+  buildChips($("#styleChips"),STYLES,styleSel);
+  buildChips($("#toneChips"),TONES,toneSel);
+
+  window.setIngest=function(m){ingestMode=m;[...$("#ingestSeg").children].forEach(b=>b.setAttribute("aria-pressed",b.dataset.m===m));
+    $("#ingestDoc").classList.toggle("hide",m!=="doc");$("#ingestPrompt").classList.toggle("hide",m!=="prompt");};
+  window.setStyle=function(m){styleMode=m;[...$("#styleSeg").children].forEach(b=>b.setAttribute("aria-pressed",b.dataset.m===m));
+    $("#styleDescribe").classList.toggle("hide",m!=="describe");$("#styleRefBox").classList.toggle("hide",m!=="ref");};
+  window.setCover=function(m){coverMode=m;[...$("#coverSeg").children].forEach(b=>b.setAttribute("aria-pressed",b.dataset.m===m));
+    $("#coverDescribe").classList.toggle("hide",m!=="describe");$("#coverRefBox").classList.toggle("hide",m!=="ref");};
+
+  window.onDoc=function(e){
+    const f=e.target.files[0];if(!f){docName="";$("#docNote").textContent="No document attached.";return;}
+    docName=f.name;$("#docNote").textContent="Attached: "+f.name+" — attach this same file in HAL when you paste the prompt.";
+    if(/\.(txt|md|markdown|json)$/i.test(f.name)){
+      const r=new FileReader();
+      r.onload=()=>{try{
+        const lines=r.result.split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
+        const h=lines.find(l=>/^#\s/.test(l))||lines[0];
+        if(h&&!$("#title").value)$("#title").value=h.replace(/^#\s*/,"").slice(0,80);
+        const ll=lines.find(l=>l.length>30&&!/^#/.test(l));
+        if(ll&&!$("#logline").value)$("#logline").value=ll.slice(0,180);
+      }catch(_){}};
+      r.readAsText(f);
+    }
+  };
+  window.onRef=function(e,noteId,which){
+    const names=[...e.target.files].map(f=>f.name);
+    if(which==="style")styleRefNames=names;else if(which==="front")frontRefNames=names;else backRefNames=names;
+    $("#"+noteId).textContent=names.length?("Attached: "+names.join(", ")+" — attach the same image(s) in HAL."):"No reference attached.";
+  };
+
+  const v=id=>($("#"+id).value||"").trim();
+  const sel=id=>$("#"+id).value;
+
+  function sourceBlock(){
+    let s="SOURCE — ";
+    if(ingestMode==="doc") s+= docName?("work from the attached document: "+docName+"."):"work from the attached document (attach it in chat).";
+    else s+= '"'+(v("simplePrompt")||"Create a graphic novel based on what you know about me.")+'"';
+    if(v("title")) s+="\nTITLE — "+v("title")+(v("subtitle")?" — "+v("subtitle"):"");
+    s+= v("logline")?("\nLOGLINE — "+v("logline")):"\nLOGLINE — propose one from the source.";
+    return s;
+  }
+  function styleBlock(){
+    if(styleMode==="ref") return "STYLE — match the attached style reference image(s)"+(styleRefNames.length?": "+styleRefNames.join(", "):"")+" exactly; hold it across every page and the covers.";
+    const fams=[...styleSel].join(" × ")||"(unset)";let o="STYLE — "+fams;
+    if(v("palette"))o+="; palette: "+v("palette");if(v("line"))o+="; line: "+v("line");if(v("styleNotes"))o+="; "+v("styleNotes");
+    return o+". Hold identical across every page and the covers.";
+  }
+  function toneBlock(){const t=[...toneSel].join(", ")||"(unset)";return "TONE — "+t+(v("toneNotes")?"; "+v("toneNotes"):"")+". Carry the register through pacing and delivery.";}
+  function formatBlock(){return "FORMAT — "+sel("register")+", "+v("pages")+" pages, "+sel("rhythm")+" rhythm. Trim "+sel("trim")+", "+sel("bleed")+". Generate each image at "+sel("aspect")+" (canvas before upscale + crop).";}
+  function ruleBlock(){return "SERIES RULE (mandatory, every applicable panel) — "+(v("seriesRule")||"none specified.");}
+
+  function plate(container, body, badge, stamp){
+    container.innerHTML="";
+    const el=document.createElement("article"); el.className="plate";
+    const full=body+(badge?("\n\n"+badge):"");
+    el.innerHTML=`<pre class="prompt">${esc(body)}</pre>`+(badge?`<div class="hardlock">${esc(badge)}</div>`:"")+`<div class="foot"><button class="copy">Copy prompt</button><span class="stamp">${esc(stamp)}</span></div>`;
+    el.querySelector(".copy").onclick=function(){copy(full,this);};
+    container.appendChild(el);
+  }
+  function copy(text,btn){
+    const done=()=>{const t=btn.textContent;btn.textContent="Copied";btn.classList.add("done");setTimeout(()=>{btn.textContent=t;btn.classList.remove("done");},1100);};
+    if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(text).then(done).catch(()=>fb(text,done));else fb(text,done);
+  }
+  function fb(text,cb){const ta=document.createElement("textarea");ta.value=text;ta.style.position="fixed";ta.style.opacity="0";document.body.appendChild(ta);ta.select();try{document.execCommand("copy");}catch(e){}document.body.removeChild(ta);if(cb)cb();}
+
+  window.genFull=function(){
+    const body=
+"=== AI2BOOK · FULL ALBUM PLAN REQUEST ===\n"+
+sourceBlock()+"\n"+styleBlock()+"\n"+toneBlock()+"\n"+formatBlock()+"\n"+ruleBlock()+"\n\n"+
+"TASK — Produce a complete production plan for a "+v("pages")+"-page graphic novel. Pace the arc to land on the final page. Do NOT generate images yet — return a written plan I can review and lock. Then we iterate.\n\n"+
+"DELIVERABLES (return all, in order):\n"+
+"1. PRODUCTION HEADER — format, page count, total image count (interior; cover added last), core setting, mandatory character rule, text policy.\n"+
+"2. TEXT POLICY — keep all dialogue and captions as separate scripted text, NOT baked into the images (lettered in post).\n"+
+"3. MAIN CHARACTERS & PRODUCTION ASSETS — propose the full canon: every recurring character, machine, set, and hero prop, each with a locked description and approval status. This is the consistency spine.\n"+
+"4. PAGE-BY-PAGE BREAKDOWN — per page, a panel-by-panel list. Number every panel IMG_01, IMG_02… Per panel: shot/blocking description, caption/dialogue (kept separate), and the engagement beat enforcing the SERIES RULE.\n"+
+"5. IMAGE CANON / PRODUCTION LIST — a clean numbered list of every required image (IMG_00 cover through last interior).\n"+
+"6. REQUIRED ASSET / REFERENCE SHEETS — priority-ordered list of sheets to build BEFORE final pages to reduce drift (paired acting sheets, blocking maps, product sheets, scale refs, screen/UI inserts).\n\n"+
+"Hold STYLE, TONE, and the asset canon identical across all pages. Vary only camera, blocking, light, and beat. The cover (IMG_00) is built last during assembly — note it, don't detail it now.\n\n"+
+"Return the plan for review. We lock it before any image is made.";
+    plate($("#out"),body,"","ID2AI · AI2BOOK");
+  };
+
+  window.genTest=function(){
+    const body=
+"=== AI2BOOK · TEST PAGE REQUEST ===\n"+
+sourceBlock()+"\n"+styleBlock()+"\n"+toneBlock()+"\n"+formatBlock()+"\n"+ruleBlock()+"\n\n"+
+"TASK — Before committing the full album, produce a plan for ONE representative page to validate look, cast, and tone.\n\n"+
+"DELIVERABLES:\n"+
+"1. The minimum ASSET / REFERENCE SHEETS needed to lock this page (characters + primary set/props), each with a locked description.\n"+
+"2. A panel-by-panel breakdown — number panels IMG_01…, each with shot description, separate caption/dialogue, and the SERIES RULE engagement beat.\n"+
+"3. One generation-ready prompt per panel at "+sel("aspect")+", in the locked STYLE and TONE. Keep captions/dialogue out of the image.\n\n"+
+"Return for review so we can confirm the look holds before the full run.";
+    plate($("#out"),body,"HARDLOCK PLOCK","ID2AI · AI2BOOK · TEST");
+  };
+
+  window.genCover=function(which){
+    const refs = which==="front"?frontRefNames:backRefNames;
+    let dir;
+    if(coverMode==="ref") dir="ART DIRECTION — match the attached "+which+" cover reference image(s)"+(refs.length?": "+refs.join(", "):"")+" exactly.";
+    else if(which==="front") dir="ART DIRECTION — "+(v("frontHero")||"protagonist + signature prop, hero composition");
+    else dir="ART DIRECTION — "+(v("backArt")||"reverse angle of the hero composition");
+    const body=
+"=== AI2BOOK · "+which.toUpperCase()+" COVER ===\n"+
+styleBlock()+"\n"+toneBlock()+"\n"+(which==="front"?ruleBlock()+"\n":"")+
+dir+"\n"+
+"GENERATE AT 16:9. Clean image only.\n"+
+"NO text, titles, subtitles, copy, lettering, logos, signage, or typography of any kind in the image. All type is added in Photoshop afterward, then cropped to "+sel("trim")+". Compose so the focal subject sits clear of the edges to leave working room for that type pass.";
+    plate($("#coverOut"),body,"HARDLOCK PLOCK","ID2AI · AI2BOOK · COVER");
+  };
+})();
+</script>
+</body>
+</html>
