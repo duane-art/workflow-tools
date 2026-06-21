@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>xFLOW · Flow Designer</title>
+<link rel="icon" href="assets/favicon.ico" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Saira+Condensed:wght@500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --ink:#0A0D11; --ink-2:#0F141A; --ink-3:#151B23; --ink-4:#1B232C;
+    --line:rgba(255,255,255,0.08); --line-2:rgba(255,255,255,0.16);
+    --text:#E8EDF2; --text-dim:#8A97A6; --mono-dim:#66727F;
+    --accent:#39FF14; --accent-deep:#14C40A; --accent-glow:rgba(57,255,20,0.30);
+    --display:"Saira Condensed",system-ui,sans-serif;
+    --body:"Inter",system-ui,sans-serif;
+    --mono:"Space Mono",ui-monospace,monospace;
+    --r:12px;
+  }
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  html,body{ height:100%; overflow:hidden; }
+  body{ background:var(--ink); color:var(--text); font-family:var(--body); -webkit-font-smoothing:antialiased; display:flex; flex-direction:column; }
+  button{ font-family:inherit; cursor:pointer; }
+
+  /* ---- bar ---- */
+  .bar{ display:flex; align-items:center; gap:14px; height:56px; padding:0 16px; border-bottom:1px solid var(--line); background:var(--ink-2); z-index:40; flex:none; }
+  .wordmark{ font-family:var(--display); font-weight:700; font-size:22px; letter-spacing:0.04em; display:flex; align-items:baseline; }
+  .wordmark .mark{ width:26px; height:26px; align-self:center; margin-right:9px; flex:none;  filter:drop-shadow(0 0 6px var(--accent-glow)); object-fit:contain;}
+  .m-ring{ fill:none; stroke:var(--accent); stroke-width:12; stroke-linejoin:round; stroke-linecap:round; filter:drop-shadow(0 0 5px var(--accent-glow)); }
+  .m-play{ fill:var(--accent); stroke:var(--accent); stroke-width:5; stroke-linejoin:round; }
+  .m-base{ fill:var(--accent); }
+  .wordmark .x{ color:var(--accent); text-shadow:0 0 16px var(--accent-glow); }
+  .wordmark .sub{ font-family:var(--mono); font-weight:400; font-size:10px; letter-spacing:0.26em; color:var(--mono-dim); margin-left:11px; transform:translateY(-1px); text-transform:uppercase; }
+  .bar a.back{ font-family:var(--mono); font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:var(--mono-dim); text-decoration:none; }
+  .bar a.back:hover{ color:var(--accent); }
+  .bar .spacer{ flex:1; }
+  .seg{ display:flex; border:1px solid var(--line); border-radius:9px; overflow:hidden; }
+  .seg button{ font-family:var(--mono); font-size:11px; letter-spacing:0.12em; text-transform:uppercase; color:var(--text-dim); background:transparent; border:none; padding:8px 15px; }
+  .seg button.on{ background:var(--accent); color:var(--ink); font-weight:700; }
+  .btn{ font-family:var(--mono); font-size:11px; letter-spacing:0.12em; text-transform:uppercase; color:var(--text-dim); background:transparent; border:1px solid var(--line); padding:8px 12px; border-radius:9px; transition:all .15s ease; }
+  .btn:hover{ color:var(--accent); border-color:var(--accent); }
+  .btn.primary{ color:var(--ink); background:var(--accent); border-color:var(--accent); font-weight:700; }
+  .btn.primary:hover{ background:#fff; border-color:#fff; }
+
+  .shell{ flex:1; min-height:0; position:relative; }
+
+  /* ---- editor ---- */
+  #editPane{ position:absolute; inset:0; overflow-y:auto; padding:34px 20px 80px; }
+  .ed-wrap{ max-width:720px; margin:0 auto; }
+  .ed-wrap input.f-title{ width:100%; background:transparent; border:none; border-bottom:1px solid var(--line); color:var(--text); font-family:var(--display); font-weight:700; font-size:42px; letter-spacing:-0.01em; padding:4px 0 10px; }
+  .ed-wrap input.f-title::placeholder{ color:#39424d; }
+  .ed-wrap textarea.f-intro{ width:100%; background:transparent; border:none; color:var(--text-dim); font-size:16px; line-height:1.6; padding:12px 0; resize:vertical; min-height:54px; }
+  .ed-wrap textarea:focus, .ed-wrap input:focus{ outline:none; }
+  .ed-label{ font-family:var(--mono); font-size:10px; letter-spacing:0.2em; text-transform:uppercase; color:var(--mono-dim); margin:22px 0 10px; display:flex; align-items:center; gap:10px; }
+  .ed-label::after{ content:""; flex:1; height:1px; background:var(--line); }
+
+  .step-ed{ background:linear-gradient(180deg,var(--ink-2),var(--ink-3)); border:1px solid var(--line); border-radius:var(--r); padding:16px; margin-bottom:14px; position:relative; }
+  .step-ed .se-top{ display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+  .step-ed .se-num{ font-family:var(--display); font-weight:700; font-size:22px; color:var(--accent); min-width:30px; }
+  .step-ed .se-title{ flex:1; background:var(--ink); border:1px solid var(--line); border-radius:8px; color:var(--text); font-family:var(--display); font-weight:600; font-size:18px; padding:7px 10px; }
+  .step-ed .se-type{ font-family:var(--mono); font-size:10px; letter-spacing:0.12em; text-transform:uppercase; color:var(--mono-dim); background:var(--ink); border:1px solid var(--line); border-radius:6px; padding:5px 8px; }
+  .step-ed .se-tools{ display:flex; gap:4px; }
+  .step-ed .se-tools button{ width:28px; height:28px; border:1px solid var(--line); background:var(--ink); border-radius:7px; color:var(--text-dim); font-size:13px; }
+  .step-ed .se-tools button:hover{ color:var(--accent); border-color:var(--accent); }
+  .step-ed .se-tools button.del:hover{ color:#ff5b6e; border-color:#ff5b6e; }
+  .step-ed textarea{ width:100%; background:var(--ink); border:1px solid var(--line); border-radius:8px; color:var(--text); font-family:var(--body); font-size:13.5px; line-height:1.5; padding:9px; resize:vertical; margin-top:8px; }
+  .step-ed textarea.prompt{ min-height:46px; } .step-ed textarea.desc{ min-height:40px; color:var(--text-dim); }
+  .step-ed input:focus, .step-ed textarea:focus{ outline:none; border-color:var(--accent); }
+  .se-media{ display:flex; flex-wrap:wrap; gap:8px; margin-top:10px; }
+  .se-media .thumb{ position:relative; width:74px; height:54px; border-radius:7px; overflow:hidden; border:1px solid var(--line); background:var(--ink); }
+  .se-media .thumb img{ width:100%; height:100%; object-fit:cover; }
+  .se-media .thumb.embed{ display:flex; align-items:center; justify-content:center; font-family:var(--mono); font-size:9px; letter-spacing:0.08em; color:var(--accent); text-transform:uppercase; padding:4px; text-align:center; }
+  .se-media .thumb .x{ position:absolute; top:2px; right:2px; width:17px; height:17px; border-radius:50%; background:rgba(0,0,0,0.7); color:#fff; border:none; font-size:12px; line-height:1; }
+  .se-media .add{ width:74px; height:54px; border:1px dashed var(--line-2); border-radius:7px; background:transparent; color:var(--mono-dim); font-size:10px; font-family:var(--mono); letter-spacing:0.06em; text-transform:uppercase; }
+  .se-media .add:hover{ color:var(--accent); border-color:var(--accent); }
+  .add-step{ width:100%; padding:14px; border:1px dashed var(--line-2); border-radius:var(--r); background:transparent; color:var(--text-dim); font-family:var(--mono); font-size:12px; letter-spacing:0.14em; text-transform:uppercase; margin-top:6px; }
+  .add-step:hover{ color:var(--accent); border-color:var(--accent); }
+
+  /* ---- preview canvas (Loki engine, reskinned) ---- */
+  #prevPane{ position:absolute; inset:0; display:none; }
+  #prevPane.on{ display:block; }
+  #stage{ position:relative; width:100%; height:100%; overflow:hidden; cursor:grab;
+    background-color:var(--ink); background-image:radial-gradient(rgba(255,255,255,0.05) 1.1px, transparent 1.1px); background-size:26px 26px; }
+  #stage.grab{ cursor:grabbing; }
+  #stage img, #stage .cm-frame{ -webkit-user-drag:none; user-drag:none; }
+  #canvas{ position:absolute; top:0; left:0; transform-origin:0 0; will-change:transform; }
+  .flow-h{ position:relative; display:flex; align-items:flex-start; gap:64px; padding:80px; }
+  .h-conduit{ position:absolute; top:108px; left:230px; right:230px; height:3px; background:linear-gradient(90deg,var(--accent-deep),var(--accent)); opacity:.85; z-index:0; box-shadow:0 0 10px var(--accent-glow); }
+  .h-step{ position:relative; width:320px; flex:0 0 320px; display:flex; flex-direction:column; align-items:center; z-index:1; }
+  .h-rail{ height:60px; display:flex; align-items:center; justify-content:center; }
+  .node{ position:relative; z-index:2; margin-top:13px; width:42px; height:42px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:var(--mono); font-weight:700; font-size:15px; color:var(--ink); background:radial-gradient(circle at 35% 30%, #b9ff9f, var(--accent)); box-shadow:0 0 0 4px var(--ink), 0 0 14px var(--accent-glow); }
+  .card{ width:100%; background:linear-gradient(180deg,var(--ink-2),var(--ink-3)); border:1px solid var(--line); border-radius:var(--r); padding:16px 18px; cursor:default; }
+  .card .step-title{ color:var(--text); font-family:var(--display); font-weight:600; font-size:18px; letter-spacing:-.01em; }
+  .cm{ margin-top:12px; display:flex; flex-direction:column; gap:10px; }
+  .cm-img{ width:100%; height:auto; border-radius:9px; display:block; cursor:zoom-in; border:1px solid var(--line-2); }
+  .cm-poster{ position:relative; display:block; border-radius:9px; overflow:hidden; border:1px solid var(--line-2); background:var(--ink); cursor:zoom-in; }
+  .cm-poster img{ width:100%; height:auto; display:block; object-fit:contain; }
+  .cm-poster .cm-play{ position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:56px; height:56px; border-radius:50%; background:rgba(0,0,0,.55); display:flex; align-items:center; justify-content:center; pointer-events:none; }
+  .cm-poster .cm-play svg{ width:24px; height:24px; fill:#fff; stroke:none; margin-left:3px; }
+  .cm-frame{ position:relative; width:100%; padding-top:56.25%; border-radius:9px; overflow:hidden; border:1px solid var(--line-2); background:#000; }
+  .cm-frame iframe, .cm-frame video{ position:absolute; inset:0; width:100%; height:100%; border:0; object-fit:contain; }
+  .cm-exp{ position:absolute; top:6px; right:6px; z-index:2; width:26px; height:26px; border:none; border-radius:7px; background:rgba(0,0,0,.55); color:#fff; display:flex; align-items:center; justify-content:center; font-size:13px; cursor:pointer; }
+  .cm-exp:hover{ background:var(--accent); color:var(--ink); }
+  .h-note{ margin-top:12px; color:var(--text-dim); font-size:14px; line-height:1.5; white-space:pre-wrap; }
+  .h-prompt{ margin-top:12px; background:var(--ink); border:1px solid var(--line); border-radius:10px; padding:10px 12px; position:relative; }
+  .h-prompt .lbl{ font-family:var(--mono); font-size:10px; letter-spacing:.15em; text-transform:uppercase; color:var(--mono-dim); margin-bottom:5px; }
+  .h-prompt .txt{ font-family:var(--mono); font-size:12px; color:var(--text); white-space:pre-wrap; line-height:1.5; padding-right:54px; }
+  .h-prompt .cp{ position:absolute; top:8px; right:8px; border:1px solid var(--line-2); background:var(--ink); color:var(--text-dim); border-radius:6px; font-size:10px; padding:3px 7px; font-family:var(--mono); cursor:pointer; }
+  .h-prompt .cp:hover{ border-color:var(--accent); color:var(--accent); }
+  .canvas-empty{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:var(--text-dim); font-size:15px; }
+  .canvas-head{ position:absolute; top:18px; left:50%; transform:translateX(-50%); z-index:4; display:flex; align-items:center; gap:12px; pointer-events:none; }
+  .canvas-head .badge{ display:inline-flex; align-items:center; gap:8px; font-family:var(--mono); font-size:10px; letter-spacing:0.2em; text-transform:uppercase; color:var(--accent); border:1px solid var(--accent-deep); border-radius:999px; padding:5px 12px; background:rgba(10,13,17,0.85); }
+  .canvas-head .badge .d{ width:6px; height:6px; border-radius:50%; background:var(--accent); box-shadow:0 0 8px var(--accent-glow); }
+  .canvas-head .ptitle{ font-family:var(--display); font-weight:700; font-size:18px; color:var(--text); }
+
+  .zoombar{ position:absolute; left:18px; bottom:18px; z-index:5; display:flex; gap:6px; align-items:center; background:var(--ink-2); border:1px solid var(--line); border-radius:11px; padding:6px; }
+  .zoombar button{ width:34px; height:34px; border-radius:8px; border:1px solid var(--line); background:var(--ink); color:var(--text); font-size:18px; line-height:1; display:flex; align-items:center; justify-content:center; cursor:pointer; }
+  .zoombar button:hover{ border-color:var(--accent); color:var(--accent); }
+  .zoombar .zlvl{ font-family:var(--mono); font-size:12px; color:var(--text-dim); width:48px; text-align:center; }
+  .zoombar .fit{ width:auto; padding:0 12px; font-size:12px; font-family:var(--mono); }
+
+  /* ---- lightbox (Loki) ---- */
+  .lb{ position:fixed; inset:0; z-index:90; display:none; align-items:center; justify-content:center; padding:38px; background:rgba(5,7,10,0.78); backdrop-filter:blur(3px); }
+  .lb.open{ display:flex; }
+  .lb-inner{ position:relative; display:inline-flex; max-width:92vw; max-height:88vh; }
+  .lb-media{ display:flex; align-items:center; justify-content:center; }
+  .lb-media img{ max-width:84vw; max-height:86vh; border-radius:8px; box-shadow:0 20px 60px rgba(0,0,0,.6); display:block; -webkit-user-drag:none; user-drag:none; }
+  .lb-media video{ max-width:84vw; max-height:86vh; border-radius:8px; background:#000; display:block; }
+  .lb-media iframe{ width:min(82vw,1040px); height:min(78vh,600px); border:0; border-radius:8px; background:#000; display:block; }
+  .lb-x{ position:absolute; top:8px; right:8px; z-index:5; width:34px; height:34px; border-radius:50%; border:none; background:rgba(10,12,16,.62); color:#fff; font-size:18px; line-height:1; display:flex; align-items:center; justify-content:center; cursor:pointer; backdrop-filter:blur(2px); }
+  .lb-x:hover{ background:var(--accent); color:var(--ink); }
+  .lb-nav{ width:38px; height:38px; border-radius:50%; border:none; background:rgba(255,255,255,.16); color:#fff; font-size:22px; line-height:1; display:flex; align-items:center; justify-content:center; cursor:pointer; padding:0; }
+  .lb-nav:hover{ background:var(--accent); color:var(--ink); }
+  .lb-nav.hidden{ display:none; }
+  .lb-controls{ position:absolute; bottom:16px; left:50%; transform:translateX(-50%); z-index:4; display:flex; align-items:center; gap:10px; }
+  .lb-count{ font-family:var(--mono); font-size:12px; color:#fff; background:rgba(10,12,16,.55); padding:6px 14px; border-radius:20px; min-width:56px; text-align:center; }
+
+  /* ---- modal ---- */
+  .scrim{ position:fixed; inset:0; background:rgba(5,7,10,0.7); backdrop-filter:blur(3px); z-index:60; display:none; align-items:center; justify-content:center; padding:24px; }
+  .scrim.open{ display:flex; }
+  .modal{ position:relative; width:520px; max-width:100%; max-height:84vh; overflow-y:auto; background:var(--ink-2); border:1px solid var(--line-2); border-radius:16px; padding:24px 26px; }
+  .modal-x{ position:absolute; top:14px; right:14px; width:32px; height:32px; border-radius:50%; border:1px solid var(--line-2); background:var(--ink); color:var(--text-dim); font-size:18px; line-height:1; display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:2; }
+  .modal-x:hover{ color:var(--accent); border-color:var(--accent); }
+  .modal h2{ font-family:var(--display); font-weight:700; font-size:28px; margin-bottom:4px; }
+  .modal .m-kick{ font-family:var(--mono); font-size:11px; letter-spacing:0.22em; text-transform:uppercase; color:var(--accent); margin-bottom:14px; }
+  .modal p{ color:#C7D0DA; font-size:14px; margin-bottom:12px; }
+  .modal ul{ margin:6px 0 14px 2px; list-style:none; display:grid; gap:8px; }
+  .modal li{ font-size:14px; color:#C7D0DA; padding-left:20px; position:relative; }
+  .modal li::before{ content:"›"; position:absolute; left:2px; color:var(--accent); font-weight:700; }
+  .field{ margin-bottom:14px; }
+  .field label{ font-family:var(--mono); font-size:10px; letter-spacing:0.16em; text-transform:uppercase; color:var(--mono-dim); display:block; margin-bottom:6px; }
+  .field input, .field select{ width:100%; background:var(--ink); border:1px solid var(--line); border-radius:8px; color:var(--text); font-family:var(--body); font-size:14px; padding:9px 10px; }
+  .field input:focus, .field select:focus{ outline:none; border-color:var(--accent); }
+  .row3{ display:grid; grid-template-columns:1fr 90px auto; gap:10px; align-items:end; }
+  .chk{ display:flex; align-items:center; gap:8px; font-size:13px; color:var(--text-dim); padding-bottom:9px; }
+  .msgbox{ width:100%; min-height:96px; background:var(--ink); border:1px solid var(--line); border-radius:8px; color:var(--text); font-family:var(--body); font-size:13px; line-height:1.5; padding:10px; resize:vertical; }
+  .m-foot{ display:flex; gap:10px; justify-content:flex-end; align-items:center; margin-top:16px; padding-top:16px; border-top:1px solid var(--line); }
+  .m-foot a{ font-family:var(--mono); font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:var(--text-dim); text-decoration:none; margin-right:auto; }
+  .m-foot a:hover{ color:var(--accent); }
+  .m-ok{ padding:9px 18px; border-radius:9px; border:1px solid var(--accent); background:var(--accent); color:var(--ink); font-family:var(--mono); font-size:11px; letter-spacing:0.12em; text-transform:uppercase; font-weight:700; }
+  .m-ghost{ padding:9px 16px; border-radius:9px; border:1px solid var(--line); background:transparent; color:var(--text-dim); font-family:var(--mono); font-size:11px; letter-spacing:0.12em; text-transform:uppercase; }
+  .m-ghost:hover{ color:var(--accent); border-color:var(--accent); }
+  code{ font-family:var(--mono); font-size:0.86em; background:var(--ink-3); border:1px solid var(--line); border-radius:5px; padding:1px 6px; color:var(--accent); }
+  .t-list{ display:grid; gap:10px; margin:4px 0 4px; }
+  .t-card{ display:flex; align-items:center; gap:14px; width:100%; text-align:left; background:var(--ink); border:1px solid var(--line); border-radius:10px; padding:12px 14px; cursor:pointer; transition:all .15s ease; }
+  .t-card:hover{ border-color:var(--accent); box-shadow:0 0 0 1px var(--accent-glow); }
+  .t-card .t-thumb{ width:62px; height:42px; flex:none; border-radius:7px; border:1px solid var(--line-2); background:var(--ink-3); overflow:hidden; display:flex; align-items:center; justify-content:center; }
+  .t-card .t-thumb img{ width:100%; height:100%; object-fit:cover; }
+  .t-card .t-thumb .ph{ font-family:var(--mono); font-size:9px; letter-spacing:0.1em; color:var(--mono-dim); }
+  .t-card .t-meta{ flex:1; min-width:0; }
+  .t-card .t-name{ font-family:var(--display); font-weight:600; font-size:17px; color:var(--text); }
+  .t-card .t-sub{ font-family:var(--mono); font-size:10px; letter-spacing:0.08em; text-transform:uppercase; color:var(--mono-dim); margin-top:2px; }
+  .t-card .t-use{ font-family:var(--mono); font-size:10px; letter-spacing:0.12em; text-transform:uppercase; color:var(--accent); flex:none; }
+  .t-note{ font-family:var(--mono); font-size:11px; letter-spacing:0.06em; color:var(--mono-dim); text-align:center; padding:14px; }
+  .toast{ position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(20px); background:var(--accent); color:var(--ink); font-family:var(--mono); font-size:12px; letter-spacing:0.1em; text-transform:uppercase; font-weight:700; padding:11px 20px; border-radius:10px; opacity:0; pointer-events:none; transition:all .2s ease; z-index:90; }
+  .toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
+
+  .sample-badge{ display:none; font-family:var(--mono); font-size:10px; letter-spacing:0.18em; text-transform:uppercase; color:var(--accent); border:1px solid var(--accent-deep); border-radius:999px; padding:5px 12px; margin-right:4px; }
+  .viewonly{ display:none !important; }
+  body.view-only .auth{ display:none !important; }
+  body.view-only .viewonly{ display:inline-flex !important; }
+  body.view-only .sample-badge{ display:inline-flex; }
+
+  /* ---- print (samples / any flow) ---- */
+  #printRoot{ display:none; }
+  @media print{
+    body *{ visibility:hidden !important; }
+    #printRoot, #printRoot *{ visibility:visible !important; }
+    #printRoot{ display:block; position:absolute; inset:0; background:#fff; color:#15181d; }
+    #printRoot .badge{ display:inline-flex; align-items:center; gap:8px; font-family:var(--mono); font-size:9pt; letter-spacing:.2em; text-transform:uppercase; color:#14a009; border:1px solid #14a009; border-radius:999px; padding:4px 12px; margin:0 0 14px; }
+    #printRoot .badge .d{ display:none; }
+    #printRoot h1{ font-family:var(--display); font-weight:700; font-size:32pt; line-height:1; margin:0 0 8px; }
+    #printRoot .intro{ font-size:12pt; color:#444; line-height:1.5; margin-bottom:16px; }
+    #printRoot .pcard{ display:flex; gap:16px; padding:13px 0; border-top:1px solid #ddd; break-inside:avoid; }
+    #printRoot .pc-n{ font-family:var(--display); font-weight:700; font-size:19pt; color:#14a009; min-width:38px; }
+    #printRoot .pc-kick{ font-family:var(--mono); font-size:8pt; letter-spacing:.16em; text-transform:uppercase; color:#888; margin-bottom:3px; }
+    #printRoot h3{ font-family:var(--display); font-weight:600; font-size:15pt; margin-bottom:5px; }
+    #printRoot .pc-prompt{ font-size:10.5pt; color:#222; line-height:1.5; margin-bottom:6px; }
+    #printRoot .pc-desc{ font-size:10pt; color:#555; line-height:1.45; }
+    #printRoot .pc-gal{ display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:10px; }
+    #printRoot .pc-gal .g{ border:1px solid #ddd; border-radius:6px; overflow:hidden; aspect-ratio:16/10; }
+    #printRoot .pc-gal .g img{ width:100%; height:100%; object-fit:cover; }
+    #printRoot .pc-gal .g.embed{ display:flex; align-items:center; justify-content:center; font-family:var(--mono); font-size:8pt; color:#14a009; }
+    #printRoot .pc-gal .g.embed svg{ width:18px; height:18px; fill:#14a009; }
+    @page{ margin:14mm; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="bar">
+    <div class="wordmark"><img class="mark" src="data:image/png;base64,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" alt="xFLOW" /><span class="x">x</span>FLOW<span class="sub">Flow Designer</span></div>
+    <a class="back" href="index.html">← LAB</a>
+    <div class="spacer"></div>
+    <span class="sample-badge" id="sampleBadge">Sample · view only</span>
+    <div class="seg auth"><button id="mEdit" class="on">Edit</button><button id="mPrev">Preview</button></div>
+    <button class="btn" id="btnGuide">Guide</button>
+    <button class="btn auth" id="btnTemplates">Templates</button>
+    <button class="btn" id="btnSamples">Samples</button>
+    <button class="btn auth" id="btnImport">Import</button>
+    <button class="btn auth" id="btnJson">Export JSON</button>
+    <button class="btn auth" id="btnHtml">Export HTML</button>
+    <button class="btn primary auth" id="btnShare">Publish ▸</button>
+    <button class="btn viewonly" id="btnPrint">Print</button>
+    <button class="btn primary viewonly" id="btnExit">Exit sample</button>
+    <input type="file" id="fileImport" accept="application/json" hidden />
+    <input type="file" id="fileImg" accept="image/*" hidden />
+  </div>
+
+  <div class="shell">
+    <div id="printRoot"></div>
+    <div id="editPane">
+      <div class="ed-wrap">
+        <input class="f-title" id="fTitle" placeholder="Flow title" />
+        <textarea class="f-intro" id="fIntro" placeholder="A short intro for the client…"></textarea>
+        <div class="ed-label">Steps</div>
+        <div id="steps"></div>
+        <button class="add-step" id="addStep">+ Add step</button>
+      </div>
+    </div>
+
+    <div id="prevPane">
+      <div class="canvas-head" id="canvasHead"></div>
+      <div id="stage"><div id="canvas"></div></div>
+      <div class="zoombar">
+        <button id="zOut" title="Zoom out">&minus;</button>
+        <div class="zlvl" id="zLvl">100%</div>
+        <button id="zIn" title="Zoom in">+</button>
+        <button class="fit" id="zFit" title="Fit to screen">Fit</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- lightbox -->
+  <div class="lb" id="lb" tabindex="-1">
+    <div class="lb-inner"><button class="lb-x" id="lbX" aria-label="Close">&times;</button><div class="lb-media" id="lbMedia"></div></div>
+    <div class="lb-controls"><button class="lb-nav" id="lbPrev" aria-label="Previous">&#8249;</button><span class="lb-count" id="lbCount"></span><button class="lb-nav" id="lbNext" aria-label="Next">&#8250;</button></div>
+  </div>
+
+  <!-- publish modal -->
+  <div class="scrim" id="pubScrim">
+    <div class="modal">
+      <button class="modal-x" aria-label="Close">&times;</button>
+      <div class="m-kick">Publish</div>
+      <h2>Version &amp; share</h2>
+      <p>The version label is shown to the client in the deliverable — the link stays stable, the label tells them it's current.</p>
+      <div class="field">
+        <label>Version label</label>
+        <div class="row3">
+          <select id="vStage"><option>ALPHA</option><option>BETA</option><option>FINAL</option></select>
+          <input id="vNum" value="1" />
+          <label class="chk"><input type="checkbox" id="vDate" /> date</label>
+        </div>
+      </div>
+      <div class="field"><label>Client link (your stable URL)</label><input id="shareUrl" placeholder="https://duane-art.github.io/…" /></div>
+      <div class="field"><label>Share message</label><textarea class="msgbox" id="shareMsg"></textarea></div>
+      <div class="m-foot">
+        <a href="guide.html">xFLOW method →</a>
+        <button class="m-ghost" id="copyLink">Copy link</button>
+        <button class="m-ghost" id="copyMsg">Copy message</button>
+        <button class="m-ok" id="pubClose">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- guide modal -->
+  <div class="scrim" id="gScrim">
+    <div class="modal">
+      <button class="modal-x" aria-label="Close">&times;</button>
+      <div class="m-kick">Embedded guide</div>
+      <h2>Flow Designer</h2>
+      <p>The DESIGNER turns a flow into a polished, client-facing walkthrough. Build it from scratch, or <b>Import</b> a flow the Maker built — same xFLOW schema.</p>
+      <ul>
+        <li><b>Edit</b> the title, intro, and steps. Each step has a title, the prompt/action, a description, and media.</li>
+        <li><b>Add media</b> per step — upload images or paste an image/video/embed link.</li>
+        <li><b>Preview</b> shows the client view with the version badge; zoom with the HUD.</li>
+        <li><b>Publish</b> sets the version label and share message; <b>Export HTML</b> writes a self-contained deliverable.</li>
+        <li><b>Export JSON</b> writes the shared schema (graph preserved) so the flow round-trips back to the Maker.</li>
+      </ul>
+      <div class="m-foot"><a href="guide.html">Full xFLOW method →</a><button class="m-ok" id="gOk">Got it</button></div>
+    </div>
+  </div>
+
+  <!-- templates modal -->
+  <div class="scrim" id="tScrim">
+    <div class="modal">
+      <button class="modal-x" aria-label="Close">&times;</button>
+      <div class="m-kick">Start from a template</div>
+      <h2>Templates</h2>
+      <p>Editable starting points. Pick one to load it into the editor, then make it yours. Templates live in <code>xflow-lab/templates/</code> — drop an xFLOW <code>.json</code> in that folder and it appears here automatically.</p>
+      <div id="tList" class="t-list"></div>
+      <div class="m-foot"><a href="guide.html">xFLOW method →</a><button class="m-ghost" id="tClose">Close</button></div>
+    </div>
+  </div>
+
+  <!-- samples modal -->
+  <div class="scrim" id="sScrim">
+    <div class="modal">
+      <button class="modal-x" aria-label="Close">&times;</button>
+      <div class="m-kick">Open a sample</div>
+      <h2>Samples</h2>
+      <p>Approved, shareable flows — <b>view and print only</b>, fully interactive (pan, zoom, lightbox). Samples live in <code>xflow-lab/samples/</code>; drop an approved xFLOW <code>.json</code> there and it appears here.</p>
+      <div id="sList" class="t-list"></div>
+      <div class="m-foot"><a href="../">All samples ↗</a><button class="m-ghost" id="sClose">Close</button></div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  "use strict";
+
+  const TYPE_LABEL = { prompt:"Prompt", sketch:"Sketch / Line", image:"Image", animate:"Animate", upscale:"Upscale", crop:"Crop", lock:"Lock", note:"Note" };
+  let seq = 1;
+  const uid = ()=> "n"+(seq++);
+
+  // ---- model (shared xFLOW schema, in memory) ----
+  let flow = {
+    meta:{ title:"", intro:"" },
+    steps:[],
+    graph:null,  // preserved from Maker imports
+    publish:{ version:{ stage:"ALPHA", num:"1", date:false }, shareUrl:"", shareImage:"", card:{color:"",text:"",pattern:""} }
+  };
+  let mode = "edit";
+  let viewOnly = false, stashedFlow = null;
+
+  const $ = id => document.getElementById(id);
+  const esc = s => String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+  const toast = m => { const t=$("toast"); t.textContent=m; t.classList.add("show"); setTimeout(()=>t.classList.remove("show"),1600); };
+  function todayStr(){ const d=new Date(); return d.toLocaleDateString(undefined,{year:"numeric",month:"short",day:"numeric"}); }
+  function mediaKind(url){
+    if(typeof url==="string" && url.indexOf("data:image/")===0) return "image";
+    if(/\.(png|jpe?g|gif|webp|svg|avif)(\?|#|$)/i.test(url)) return "image";
+    return "embed";
+  }
+  function mediaHost(url){
+    if(/youtube|youtu\.be/.test(url)) return "YouTube";
+    if(/vimeo\.com/.test(url)) return "Vimeo";
+    if(/drive\.google/.test(url)) return "Drive";
+    if(/\.(mp4|webm|mov|m4v|ogv)(\?|#|$)/i.test(url)) return "Video";
+    return "Link";
+  }
+  function verLabel(){ const v=flow.publish.version||{}; let s=(v.stage||"ALPHA")+" "+(v.num||"1"); if(v.date) s+=" · "+todayStr(); return s; }
+
+  // ---- editor render ----
+  function renderEditor(){
+    $("fTitle").value = flow.meta.title || "";
+    $("fIntro").value = flow.meta.intro || "";
+    const host = $("steps"); host.innerHTML = "";
+    flow.steps.forEach((s,i)=>{
+      const card = document.createElement("div"); card.className = "step-ed"; card.dataset.id = s.id;
+      card.innerHTML =
+        '<div class="se-top">'+
+          '<span class="se-num">'+String(i+1).padStart(2,"0")+'</span>'+
+          '<input class="se-title" placeholder="Step title" value="'+esc(s.title|| (s.type?TYPE_LABEL[s.type]||"":""))+'">'+
+          (s.type?'<span class="se-type">'+esc(TYPE_LABEL[s.type]||s.type)+'</span>':'')+
+          '<div class="se-tools"><button class="up">↑</button><button class="dn">↓</button><button class="del">×</button></div>'+
+        '</div>'+
+        '<textarea class="prompt" placeholder="Prompt / action…">'+esc(s.prompt)+'</textarea>'+
+        '<textarea class="desc" placeholder="Description / notes (optional)…">'+esc(s.desc)+'</textarea>'+
+        '<div class="se-media"></div>';
+      const media = card.querySelector(".se-media");
+      (s.media||[]).forEach((m,mi)=>{
+        const t = document.createElement("div");
+        if(m.type==="image"){ t.className="thumb"; t.innerHTML='<img src="'+esc(m.src)+'"><button class="x" data-mi="'+mi+'">×</button>'; }
+        else { t.className="thumb embed"; t.innerHTML=esc(mediaHost(m.src))+'<button class="x" data-mi="'+mi+'">×</button>'; }
+        t.querySelector(".x").onclick = ()=>{ s.media.splice(mi,1); renderEditor(); };
+        media.appendChild(t);
+      });
+      const addImg = document.createElement("button"); addImg.className="add"; addImg.textContent="+ image";
+      addImg.onclick = ()=> pickImage(s.id);
+      const addLink = document.createElement("button"); addLink.className="add"; addLink.textContent="+ link";
+      addLink.onclick = ()=>{ const u=prompt("Image, video, or embed URL:"); if(u){ s.media=s.media||[]; s.media.push({type:mediaKind(u),src:u.trim()}); renderEditor(); } };
+      media.appendChild(addImg); media.appendChild(addLink);
+
+      card.querySelector(".se-title").addEventListener("input", e=>{ s.title=e.target.value; });
+      card.querySelector(".prompt").addEventListener("input", e=>{ s.prompt=e.target.value; });
+      card.querySelector(".desc").addEventListener("input", e=>{ s.desc=e.target.value; });
+      card.querySelector(".del").onclick = ()=>{ flow.steps.splice(i,1); renderEditor(); };
+      card.querySelector(".up").onclick = ()=>{ if(i>0){ const a=flow.steps; [a[i-1],a[i]]=[a[i],a[i-1]]; renderEditor(); } };
+      card.querySelector(".dn").onclick = ()=>{ if(i<flow.steps.length-1){ const a=flow.steps; [a[i+1],a[i]]=[a[i],a[i+1]]; renderEditor(); } };
+      host.appendChild(card);
+    });
+  }
+
+  $("fTitle").addEventListener("input", e=> flow.meta.title=e.target.value);
+  $("fIntro").addEventListener("input", e=> flow.meta.intro=e.target.value);
+  $("addStep").onclick = ()=>{ flow.steps.push({ id:uid(), type:"", title:"", prompt:"", desc:"", media:[] }); renderEditor(); };
+
+  // ---- image upload ----
+  let imgTargetStep = null;
+  function pickImage(stepId){ imgTargetStep = stepId; $("fileImg").click(); }
+  $("fileImg").addEventListener("change", e=>{
+    const f = e.target.files[0]; if(!f || !imgTargetStep){ e.target.value=""; return; }
+    const rd = new FileReader();
+    rd.onload = ()=>{ const s=flow.steps.find(x=>x.id===imgTargetStep); if(s){ s.media=s.media||[]; s.media.push({type:"image",src:rd.result}); renderEditor(); } };
+    rd.readAsDataURL(f); e.target.value="";
+  });
+
+  // ---- preview render (also the client deliverable body) ----
+  function clientHTMLBody(f){
+    let h = '<div class="badge"><span class="d"></span>'+esc(verLabelFor(f))+'</div>';
+    h += '<h1>'+esc(f.meta.title||"Untitled flow")+'</h1>';
+    if(f.meta.intro) h += '<div class="intro">'+esc(f.meta.intro)+'</div>';
+    f.steps.forEach((s,i)=>{
+      h += '<div class="pcard"><div class="pc-n">'+String(i+1).padStart(2,"0")+'</div><div class="pc-body">';
+      if(s.type) h += '<div class="pc-kick">'+esc(TYPE_LABEL[s.type]||s.type)+'</div>';
+      h += '<h3>'+esc(s.title || TYPE_LABEL[s.type] || "Step "+(i+1))+'</h3>';
+      const p = s.prompt || (s.type==="lock" ? "HARDLOCK PLOCK" : "");
+      if(p) h += '<div class="pc-prompt">'+esc(p)+'</div>';
+      if(s.desc) h += '<div class="pc-desc">'+esc(s.desc)+'</div>';
+      if((s.media||[]).length){
+        h += '<div class="pc-gal">';
+        s.media.forEach(m=>{
+          if(m.type==="image") h += '<div class="g" data-src="'+esc(m.src)+'"><img src="'+esc(m.src)+'"></div>';
+          else h += '<a class="g embed" href="'+esc(m.src)+'" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>'+esc(mediaHost(m.src))+'</a>';
+        });
+        h += '</div>';
+      }
+      h += '</div></div>';
+    });
+    return h;
+  }
+  function verLabelFor(f){ const v=(f.publish&&f.publish.version)||{}; let s=(v.stage||"ALPHA")+" "+(v.num||"1"); if(v.date) s+=" · "+todayStr(); return s; }
+
+  // ---- preview: Loki canvas engine ----
+  function el(tag,cls,txt){ const n=document.createElement(tag); if(cls)n.className=cls; if(txt!=null)n.textContent=txt; return n; }
+  function clamp(v,a,b){ return Math.max(a,Math.min(b,v)); }
+  function embedInfo(url){
+    let m;
+    if((m=url.match(/drive\.google\.com\/file\/d\/([\w-]+)/))||(m=url.match(/[?&]id=([\w-]+)/))){
+      return {mode:"iframe", src:"https://drive.google.com/file/d/"+m[1]+"/preview", host:"Drive", poster:"https://drive.google.com/thumbnail?id="+m[1]+"&sz=w1600"};
+    }
+    if((m=url.match(/(?:youtube\.com\/.*[?&]v=|youtu\.be\/)([\w-]{6,})/))){ return {mode:"iframe", src:"https://www.youtube.com/embed/"+m[1], host:"YouTube", poster:"https://img.youtube.com/vi/"+m[1]+"/hqdefault.jpg"}; }
+    if((m=url.match(/vimeo\.com\/(\d+)/))){ return {mode:"iframe", src:"https://player.vimeo.com/video/"+m[1], host:"Vimeo"}; }
+    if(/\.(mp4|webm|ogg|ogv|mov|m4v)(\?|#|$)/i.test(url)){ return {mode:"video", src:url, host:"Video"}; }
+    return {mode:"iframe", src:url, host:"Link"};
+  }
+  function mediaNode(item){
+    if(item.type==="image"){ const im=el("img","cm-img"); im.src=item.src; im.alt=""; im.onload=imgLoaded; im.onclick=()=>openMedia(item); im.setAttribute("draggable","false"); return im; }
+    const info=embedInfo(item.src);
+    if(item.type==="video" && info.mode!=="iframe"){ const fr0=el("div","cm-frame"); const v=el("video"); v.src=item.src; v.controls=true; v.preload="metadata"; fr0.appendChild(v);
+      const ex0=el("button","cm-exp","\u2922"); ex0.title="Expand"; ex0.onclick=()=>openMedia(item); fr0.appendChild(ex0); return fr0; }
+    if(info.poster){
+      const wrap=el("div","cm-poster");
+      const pi=el("img"); pi.src=info.poster; pi.alt=(info.host||"")+" video"; pi.setAttribute("draggable","false"); pi.onload=imgLoaded;
+      pi.onerror=()=>{ wrap.className="cm-frame"; wrap.innerHTML="";
+        const f=el("iframe"); f.src=info.src; f.allow="autoplay; fullscreen; picture-in-picture"; f.setAttribute("allowfullscreen",""); wrap.appendChild(f);
+        const ex=el("button","cm-exp","\u2922"); ex.title="Expand"; ex.onclick=()=>openMedia(item); wrap.appendChild(ex); wrap.onclick=null; };
+      wrap.appendChild(pi);
+      wrap.insertAdjacentHTML("beforeend",'<span class="cm-play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span>');
+      wrap.onclick=()=>openMedia(item);
+      return wrap;
+    }
+    const fr=el("div","cm-frame");
+    const f2=el("iframe"); f2.src=info.src; f2.allow="autoplay; fullscreen; picture-in-picture"; f2.setAttribute("allowfullscreen",""); fr.appendChild(f2);
+    const ex2=el("button","cm-exp","\u2922"); ex2.title="Expand"; ex2.onclick=()=>openMedia(item); fr.appendChild(ex2);
+    return fr;
+  }
+  const canvas = $("canvas"), stage = $("stage");
+  function renderCanvas(){
+    const head=$("canvasHead"); head.innerHTML="";
+    if(flow.steps.length || flow.meta.title){
+      head.insertAdjacentHTML("beforeend",'<span class="badge"><span class="d"></span>'+esc(verLabelFor(flow))+'</span>');
+      head.insertAdjacentHTML("beforeend",'<span class="ptitle">'+esc(flow.meta.title||"Untitled flow")+'</span>');
+    }
+    canvas.innerHTML="";
+    const oldE=stage.querySelector(".canvas-empty"); if(oldE)oldE.remove();
+    if(!flow.steps.length){ stage.appendChild(el("div","canvas-empty","Nothing to show yet — add steps in Edit mode.")); return; }
+    const fl=el("div","flow-h"); if(flow.steps.length>1) fl.appendChild(el("div","h-conduit"));
+    flow.steps.forEach((s,i)=>{
+      const hs=el("div","h-step"); const rail=el("div","h-rail"); rail.appendChild(el("div","node",String(i+1).padStart(2,"0"))); hs.appendChild(rail);
+      const card=el("div","card");
+      card.appendChild(el("div","step-title", s.title || TYPE_LABEL[s.type] || ("Step "+(i+1))));
+      if((s.media||[]).length){ const cm=el("div","cm"); s.media.forEach(item=>cm.appendChild(mediaNode(item))); card.appendChild(cm); }
+      if(s.desc) card.appendChild(el("div","h-note",s.desc));
+      const p = s.prompt || (s.type==="lock" ? "HARDLOCK PLOCK" : "");
+      if(p){ const pb=el("div","h-prompt"); pb.appendChild(el("div","lbl","Prompt")); pb.appendChild(el("div","txt",p));
+        const cp=el("button","cp","Copy"); cp.onclick=()=>copy(p).then(()=>toast("Prompt copied")); pb.appendChild(cp); card.appendChild(pb); }
+      hs.appendChild(card); fl.appendChild(hs);
+    });
+    canvas.appendChild(fl);
+  }
+  // pan & zoom
+  let scale=1, panX=40, panY=40, userMoved=false;
+  function apply(){ canvas.style.transform="translate("+panX+"px,"+panY+"px) scale("+scale+")"; $("zLvl").textContent=Math.round(scale*100)+"%"; }
+  function flowEl(){ return canvas.firstElementChild; }
+  function fit(){ const f=flowEl(); if(!f){ scale=1; panX=40; panY=40; apply(); return; }
+    const w=f.offsetWidth,h=f.offsetHeight,sw=stage.clientWidth,sh=stage.clientHeight; if(!w||!h||!sw)return;
+    scale=clamp(Math.min((sw-60)/w,(sh-60)/h,1.4),0.15,4); panX=(sw-w*scale)/2; panY=(sh-h*scale)/2; userMoved=false; apply(); }
+  function zoomAt(cx,cy,factor){ const prev=scale; scale=clamp(scale*factor,0.15,4); const k=scale/prev; panX=cx-k*(cx-panX); panY=cy-k*(cy-panY); userMoved=true; apply(); }
+  function imgLoaded(){ if(mode==="preview" && !userMoved) fit(); }
+  stage.addEventListener("wheel",e=>{ if(mode!=="preview")return; e.preventDefault(); const r=stage.getBoundingClientRect(); zoomAt(e.clientX-r.left,e.clientY-r.top, e.deltaY<0?1.12:1/1.12); },{passive:false});
+  let dragging=false,sx=0,sy=0,opx=0,opy=0;
+  stage.addEventListener("pointerdown",e=>{ if(mode!=="preview")return; if(e.target.closest(".zoombar")||e.target.closest(".cm-frame")||e.target.closest(".cm-img")||e.target.closest(".cm-poster")||e.target.closest(".h-prompt"))return;
+    dragging=true; userMoved=true; sx=e.clientX; sy=e.clientY; opx=panX; opy=panY; stage.classList.add("grab"); stage.setPointerCapture(e.pointerId); });
+  stage.addEventListener("pointermove",e=>{ if(!dragging)return; panX=opx+(e.clientX-sx); panY=opy+(e.clientY-sy); apply(); });
+  function endDrag(){ dragging=false; stage.classList.remove("grab"); }
+  stage.addEventListener("pointerup",endDrag); stage.addEventListener("pointercancel",endDrag);
+  $("zIn").onclick=()=>{ const r=stage.getBoundingClientRect(); zoomAt(r.width/2,r.height/2,1.2); };
+  $("zOut").onclick=()=>{ const r=stage.getBoundingClientRect(); zoomAt(r.width/2,r.height/2,1/1.2); };
+  $("zFit").onclick=()=>fit();
+
+  // ---- mode toggle ----
+  function setMode(m){
+    if(viewOnly && m==="edit") return;
+    mode=m;
+    $("mEdit").classList.toggle("on", m==="edit");
+    $("mPrev").classList.toggle("on", m==="preview");
+    $("editPane").style.display = m==="edit" ? "block" : "none";
+    $("prevPane").classList.toggle("on", m==="preview");
+    if(m==="preview"){ renderCanvas(); requestAnimationFrame(()=>fit()); }
+  }
+  $("mEdit").onclick = ()=> setMode("edit");
+  $("mPrev").onclick = ()=> setMode("preview");
+
+  // ---- lightbox ----
+  let lbList=[], lbIndex=0;
+  function renderLbItem(item){
+    const box=$("lbMedia"); box.innerHTML="";
+    if(item.type==="image"){ const im=el("img"); im.src=item.src; im.setAttribute("draggable","false"); box.appendChild(im); return; }
+    const info=embedInfo(item.src);
+    if(item.type==="video" && info.mode!=="iframe"){ const v=el("video"); v.src=item.src; v.controls=true; v.autoplay=true; box.appendChild(v); }
+    else if(info.mode==="video"){ const v2=el("video"); v2.src=info.src; v2.controls=true; v2.autoplay=true; box.appendChild(v2); }
+    else { const f=el("iframe"); f.src=info.src; f.allow="autoplay; fullscreen; picture-in-picture"; f.setAttribute("allowfullscreen",""); box.appendChild(f); }
+  }
+  function updateLbNav(){ const many=lbList.length>1; $("lbPrev").classList.toggle("hidden",!many); $("lbNext").classList.toggle("hidden",!many); $("lbCount").textContent=many?(lbIndex+1)+" / "+lbList.length:""; }
+  function openMedia(item){
+    lbList=[]; flow.steps.forEach(s=>(s.media||[]).forEach(m=>lbList.push(m)));
+    lbIndex=lbList.indexOf(item); if(lbIndex<0){ lbList=[item]; lbIndex=0; }
+    renderLbItem(lbList[lbIndex]); updateLbNav(); $("lb").classList.add("open"); try{ $("lb").focus(); }catch(e){}
+  }
+  function lbStep(d){ if(!lbList.length)return; lbIndex=(lbIndex+d+lbList.length)%lbList.length; renderLbItem(lbList[lbIndex]); updateLbNav(); }
+  function closeLb(){ $("lb").classList.remove("open"); $("lbMedia").innerHTML=""; }
+  $("lb").addEventListener("click",e=>{ if(e.target===$("lb")) closeLb(); });
+  $("lbX").onclick=e=>{ e.stopPropagation(); closeLb(); };
+  $("lbPrev").onclick=e=>{ e.stopPropagation(); lbStep(-1); };
+  $("lbNext").onclick=e=>{ e.stopPropagation(); lbStep(1); };
+  let lbWheelLock=0;
+  $("lb").addEventListener("wheel",e=>{ if(!$("lb").classList.contains("open"))return; e.preventDefault(); const now=Date.now(); if(now-lbWheelLock<140)return; lbWheelLock=now; if(e.deltaY<0)lbStep(1); else if(e.deltaY>0)lbStep(-1); },{passive:false});
+  document.addEventListener("keydown",e=>{ if(!$("lb").classList.contains("open"))return; if(e.key==="Escape")closeLb(); else if(e.key==="ArrowRight")lbStep(1); else if(e.key==="ArrowLeft")lbStep(-1); });
+
+  // ---- schema in/out ----
+  function buildSchema(){
+    return {
+      xflow:"flow", schema:2,
+      meta:{ title:flow.meta.title||"", intro:flow.meta.intro||"" },
+      steps: flow.steps.map(s=>({ id:s.id, type:s.type||"", title:s.title||"", prompt:s.prompt||"", desc:s.desc||"", media:(s.media||[]).map(m=>({type:m.type,src:m.src})) })),
+      graph: flow.graph || null,
+      publish: flow.publish
+    };
+  }
+  function loadSchema(d){
+    if(!d || typeof d!=="object") return false;
+    const steps = Array.isArray(d.steps) ? d.steps
+      : (Array.isArray(d.nodes) ? d.nodes.map(n=>({ id:n.id, type:n.type, title:"", prompt:n.text||"", desc:"", media:[] })) : null);
+    if(!steps) return false;
+    flow.meta = { title:(d.meta&&d.meta.title)||d.title||"", intro:(d.meta&&d.meta.intro)||d.intro||"" };
+    flow.steps = steps.map(s=>({ id:s.id||uid(), type:s.type||"", title:s.title||"", prompt:s.prompt||"", desc:s.desc||"", media:Array.isArray(s.media)?s.media.map(m=>({type:m.type||mediaKind(m.src),src:m.src})):[] }));
+    flow.graph = d.graph || (Array.isArray(d.nodes)?{nodes:d.nodes.map(n=>({id:n.id,x:n.x,y:n.y})),edges:d.edges||[]}:null);
+    const pub = d.publish || {};
+    flow.publish = {
+      version: pub.version || { stage:"ALPHA", num:"1", date:false },
+      shareUrl: pub.shareUrl || d.shareUrl || "",
+      shareImage: pub.shareImage || d.shareImage || "",
+      card: pub.card || d.card || {color:"",text:"",pattern:""}
+    };
+    let max=1; flow.steps.forEach(s=>{ const m=parseInt(String(s.id).replace(/\D/g,""),10); if(m>=max) max=m+1; });
+    if(seq<max) seq=max;
+    renderEditor(); if(mode==="preview") renderCanvas();
+    return true;
+  }
+
+  function download(content, name, type){
+    const blob=new Blob([content],{type:type}); const a=document.createElement("a");
+    a.href=URL.createObjectURL(blob); a.download=name; document.body.appendChild(a); a.click();
+    setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 600);
+  }
+  function safeName(){ return (flow.meta.title||"flow").replace(/[^a-z0-9_-]+/gi,"_").replace(/^_+|_+$/g,"")||"flow"; }
+
+  $("btnJson").onclick = ()=> download(JSON.stringify(buildSchema(),null,2), "xflow-"+safeName()+".json", "application/json");
+
+  $("btnImport").onclick = ()=> $("fileImport").click();
+  $("fileImport").addEventListener("change", e=>{
+    const f=e.target.files[0]; if(!f) return;
+    const rd=new FileReader();
+    rd.onload=()=>{ try{ if(!loadSchema(JSON.parse(rd.result))) throw 0; toast("Flow loaded"); }catch(_){ alert("Couldn't read that file as an xFLOW flow."); } };
+    rd.readAsText(f); e.target.value="";
+  });
+
+  // ---- export standalone client HTML ----
+  function buildClientHTML(){
+    const body = clientHTMLBody(flow);
+    const css = "*{box-sizing:border-box;margin:0;padding:0}body{background:#0A0D11;color:#E8EDF2;font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased;padding:48px 20px 90px}"
+      + ".deck{max-width:760px;margin:0 auto}"
+      + ".badge{display:inline-flex;align-items:center;gap:9px;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:#39FF14;border:1px solid #14C40A;border-radius:999px;padding:6px 14px;margin-bottom:22px}"
+      + ".badge .d{width:7px;height:7px;border-radius:50%;background:#39FF14;box-shadow:0 0 8px rgba(57,255,20,.4)}"
+      + "h1{font-family:'Saira Condensed',sans-serif;font-weight:700;font-size:clamp(40px,6vw,68px);line-height:.95;letter-spacing:-.01em;margin-bottom:14px}"
+      + ".intro{font-size:18px;color:#8A97A6;line-height:1.6;max-width:620px;margin-bottom:34px}"
+      + ".pcard{display:flex;gap:20px;padding:24px 0;border-top:1px solid rgba(255,255,255,.08)}"
+      + ".pc-n{font-family:'Saira Condensed',sans-serif;font-weight:700;font-size:30px;color:#39FF14;min-width:46px;line-height:1}"
+      + ".pc-body{flex:1;min-width:0}.pc-kick{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#66727F;margin-bottom:4px}"
+      + ".pc-body h3{font-family:'Saira Condensed',sans-serif;font-weight:600;font-size:26px;margin-bottom:8px}"
+      + ".pc-prompt{font-size:15px;color:#C7D0DA;line-height:1.6;margin-bottom:8px}.pc-desc{font-size:14px;color:#8A97A6;line-height:1.55}"
+      + ".pc-gal{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-top:14px}"
+      + ".pc-gal .g{position:relative;border-radius:10px;overflow:hidden;border:1px solid rgba(255,255,255,.08);aspect-ratio:16/10;background:#151B23;text-decoration:none}"
+      + ".pc-gal .g img{width:100%;height:100%;object-fit:cover}"
+      + ".pc-gal .g.embed{display:flex;align-items:center;justify-content:center;flex-direction:column;gap:6px;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.1em;color:#39FF14;text-transform:uppercase}"
+      + ".pc-gal .g.embed svg{width:26px;height:26px;fill:#39FF14}"
+      + ".foot{max-width:760px;margin:40px auto 0;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#66727F}";
+    return "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">"
+      + "<title>"+esc(flow.meta.title||"xFLOW")+"</title>"
+      + "<link rel=\"preconnect\" href=\"https://fonts.googleapis.com\"><link href=\"https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Saira+Condensed:wght@600;700&family=Space+Mono:wght@400;700&display=swap\" rel=\"stylesheet\">"
+      + "<style>"+css+"</style></head><body><div class=\"deck\">"+body+"</div><div class=\"foot\">xFLOW LAB · Flow Designer</div></body></html>";
+  }
+  $("btnHtml").onclick = ()=>{ download(buildClientHTML(), safeName()+".html", "text/html"); toast("Client HTML exported"); };
+
+  // ---- publish modal ----
+  function syncShareMsg(){
+    const link = $("shareUrl").value || flow.publish.shareUrl || "(your link)";
+    $("shareMsg").value = "Hello,\n\nHere's the latest version of \""+(flow.meta.title||"the flow")+"\" — "+verLabel()+".\n\n"+link+"\n";
+  }
+  $("btnShare").onclick = ()=>{
+    const v=flow.publish.version;
+    $("vStage").value=v.stage||"ALPHA"; $("vNum").value=v.num||"1"; $("vDate").checked=!!v.date;
+    $("shareUrl").value=flow.publish.shareUrl||"";
+    syncShareMsg();
+    $("pubScrim").classList.add("open");
+  };
+  ["vStage","vNum","vDate"].forEach(id=> $(id).addEventListener("input", ()=>{
+    flow.publish.version = { stage:$("vStage").value, num:$("vNum").value, date:$("vDate").checked };
+    syncShareMsg();
+  }));
+  $("shareUrl").addEventListener("input", ()=>{ flow.publish.shareUrl=$("shareUrl").value; syncShareMsg(); });
+  function copy(txt){ if(navigator.clipboard&&navigator.clipboard.writeText) return navigator.clipboard.writeText(txt); const t=document.createElement("textarea"); t.value=txt; document.body.appendChild(t); t.select(); try{document.execCommand("copy");}catch(e){} t.remove(); return Promise.resolve(); }
+  $("copyLink").onclick = ()=> copy($("shareUrl").value).then(()=>toast("Link copied"));
+  $("copyMsg").onclick = ()=> copy($("shareMsg").value).then(()=>toast("Message copied"));
+  $("pubClose").onclick = ()=>{ $("pubScrim").classList.remove("open"); if(mode==="preview") renderCanvas(); };
+  $("pubScrim").addEventListener("click", e=>{ if(e.target===$("pubScrim")) $("pubClose").onclick(); });
+
+  // ---- guide ----
+  $("btnGuide").onclick = ()=> $("gScrim").classList.add("open");
+  $("gOk").onclick = ()=> $("gScrim").classList.remove("open");
+  $("gScrim").addEventListener("click", e=>{ if(e.target===$("gScrim")) $("gScrim").classList.remove("open"); });
+
+  // ---- templates ----
+  const TPL_REPO = "duane-art/workflow-tools";
+  const TPL_PATH = "xflow-lab/templates";
+  // built-in so the picker is never empty (mirrors templates/xauto.json)
+  const BUILTIN_TEMPLATES = [
+    { file:"xauto.json", data:{
+      xflow:"flow", schema:2,
+      meta:{ title:"Vehicle Design — xAUTO", intro:"The xAUTO pipeline as a starting flow: lock an uploaded vehicle as the master design, build clean views and renders, optionally drop in a driver or scale figure from a second locked reference, then finish for delivery. Designs never drift and the vehicle is never resized or redesigned to fit the figure. Swap in your own art and prompts." },
+      steps:[
+        { id:"n1", type:"image", title:"Vehicle reference (master)", prompt:"Locked master vehicle design from the uploaded reference (Image 1). Hold silhouette, proportions, running gear, panel lines, and color palette true across every view. Do not resize or redesign the vehicle.", desc:"Upload the vehicle art as the locked master. Everything downstream is built from this design, not reinvented. Add a short ID note (e.g. \u201cfour-wheel desert scout, exposed running gear, single canopy\u201d) to pin the model to the right design.", media:[] },
+        { id:"n2", type:"lock", title:"Hardlock the design", prompt:"", desc:"Append the hardlock token so the model adheres to the reference style and the vehicle design never drifts between views.", media:[] },
+        { id:"n3", type:"image", title:"Orthographic views / turnaround", prompt:"Generate clean orthographic views of the locked vehicle \u2014 front, side, rear, and 3/4 \u2014 on a clean neutral background, 16:9. Same design across all angles, consistent scale, no reinvention.", desc:"The turnaround sheet that becomes the reference for every later render.", media:[] },
+        { id:"n4", type:"image", title:"Driver / scale figure (optional)", prompt:"Introduce a driver, pilot, rider, mechanic, or scale figure from a second locked reference (Image 2). Preserve the figure's identity, face, body proportions, wardrobe, silhouette, and color palette. Pose and placement may move; neither the vehicle nor the figure design drifts. Realistic human scale.", desc:"Turn this on only when you need a figure for scale or context. Both references stay locked \u2014 the vehicle is never resized to fit the figure.", media:[] },
+        { id:"n5", type:"image", title:"Render styling", prompt:"Render the locked vehicle (and figure) in the chosen style mode on the selected background \u2014 studio sweep or in-context scene. Hybrid style: keep identity, match the scene lighting and grade.", desc:"Lock identity, match the scene. Pick the style and background that fit the deliverable.", media:[] },
+        { id:"n6", type:"image", title:"Context / product shots", prompt:"Place the locked vehicle (and figure) in-context for product and marketing shots \u2014 environment, hero framing, motivated lighting. Designs remain locked; only camera, staging, and light change.", desc:"The shots you hand to clients or drop onto product mockups.", media:[] },
+        { id:"n7", type:"upscale", title:"Upscale to 4K", prompt:"Upscale the selected finals to 4K for delivery.", desc:"Topaz upscale on the picks before handoff.", media:[] },
+        { id:"n8", type:"animate", title:"Animate hero shot (optional)", prompt:"Animate a hero render in Veo: lock the plate, add one motion element or a single camera move. Keep it subtle \u2014 one motion idea per shot.", desc:"Optional motion pass for a hero beat.", media:[] }
+      ],
+      graph:null,
+      publish:{ version:{ stage:"ALPHA", num:"1", date:false }, shareUrl:"", shareImage:"", card:{ color:"", text:"", pattern:"" } }
+    }}
+  ];
+  function tplTitle(d){ return (d.meta && d.meta.title) || "Untitled flow"; }
+  function tplThumb(d){
+    if(d.publish && d.publish.shareImage) return d.publish.shareImage;
+    for(const s of (d.steps||[])){ for(const m of (s.media||[])){ if(m.type==="image") return m.src; } }
+    return "";
+  }
+  function tplCard(d){
+    const card = el("button","t-card"); card.type="button";
+    const thumb = tplThumb(d);
+    card.innerHTML =
+      '<div class="t-thumb">'+(thumb?'<img src="'+esc(thumb)+'">':'<span class="ph">FLOW</span>')+'</div>'+
+      '<div class="t-meta"><div class="t-name">'+esc(tplTitle(d))+'</div><div class="t-sub">'+((d.steps||[]).length)+' steps</div></div>'+
+      '<span class="t-use">Use \u2192</span>';
+    card.onclick = ()=>{ if(loadSchema(JSON.parse(JSON.stringify(d)))){ setMode("edit"); $("tScrim").classList.remove("open"); toast("Template loaded"); } };
+    return card;
+  }
+  async function loadGitHubFlows(path, seen){
+    const out=[];
+    try{
+      const r = await fetch("https://api.github.com/repos/"+TPL_REPO+"/contents/"+path, { headers:{ "Accept":"application/vnd.github+json" } });
+      if(!r.ok) return out;
+      const files = await r.json();
+      if(!Array.isArray(files)) return out;
+      for(const f of files){
+        if(f.type!=="file" || !/\.json$/i.test(f.name) || seen.has(f.name)) continue;
+        try{ const jr = await fetch(f.download_url); if(!jr.ok) continue; const d = await jr.json(); seen.add(f.name); out.push(d); }catch(e){}
+      }
+    }catch(e){}
+    return out;
+  }
+  async function openTemplates(){
+    const list = $("tList"); list.innerHTML="";
+    const seen = new Set();
+    BUILTIN_TEMPLATES.forEach(t=>{ seen.add(t.file); list.appendChild(tplCard(t.data)); });
+    $("tScrim").classList.add("open");
+    const note = el("div","t-note","Checking the templates folder…"); list.appendChild(note);
+    const gh = await loadGitHubFlows(TPL_PATH, seen);
+    note.remove();
+    gh.forEach(d=> list.appendChild(tplCard(d)));
+    if(!list.children.length){ list.appendChild(el("div","t-note","No templates yet — drop an xFLOW .json in xflow-lab/templates/.")); }
+  }
+  $("btnTemplates").onclick = openTemplates;
+  $("tClose").onclick = ()=> $("tScrim").classList.remove("open");
+  $("tScrim").addEventListener("click", e=>{ if(e.target===$("tScrim")) $("tScrim").classList.remove("open"); });
+
+  // ---- samples (view + print only) ----
+  const SMP_PATH = "xflow-lab/samples";
+  // demo built-in so the mode is testable before the folder is pushed (our own pipeline, fully shareable)
+  const BUILTIN_SAMPLES = [ { file:"xauto.json", data: BUILTIN_TEMPLATES[0].data } ];
+  function sampleCard(d){
+    const card = el("button","t-card"); card.type="button";
+    const thumb = tplThumb(d);
+    card.innerHTML =
+      '<div class="t-thumb">'+(thumb?'<img src="'+esc(thumb)+'">':'<span class="ph">FLOW</span>')+'</div>'+
+      '<div class="t-meta"><div class="t-name">'+esc(tplTitle(d))+'</div><div class="t-sub">'+((d.steps||[]).length)+' steps · view + print</div></div>'+
+      '<span class="t-use">View \u2192</span>';
+    card.onclick = ()=>{ if(enterViewOnly(JSON.parse(JSON.stringify(d)))){ $("sScrim").classList.remove("open"); } };
+    return card;
+  }
+  async function openSamples(){
+    const list = $("sList"); list.innerHTML="";
+    const seen = new Set();
+    BUILTIN_SAMPLES.forEach(t=>{ seen.add(t.file); list.appendChild(sampleCard(t.data)); });
+    $("sScrim").classList.add("open");
+    const note = el("div","t-note","Checking the samples folder…"); list.appendChild(note);
+    const gh = await loadGitHubFlows(SMP_PATH, seen);
+    note.remove();
+    gh.forEach(d=> list.appendChild(sampleCard(d)));
+    if(!list.children.length){ list.appendChild(el("div","t-note","No samples yet — drop an approved xFLOW .json in xflow-lab/samples/.")); }
+  }
+  function enterViewOnly(d){
+    stashedFlow = JSON.parse(JSON.stringify(flow));
+    if(!loadSchema(d)){ stashedFlow=null; return false; }
+    viewOnly = true; document.body.classList.add("view-only");
+    setMode("preview"); toast("Sample · view only");
+    return true;
+  }
+  function exitSample(){
+    viewOnly = false; document.body.classList.remove("view-only");
+    if(stashedFlow){ loadSchema(stashedFlow); stashedFlow=null; }
+    setMode("edit");
+  }
+  $("btnSamples").onclick = openSamples;
+  $("sClose").onclick = ()=> $("sScrim").classList.remove("open");
+  $("sScrim").addEventListener("click", e=>{ if(e.target===$("sScrim")) $("sScrim").classList.remove("open"); });
+  $("btnExit").onclick = exitSample;
+  $("btnPrint").onclick = ()=>{ $("printRoot").innerHTML = clientHTMLBody(flow); window.print(); };
+
+  // ---- universal modal close: circular X + Escape (outside-click wired per modal) ----
+  document.addEventListener("click", function(e){ var x=e.target.closest && e.target.closest(".modal-x"); if(x){ var s=x.closest(".scrim"); if(s) s.classList.remove("open"); } });
+  document.addEventListener("keydown", function(e){ if(e.key!=="Escape") return; document.querySelectorAll(".scrim.open").forEach(function(s){ s.classList.remove("open"); }); });
+
+  // ---- seed ----
+  flow.steps = [
+    { id:uid(), type:"sketch", title:"", prompt:"", desc:"", media:[] },
+    { id:uid(), type:"image",  title:"", prompt:"", desc:"", media:[] },
+    { id:uid(), type:"animate",title:"", prompt:"", desc:"", media:[] }
+  ];
+  flow.meta.title = "";
+  renderEditor();
+  setMode("edit");
+})();
+</script>
+</body>
+</html>
