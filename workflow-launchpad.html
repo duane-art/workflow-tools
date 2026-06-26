@@ -80,7 +80,7 @@
         <h1>Launchpad</h1>
         <p class="sub">Every flow in your library. Click one to open it in the builder, ready to edit — or start a fresh one.</p>
       </div>
-      <a class="newflow" href="loki-process-master-tool.html"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>New flow</a>
+      <a class="newflow" href="workflow-process-master-tool.html"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>New flow</a>
     </div>
     <div id="grid" class="grid"></div>
     <div id="state" class="state">Loading your flows…</div>
@@ -97,7 +97,7 @@
   var OWNER="duane-art", REPO="workflow-tools", BRANCH="main";
   var API="https://api.github.com/repos/"+OWNER+"/"+REPO+"/contents/";
   var EXPORTS="exports";                       // the folder this launchpad reads
-  var TOOL="loki-process-master-tool.html";    // the builder we open flows into
+  var TOOL="workflow-process-master-tool.html";  // the builder we open flows into
   var PAGES="https://"+OWNER+".github.io/"+REPO+"/";  // hosted base — keeps every link online even if this page is opened locally
   var grid=document.getElementById("grid"), state=document.getElementById("state");
 
