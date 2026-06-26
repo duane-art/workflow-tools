@@ -78,7 +78,7 @@
   .add-step{ width:100%; padding:14px; border:1px dashed var(--line-2); border-radius:var(--r); background:transparent; color:var(--text-dim); font-family:var(--mono); font-size:12px; letter-spacing:0.14em; text-transform:uppercase; margin-top:6px; }
   .add-step:hover{ color:var(--accent); border-color:var(--accent); }
 
-  /* ---- preview canvas (Loki engine, reskinned) ---- */
+  /* ---- preview canvas (// xFLOW engine) ---- */
   #prevPane{ position:absolute; inset:0; display:none; }
   #prevPane.on{ display:block; }
   #stage{ position:relative; width:100%; height:100%; overflow:hidden; cursor:grab;
@@ -121,7 +121,7 @@
   .zoombar .zlvl{ font-family:var(--mono); font-size:12px; color:var(--text-dim); width:48px; text-align:center; }
   .zoombar .fit{ width:auto; padding:0 12px; font-size:12px; font-family:var(--mono); }
 
-  /* ---- lightbox (Loki) ---- */
+ /* ---- lightbox ---- */
   .lb{ position:fixed; inset:0; z-index:90; display:none; align-items:center; justify-content:center; padding:38px; background:rgba(5,7,10,0.78); backdrop-filter:blur(3px); }
   .lb.open{ display:flex; }
   .lb-inner{ position:relative; display:inline-flex; max-width:92vw; max-height:88vh; }
@@ -446,7 +446,7 @@
   }
   function verLabelFor(f){ const v=(f.publish&&f.publish.version)||{}; let s=(v.stage||"ALPHA")+" "+(v.num||"1"); if(v.date) s+=" · "+todayStr(); return s; }
 
-  // ---- preview: Loki canvas engine ----
+  // ---- preview: canvas engine ----
   function el(tag,cls,txt){ const n=document.createElement(tag); if(cls)n.className=cls; if(txt!=null)n.textContent=txt; return n; }
   function clamp(v,a,b){ return Math.max(a,Math.min(b,v)); }
   function embedInfo(url){
